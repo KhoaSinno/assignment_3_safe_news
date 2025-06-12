@@ -272,28 +272,21 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           const SizedBox(height: 16.0),
           // Danh sách bài viết
           Expanded(
-            child: SizedBox(
-              width: double.infinity,
-              child: FutureBuilder<List<ArticleModel>>(
-                future:
-                    articles, // Use the Future from articleProvider.fetchArticle()
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No articles found'));
-                  }
-
-                  final articleList = snapshot.data!;
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    padding: EdgeInsets.all(0),
-                    itemCount: articleList.length, // Use dynamic length
-                    itemBuilder: (context, index) {
-                      final article = articleList[index];
-                      return Padding(
+            child: FutureBuilder<List<ArticleModel>>(
+              future: articleProvider.fetchArticle(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No articles found'));
+                }
+                final articles = snapshot.data!;
+                return ListView.builder(
+                  itemCount: articles.length,
+                  itemBuilder:
+                      (context, index) => Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 8,
                           horizontal: 16,
@@ -308,7 +301,12 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                                 borderRadius: BorderRadius.circular(8),
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                    'https://placehold.co/150x150',
+                                    RegExp(r'src="([^"]+)"')
+                                            .firstMatch(
+                                              articles[index].description,
+                                            )
+                                            ?.group(1) ??
+                                        'https://placehold.co/150x150',
                                   ),
                                   fit: BoxFit.cover,
                                 ),
@@ -320,7 +318,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    article.title ?? 'No title',
+                                    articles[index].title,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -332,7 +330,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'No category',
+                                    'No category', // Thêm category nếu có trong dữ liệu
                                     style: const TextStyle(
                                       color: Color(0xFF6D6265),
                                       fontSize: 14,
@@ -345,11 +343,9 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                             ),
                           ],
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
+                      ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 16.0),

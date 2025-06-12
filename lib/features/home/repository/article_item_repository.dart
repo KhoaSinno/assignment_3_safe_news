@@ -4,26 +4,30 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Future<List<ArticleModel>> fetchArticles() async {
-  //   try {
-  //     final snapshot = await _firestore.collection('news').get();
-  //     return snapshot.docs
-  //         .map((doc) => ArticleModel.fromJson(doc.data()))
-  //         .toList();
-  //   } catch (e) {
-  //     print('Error fetching articles: $e');
-  //     rethrow;
-  //   }
-  // }
   Future<List<ArticleModel>> fetchArticle() async {
     try {
       QuerySnapshot querySnapshot =
-          await _firestore.collection('articles').get();
-      return querySnapshot.docs
-          .map(
-            (doc) => ArticleModel.fromJson(doc.data() as Map<String, dynamic>),
-          )
-          .toList();
+          await _firestore.collection('news').get();
+      print('QuerySnapshot docs: ${querySnapshot.docs.length} documents');
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>?;
+        print('Doc data: $data');
+        try {
+          return ArticleModel.fromJson(data ?? {}, doc.id);
+        } catch (e) {
+          print('Error parsing doc ${doc.id}: $e');
+          // Trả về model với published mặc định nếu parse thất bại
+          return ArticleModel(
+            id: doc.id,
+            title: data?['title'] as String? ?? 'No title',
+            description: data?['description'] as String? ?? '',
+            published: DateTime.now(), // Giá trị mặc định
+            link: data?['link'] as String?,
+            isToxic: data?['is_toxic'] as bool?,
+            sentiment: data?['sentiment'] as int?,
+          );
+        }
+      }).toList();
     } catch (e) {
       print('Error fetching articles: $e');
       return [];
@@ -39,7 +43,7 @@ class ArticleItemRepository {
 
   Future<void> updateArticle(String id, ArticleModel article) async {
     try {
-      await _firestore.collection('articles').doc(id).update(article.toJson());
+      await _firestore.collection('News').doc(id).update(article.toJson());
     } catch (e) {
       rethrow;
     }
@@ -47,7 +51,7 @@ class ArticleItemRepository {
 
   Future<void> deleteArticle(String id) async {
     try {
-      await _firestore.collection('articles').doc(id).delete();
+      await _firestore.collection('News').doc(id).delete();
     } catch (e) {
       rethrow;
     }

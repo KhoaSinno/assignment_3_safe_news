@@ -1,10 +1,10 @@
+import 'package:intl/intl.dart';
+
 class ArticleModel {
   ArticleModel({
     required this.id,
     required this.title,
     required this.description,
-    // required this.imageUrl,
-    // required this.author,
     required this.published,
     this.link,
     this.isToxic,
@@ -14,19 +14,17 @@ class ArticleModel {
   final String id;
   final String title;
   final String description;
-  // final String imageUrl;
-  // final String author;
   final DateTime published;
   final String? link;
-  bool? isToxic;
-  int? sentiment;
+  final bool? isToxic;
+  final int? sentiment;
 
-  factory ArticleModel.fromJson(Map<String, dynamic> json) {
+  factory ArticleModel.fromJson(Map<String, dynamic> json, String documentId) {
     return ArticleModel(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      published: DateTime.parse(json['published'] as String),
+      id: documentId,
+      title: json['title'] as String? ?? 'No title',
+      description: json['description'] as String? ?? '',
+      published: DateFormat('EEE, dd MMM yyyy HH:mm:ss Z').parse(json['published'] as String? ?? DateTime.now().toIso8601String()),
       link: json['link'] as String?,
       isToxic: json['is_toxic'] as bool?,
       sentiment: json['sentiment'] as int?,
@@ -38,8 +36,6 @@ class ArticleModel {
       'id': id,
       'title': title,
       'description': description,
-      // 'imageUrl': imageUrl,
-      // 'author': author,
       'published': published.toIso8601String(),
       'link': link,
       'is_toxic': isToxic,
