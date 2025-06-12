@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "126108149466",
+    "project_id": "safe-news-sn",
+    "storage_bucket": "safe-news-sn.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126108149466:android:0100234a1dba29486027e3",
+        "android_client_info": {
+          "package_name": "com.example.assignment_3_safe_news"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126108149466-etrg7lv1uqup1lu4vfq0boh01d6s5tee.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.assignment_3_safe_news",
+            "certificate_hash": "b646c9dba61ae20e79bb441840c4e3fc65e3e19a"
+          }
+        },
+        {
+          "client_id": "126108149466-a58tvie305le6bg3dugqtoms9316je78.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAqsJEyCh1v0p7EHSjwKXy4UDZUw6opjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "126108149466-a58tvie305le6bg3dugqtoms9316je78.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
