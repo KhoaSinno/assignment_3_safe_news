@@ -1,9 +1,9 @@
-import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/features/home/viewmodel/article_item_viewmodel.dart';
+import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
+import 'package:assignment_3_safe_news/features/home/widget/category_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class HomeArticle extends ConsumerStatefulWidget {
   const HomeArticle({super.key});
@@ -115,7 +115,6 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
             ),
           ),
           SizedBox(height: 16.0),
-
           // Thanh tìm kiếm
           Padding(
             padding: const EdgeInsets.symmetric(
@@ -221,125 +220,10 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           ),
           const SizedBox(height: 8.0),
           // Danh mục loại bài viết
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ...Categories.map((category) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: buildCategoryChip(
-                          category['name']!,
-                          isSelected:
-                              category['slug'] == AppCategory.tinMoiNhat,
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          CategoryItem(),
           const SizedBox(height: 16.0),
           // Danh sách bài viết
-          Expanded(
-            child: StreamBuilder<List<ArticleModel>>(
-              stream: articleProvider.fetchArticle(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No articles found'));
-                }
-                final articles = snapshot.data!;
-                return ListView.builder(
-                  itemCount: articles.length,
-                  padding: EdgeInsets.only(top: 0),
-                  itemBuilder:
-                      (context, index) => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 16,
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 150,
-                              height: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: NetworkImage(articles[index].imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    articles[index].title,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      color: Color(0xFF231F20),
-                                      fontSize: 18,
-                                      fontFamily: 'Aleo',
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    getNameFromCategory(
-                                      articles[index].category,
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFF6D6265),
-                                      fontSize: 14,
-                                      fontFamily: 'Merriweather',
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  SizedBox( // Wrap the Text widget with SizedBox for full width
-                                    width: double.infinity,
-                                    child: Text(
-                                      DateFormat('dd/MM/yyyy HH:mm')
-                                          .format(articles[index].published)
-                                          .toString(),
-                                      textAlign: TextAlign.end, // This will now align the text to the right
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        color: Color(0xFF6D6265),
-                                        fontSize: 14,
-                                        fontFamily: 'Merriweather',
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                );
-              },
-            ),
-          ),
+          ArticleList(),
           const SizedBox(height: 16.0),
         ],
       ),
