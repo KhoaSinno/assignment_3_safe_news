@@ -14,10 +14,9 @@ class ArticleItemViewModel extends ChangeNotifier {
   ArticleModel? _article;
   ArticleModel? get article => _article;
 
-  Future<List<ArticleModel>> fetchArticle() async {
+  Stream<List<ArticleModel>> fetchArticle() {
     try {
-      List<ArticleModel> articles = await _articleItemRepository.fetchArticle();
-      return articles;
+      return _articleItemRepository.fetchArticle();
     } catch (e) {
       rethrow;
     }

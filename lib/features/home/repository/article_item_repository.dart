@@ -3,21 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Future<List<ArticleModel>> fetchArticle() async {
-    final List<ArticleModel> articles = [];
-    try {
-      _firestore.collection('news-crawler').snapshots().listen((querySnapshot) {
-        for (var doc in querySnapshot.docs) {
-          final data = doc.data() as Map<String, dynamic>?;
-          ArticleModel article = ArticleModel.fromJson(data ?? {}, doc.id);
-          articles.add(article);
-        }
-      }, onError: (error) => print("Listen failed: $error"));
-      return articles;
-    } catch (e) {
-      print('Error fetching articles: $e');
-      return [];
-    }
+  Stream<List<ArticleModel>> fetchArticle() {
+    return _firestore
+        .collection('news-crawler')
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => ArticleModel.fromJson(doc.data(), doc.id))
+                  .toList(),
+        );
   }
 
   // Future<List<ArticleModel>> fetchArticle() async {

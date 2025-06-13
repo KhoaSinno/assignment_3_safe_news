@@ -16,7 +16,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
   @override
   Widget build(BuildContext context) {
     final articleProvider = ref.watch(articleItemViewModelProvider);
-    Future<List<ArticleModel>> articles = articleProvider.fetchArticle();
+    Stream<List<ArticleModel>> articles = articleProvider.fetchArticle();
     print('articles: $articles');
 
     return Scaffold(
@@ -250,8 +250,8 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           const SizedBox(height: 16.0),
           // Danh sách bài viết
           Expanded(
-            child: FutureBuilder<List<ArticleModel>>(
-              future: articleProvider.fetchArticle(),
+            child: StreamBuilder<List<ArticleModel>>(
+              stream: articleProvider.fetchArticle(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
