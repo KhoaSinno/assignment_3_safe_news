@@ -1,7 +1,9 @@
+import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/features/home/viewmodel/article_item_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class HomeArticle extends ConsumerStatefulWidget {
   const HomeArticle({super.key});
@@ -182,7 +184,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
             height: 44,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
@@ -214,32 +216,13 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xCCF5EAEA),
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'Thanh Niên',
-                      style: TextStyle(
-                        color: Color(0xFFCAABB4),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 8.0),
           // Danh mục loại bài viết
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -249,21 +232,16 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildCategoryChip('Giáo dục', isSelected: true),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Thế giới'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Sức khỏe'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Đời sống'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Thể thao'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Du lịch'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Cười'),
-                    const SizedBox(width: 10),
-                    _buildCategoryChip('Pháp luật'),
+                    ...Categories.map((category) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 10),
+                        child: buildCategoryChip(
+                          category['name']!,
+                          isSelected:
+                              category['slug'] == AppCategory.tinMoiNhat,
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
@@ -285,6 +263,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                 final articles = snapshot.data!;
                 return ListView.builder(
                   itemCount: articles.length,
+                  padding: EdgeInsets.only(top: 0),
                   itemBuilder:
                       (context, index) => Padding(
                         padding: const EdgeInsets.symmetric(
@@ -300,14 +279,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 image: DecorationImage(
-                                  image: NetworkImage(
-                                    RegExp(r'src="([^"]+)"')
-                                            .firstMatch(
-                                              articles[index].description,
-                                            )
-                                            ?.group(1) ??
-                                        'https://placehold.co/150x150',
-                                  ),
+                                  image: NetworkImage(articles[index].imageUrl),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -328,14 +300,34 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
-                                  const SizedBox(height: 8),
+                                  const SizedBox(height: 4),
                                   Text(
-                                    'No category', // Thêm category nếu có trong dữ liệu
+                                    getNameFromCategory(
+                                      articles[index].category,
+                                    ),
                                     style: const TextStyle(
                                       color: Color(0xFF6D6265),
                                       fontSize: 14,
                                       fontFamily: 'Merriweather',
                                       fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  SizedBox( // Wrap the Text widget with SizedBox for full width
+                                    width: double.infinity,
+                                    child: Text(
+                                      DateFormat('dd/MM/yyyy HH:mm')
+                                          .format(articles[index].published)
+                                          .toString(),
+                                      textAlign: TextAlign.end, // This will now align the text to the right
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        color: Color(0xFF6D6265),
+                                        fontSize: 14,
+                                        fontFamily: 'Merriweather',
+                                        fontWeight: FontWeight.w400,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -367,27 +359,4 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
       ),
     );
   }
-}
-
-Widget _buildCategoryChip(String label, {bool isSelected = false}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      color: isSelected ? Colors.black : const Color(0xFFF2F2F7),
-      borderRadius: BorderRadius.circular(8),
-      border:
-          isSelected
-              ? null
-              : Border.all(color: const Color(0xFFCAABB4), width: 1),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(
-        color: isSelected ? Colors.white : Colors.black,
-        fontSize: 12,
-        fontFamily: 'Aleo',
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  );
 }

@@ -7,7 +7,7 @@ class ArticleItemRepository {
   Future<List<ArticleModel>> fetchArticle() async {
     try {
       QuerySnapshot querySnapshot =
-          await _firestore.collection('news').get();
+          await _firestore.collection('news-crawler').get();
       print('QuerySnapshot docs: ${querySnapshot.docs.length} documents');
       return querySnapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>?;
@@ -23,6 +23,8 @@ class ArticleItemRepository {
             description: data?['description'] as String? ?? '',
             published: DateTime.now(), // Giá trị mặc định
             link: data?['link'] as String?,
+            imageUrl: data?['image_url'] as String? ?? 'https://placehold.co/150x150',
+            category: data?['category'] as String? ?? '',
             isToxic: data?['is_toxic'] as bool?,
             sentiment: data?['sentiment'] as int?,
           );
@@ -41,19 +43,19 @@ class ArticleItemRepository {
   //   }
   // }
 
-  Future<void> updateArticle(String id, ArticleModel article) async {
-    try {
-      await _firestore.collection('News').doc(id).update(article.toJson());
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // Future<void> updateArticle(String id, ArticleModel article) async {
+  //   try {
+  //     await _firestore.collection('News').doc(id).update(article.toJson());
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
-  Future<void> deleteArticle(String id) async {
-    try {
-      await _firestore.collection('News').doc(id).delete();
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // Future<void> deleteArticle(String id) async {
+  //   try {
+  //     await _firestore.collection('News').doc(id).delete();
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 }
