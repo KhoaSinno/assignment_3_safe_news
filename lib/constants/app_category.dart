@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:assignment_3_safe_news/features/home/model/category_model.dart';
 
 class AppCategory {
   static const String tinMoiNhat = 'tin-moi-nhat';
@@ -21,134 +21,78 @@ class AppCategory {
   static const String cuoi = 'cuoi';
 }
 
-List<Map<String, String>> Categories = [
-  {'name': 'Tin mới nhất', 'slug': AppCategory.tinMoiNhat},
-  {'name': 'Tin xem nhiều', 'slug': AppCategory.tinXemNhieu},
-  {'name': 'Thế giới', 'slug': AppCategory.theGioi},
-  {'name': 'Thời sự', 'slug': AppCategory.thoiSu},
-  {'name': 'Kinh doanh', 'slug': AppCategory.kinhDoanh},
-  {'name': 'Startup', 'slug': AppCategory.startup},
-  {'name': 'Giải trí', 'slug': AppCategory.giaiTri},
-  {'name': 'Thể thao', 'slug': AppCategory.theThao},
-  {'name': 'Pháp luật', 'slug': AppCategory.phapLuat},
-  {'name': 'Giáo dục', 'slug': AppCategory.giaoDuc},
-  {'name': 'Sức khỏe', 'slug': AppCategory.sucKhoe},
-  {'name': 'Gia đình', 'slug': AppCategory.giaDinh},
-  {'name': 'Du lịch', 'slug': AppCategory.duLich},
-  {'name': 'Khoa học công nghệ', 'slug': AppCategory.khoaHocCongNghe},
-  {'name': 'Ô tô xe máy', 'slug': AppCategory.otoXeMay},
-  {'name': 'Ý kiến', 'slug': AppCategory.yKien},
-  {'name': 'Tâm sự', 'slug': AppCategory.tamSu},
-  {'name': 'Cười', 'slug': AppCategory.cuoi},
-];
+const Map<String, CategoryModel> categories = {
+  AppCategory.tinMoiNhat: CategoryModel(
+    name: "Tin mới nhất",
+    slug: AppCategory.tinMoiNhat,
+  ),
+  AppCategory.tinXemNhieu: CategoryModel(
+    name: "Tin xem nhiều",
+    slug: AppCategory.tinXemNhieu,
+  ),
+  AppCategory.theGioi: CategoryModel(
+    name: "Thế giới",
+    slug: AppCategory.theGioi,
+  ),
+  AppCategory.thoiSu: CategoryModel(name: "Thời sự", slug: AppCategory.thoiSu),
+  AppCategory.kinhDoanh: CategoryModel(
+    name: "Kinh doanh",
+    slug: AppCategory.kinhDoanh,
+  ),
+  AppCategory.startup: CategoryModel(
+    name: "Startup",
+    slug: AppCategory.startup,
+  ),
+  AppCategory.giaiTri: CategoryModel(
+    name: "Giải trí",
+    slug: AppCategory.giaiTri,
+  ),
+  AppCategory.theThao: CategoryModel(
+    name: "Thể thao",
+    slug: AppCategory.theThao,
+  ),
+  AppCategory.phapLuat: CategoryModel(
+    name: "Pháp luật",
+    slug: AppCategory.phapLuat,
+  ),
+  AppCategory.giaoDuc: CategoryModel(
+    name: "Giáo dục",
+    slug: AppCategory.giaoDuc,
+  ),
+  AppCategory.sucKhoe: CategoryModel(
+    name: "Sức khỏe",
+    slug: AppCategory.sucKhoe,
+  ),
+  AppCategory.giaDinh: CategoryModel(
+    name: "Gia đình",
+    slug: AppCategory.giaDinh,
+  ),
+  AppCategory.duLich: CategoryModel(name: "Du lịch", slug: AppCategory.duLich),
+  AppCategory.khoaHocCongNghe: CategoryModel(
+    name: "Khoa học công nghệ",
+    slug: AppCategory.khoaHocCongNghe,
+  ),
+  AppCategory.otoXeMay: CategoryModel(
+    name: "Ô tô xe máy",
+    slug: AppCategory.otoXeMay,
+  ),
+  AppCategory.yKien: CategoryModel(name: "Ý kiến", slug: AppCategory.yKien),
+  AppCategory.tamSu: CategoryModel(name: "Tâm sự", slug: AppCategory.tamSu),
+  AppCategory.cuoi: CategoryModel(name: "Cười", slug: AppCategory.cuoi),
+};
 
 // Hàm ánh xạ từ slug sang tên danh mục
 String getNameFromCategory(String slug) {
-  switch (slug) {
-    case AppCategory.tinMoiNhat:
-      return 'Tin mới nhất';
-    case AppCategory.tinXemNhieu:
-      return 'Tin xem nhiều';
-    case AppCategory.theGioi:
-      return 'Thế giới';
-    case AppCategory.thoiSu:
-      return 'Thời sự';
-    case AppCategory.kinhDoanh:
-      return 'Kinh doanh';
-    case AppCategory.startup:
-      return 'Startup';
-    case AppCategory.giaiTri:
-      return 'Giải trí';
-    case AppCategory.theThao:
-      return 'Thể thao';
-    case AppCategory.phapLuat:
-      return 'Pháp luật';
-    case AppCategory.giaoDuc:
-      return 'Giáo dục';
-    case AppCategory.sucKhoe:
-      return 'Sức khỏe';
-    case AppCategory.giaDinh:
-      return 'Gia đình';
-    case AppCategory.duLich:
-      return 'Du lịch';
-    case AppCategory.khoaHocCongNghe:
-      return 'Khoa học công nghệ';
-    case AppCategory.otoXeMay:
-      return 'Ô tô xe máy';
-    case AppCategory.yKien:
-      return 'Ý kiến';
-    case AppCategory.tamSu:
-      return 'Tâm sự';
-    case AppCategory.cuoi:
-      return 'Cười';
-    default:
-      return '';
-  }
+  return categories[slug]?.name ??
+      ''; // Trả về chuỗi rỗng hoặc tên mặc định nếu không tìm thấy
 }
 
-// Hàm ánh xạ tên danh mục
-String getCategoryFromName(String name) {
-  switch (name.toLowerCase()) {
-    case AppCategory.tinMoiNhat:
-      return AppCategory.tinMoiNhat;
-    case AppCategory.tinXemNhieu:
-      return AppCategory.tinXemNhieu;
-    case AppCategory.theGioi:
-      return AppCategory.theGioi;
-    case AppCategory.thoiSu:
-      return AppCategory.thoiSu;
-    case AppCategory.kinhDoanh:
-      return AppCategory.kinhDoanh;
-    case AppCategory.startup:
-      return AppCategory.startup;
-    case AppCategory.giaiTri:
-      return AppCategory.giaiTri;
-    case AppCategory.theThao:
-      return AppCategory.theThao;
-    case AppCategory.phapLuat:
-      return AppCategory.phapLuat;
-    case AppCategory.giaoDuc:
-      return AppCategory.giaoDuc;
-    case AppCategory.sucKhoe:
-      return AppCategory.sucKhoe;
-    case AppCategory.giaDinh:
-      return AppCategory.giaDinh;
-    case AppCategory.duLich:
-      return AppCategory.duLich;
-    case AppCategory.khoaHocCongNghe:
-      return AppCategory.khoaHocCongNghe;
-    case AppCategory.otoXeMay:
-      return AppCategory.otoXeMay;
-    case AppCategory.yKien:
-      return AppCategory.yKien;
-    case AppCategory.tamSu:
-      return AppCategory.tamSu;
-    case AppCategory.cuoi:
-      return AppCategory.cuoi;
-    default:
-      return '';
+// Hàm ánh xạ tên danh mục sang slug
+String getSlugFromName(String name) {
+  for (var entry in categories.entries) {
+    if (entry.value.name.toLowerCase() == name.toLowerCase()) {
+      return entry.key;
+    }
   }
-}
-
-Widget buildCategoryChip(String label, {bool isSelected = false}) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    decoration: BoxDecoration(
-      color: isSelected ? Colors.black : const Color(0xFFF2F2F7),
-      borderRadius: BorderRadius.circular(8),
-      border:
-          isSelected
-              ? null
-              : Border.all(color: const Color(0xFFCAABB4), width: 1),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(
-        color: isSelected ? Colors.white : Colors.black,
-        fontSize: 12,
-        fontFamily: 'Aleo',
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  );
+  return ''; // Trả về chuỗi rỗng hoặc slug mặc định nếu không tìm thấy
 }

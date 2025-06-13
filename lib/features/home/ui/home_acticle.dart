@@ -1,7 +1,7 @@
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/features/home/viewmodel/article_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
-import 'package:assignment_3_safe_news/features/home/widget/category_item.dart';
+import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -220,7 +220,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           ),
           const SizedBox(height: 8.0),
           // Danh mục loại bài viết
-          CategoryItem(),
+          CategoryList(),
           const SizedBox(height: 16.0),
           // Danh sách bài viết
           ArticleList(),
