@@ -1,15 +1,18 @@
 import 'package:assignment_3_safe_news/features/authentication/ui/login_screen.dart';
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
+import 'package:assignment_3_safe_news/features/home/ui/home_acticle.dart';
 import 'package:assignment_3_safe_news/features/home/ui/home_screen.dart';
 import 'package:assignment_3_safe_news/features/home/ui/splash.dart';
 import 'package:assignment_3_safe_news/features/home/ui/wellcome.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -21,7 +24,7 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: authViewModel.user != null ? HomeScreen() : LoginScreen(),
+      home: authViewModel.user != null ? HomeScreen() : HomeArticle(),
     );
   }
 }
