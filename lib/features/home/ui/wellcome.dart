@@ -94,7 +94,7 @@ class WelcomeState extends State<Welcome> {
                                 ),
                               ),
                               SizedBox(width: 11),
-                              Container(
+                              SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: ClipRRect(
