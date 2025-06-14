@@ -28,7 +28,7 @@ class ArticleList extends ConsumerWidget {
                   vertical: 8,
                   horizontal: 16,
                 ),
-                child: ArticleItem(articles: article),
+                child: ArticleItem(article: article),
               );
             },
           );
