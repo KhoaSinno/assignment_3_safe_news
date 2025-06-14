@@ -237,3 +237,13 @@ Riverpod là thư viện quản lý state trong Flutter, cung cấp các loại 
                           fontWeight: FontWeight.w400,
                         ),
                       ),
+        SizedBox(height: 8),
+                      Text(
+                        'Anh Đức dành một góc trong nhà để trưng bày giấy khen, giấy chứng nhận từ các cuộc thi. Ảnh: Nhân vật cung cấp',
+                        style: TextStyle(
+                          color: const Color(0xFF6D6265),
+                          fontSize: 14,
+                          fontFamily: 'Merriweather',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),

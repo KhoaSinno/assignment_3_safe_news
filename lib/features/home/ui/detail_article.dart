@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'; // Import HtmlWidget
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as parser;
+import 'package:html/dom.dart' as dom; // Import for dom.Element
 import 'package:intl/intl.dart';
 
 class DetailArticle extends StatefulWidget {
@@ -16,21 +17,31 @@ class DetailArticle extends StatefulWidget {
 }
 
 class _DetailArticleState extends State<DetailArticle> {
-  Future<String> fetchArticleContent({
-    String url =
-        'https://vnexpress.net/mark-zuckerberg-lap-doi-phat-trien-sieu-tri-tue-agi-4897184.html',
-  }) async {
+  Future<String> fetchArticleContent({required String? url}) async { // Make url required
+    if (url == null || url.isEmpty) {
+      return '<p>Article URL is missing.</p>';
+    }
     final response = await http.get(Uri.parse(url));
-    print('Fetching article content from: $url'); // Log the actual URL being fetched
-    // print('Status code: ${response.statusCode}'); // Keep for debugging if needed
-    // print('Response body: ${response.body}'); // Keep for debugging if needed
+    print('Fetching article content from: $url');
 
     if (response.statusCode == 200) {
       final document = parser.parse(response.body);
       final contentElement = document.querySelector('.fck_detail');
-      // Return the outer HTML of the element, or a default message if not found
-      final content = contentElement?.outerHtml ?? '<p>Không tìm thấy nội dung chi tiết.</p>';
-      return content;
+      final String htmlContent = contentElement?.outerHtml ?? '<p>Không tìm thấy nội dung chi tiết.</p>';
+      
+      // Pre-process HTML to handle data-src
+      final doc = parser.parse(htmlContent);
+      doc.querySelectorAll('img').forEach((imgElement) {
+        final dataSrc = imgElement.attributes['data-src'];
+        final src = imgElement.attributes['src'];
+        if (dataSrc != null && dataSrc.isNotEmpty) {
+          if (src == null || src.isEmpty || src.startsWith('data:image/gif;base64')) {
+            imgElement.attributes['src'] = dataSrc;
+          }
+        }
+      });
+      return doc.body?.innerHtml ?? '<p>Không thể xử lý nội dung.</p>';
+
     } else {
       throw Exception('Không thể tải nội dung bài viết. Mã lỗi: ${response.statusCode}');
     }
@@ -38,8 +49,6 @@ class _DetailArticleState extends State<DetailArticle> {
 
   @override
   Widget build(BuildContext context) {
-    // fetchArticleContent(); // Remove this line, FutureBuilder handles it
-
     return Scaffold(
       // extendBodyBehindAppBar: true, // Allows body to go behind AppBar
       appBar: AppBar(
@@ -184,65 +193,101 @@ class _DetailArticleState extends State<DetailArticle> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                     
-                      SizedBox(height: 24),
-                      Container(
-                        height: 200,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                            image: NetworkImage("https://placehold.co/366x310"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Anh Đức dành một góc trong nhà để trưng bày giấy khen, giấy chứng nhận từ các cuộc thi. Ảnh: Nhân vật cung cấp',
-                        style: TextStyle(
-                          color: const Color(0xFF6D6265),
-                          fontSize: 14,
-                          fontFamily: 'Merriweather',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      SizedBox(height: 24),
+
+                      SizedBox(height: 12),
                       // FutureBuilder to display fetched HTML article content
                       FutureBuilder<String>(
-                        future: fetchArticleContent(url: widget.article.link!), 
-
+                        future: fetchArticleContent(url: widget.article.link), // Use widget.article.link
                         builder: (context, snapshot) {
-
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return Center(child: CircularProgressIndicator());
-
                           } else if (snapshot.hasError) {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text('Lỗi tải nội dung: ${snapshot.error}'),
                             );
-
-                          } else if (snapshot.hasData) {
-                            // Use HtmlWidget to render the HTML content
+                          } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-
                               child: HtmlWidget(
                                 snapshot.data!,
-                                textStyle: TextStyle( // Default text style for content not otherwise styled by HTML
+                                textStyle: TextStyle(
                                   color: const Color(0xFF231F20),
                                   fontSize: 16,
                                   fontFamily: 'Merriweather',
                                   fontWeight: FontWeight.w400,
                                 ),
-                                // You can add more configurations to HtmlWidget as needed
-                                // For example, to handle image loading errors within the HTML:
                                 onLoadingBuilder: (context, element, loadingProgress) => Center(child: CircularProgressIndicator()),
-                                onErrorBuilder: (context, element, error) => Text('Lỗi hiển thị phần tử: ${element.localName}', style: TextStyle(color: Colors.red)),
+                                onErrorBuilder: (context, element, error) => Text('Lỗi hiển thị: ${element.localName}', style: TextStyle(color: Colors.red)),
+                                // Optional: Provide a base URL if some images have relative paths
+                                // baseUrl: Uri.tryParse(widget.article.link ?? '')?.origin != null ? Uri.parse(Uri.parse(widget.article.link!).origin) : null,
+                                customWidgetBuilder: (dom.Element element) {
+                                  if (element.localName == 'img') {
+                                    final src = element.attributes['src'];
+                                    final dataSrc = element.attributes['data-src'];
+                                    String? imageUrl = src;
+
+                                    if (dataSrc != null && dataSrc.isNotEmpty) {
+                                       // Prioritize data-src if src is a placeholder
+                                      if (src == null || src.isEmpty || src.startsWith('data:image/gif;base64')) {
+                                        imageUrl = dataSrc;
+                                      }
+                                    }
+                                    
+                                    if (imageUrl != null && imageUrl.isNotEmpty) {
+                                      // Ensure the URL is absolute
+                                      if (!imageUrl.startsWith('http') && widget.article.link != null) {
+                                        try {
+                                          Uri baseUri = Uri.parse(widget.article.link!);
+                                          imageUrl = baseUri.resolve(imageUrl).toString();
+                                        } catch (e) {
+                                          print('Error resolving image URL: $e');
+                                          return Text('Invalid image URL');
+                                        }
+                                      }
+                                      
+                                      return Image.network(
+                                        imageUrl,
+                                        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return Center(
+                                            child: CircularProgressIndicator(
+                                              value: loadingProgress.expectedTotalBytes != null
+                                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                  : null,
+                                            ),
+                                          );
+                                        },
+                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
+                                          print('Error loading image in HtmlWidget: $imageUrl, Error: $exception');
+                                          return Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(Icons.broken_image, color: Colors.grey, size: 24),
+                                              SizedBox(width: 8),
+                                              Expanded(child: Text('Không thể tải ảnh', style: TextStyle(fontSize: 12, color: Colors.grey))),
+                                            ],
+                                          );
+                                        },
+                                        fit: BoxFit.cover, // Adjust fit as needed
+                                      );
+                                    }
+                                  }
+                                  // To handle videos or iframes, you might add more conditions here
+                                  // if (element.localName == 'iframe') {
+                                  //   final src = element.attributes['src'];
+                                  //   if (src != null && src.startsWith('https://www.youtube.com/embed/')) {
+                                  //     // Consider using a package like youtube_player_flutter
+                                  //     return AspectRatio(
+                                  //       aspectRatio: 16 / 9,
+                                  //       child: WebView(initialUrl: src, javascriptMode: JavascriptMode.unrestricted),
+                                  //     );
+                                  //   }
+                                  // }
+                                  return null; // Return null to let the default rendering happen
+                                },
                               ),
                             );
-
                           } else {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
