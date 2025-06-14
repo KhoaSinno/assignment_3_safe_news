@@ -1,5 +1,3 @@
-import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
-import 'package:assignment_3_safe_news/features/home/viewmodel/article_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +13,10 @@ class HomeArticle extends ConsumerStatefulWidget {
 class _HomeArticleState extends ConsumerState<HomeArticle> {
   @override
   Widget build(BuildContext context) {
-    final articleProvider = ref.watch(articleItemViewModelProvider);
-    Stream<List<ArticleModel>> articles = articleProvider.fetchArticle();
-    print('articles: $articles');
+    // final articleProvider = ref.watch(articleItemViewModelProvider);
+
+    // Stream<List<ArticleModel>> articles = articleProvider.fetchArticle();
+    // print('articles: $articles');
 
     return Scaffold(
       body: Column(

@@ -3,16 +3,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Stream<List<ArticleModel>> fetchArticle() {
-    return _firestore
-        .collection('news-crawler')
-        .snapshots()
-        .map(
-          (snapshot) =>
-              snapshot.docs
-                  .map((doc) => ArticleModel.fromJson(doc.data(), doc.id))
-                  .toList(),
-        );
+
+  Stream<List<ArticleModel>> fetchArticle({String categorySlug = 'all'}) {
+    Query query = _firestore.collection('news-crawler');
+    if (categorySlug != 'all') {
+      query = query.where('category', isEqualTo: categorySlug);
+    }
+
+    query = query.orderBy('published', descending: true);
+    
+    return query.snapshots().map(
+      (snapshot) =>
+          snapshot.docs
+              .map(
+                (doc) => ArticleModel.fromJson(
+                  doc.data() as Map<String, dynamic>,
+                  doc.id,
+                ),
+              )
+              .toList(),
+    );
   }
 
   // Future<List<ArticleModel>> fetchArticle() async {

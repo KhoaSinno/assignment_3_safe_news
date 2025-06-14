@@ -1,4 +1,3 @@
-import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/features/home/viewmodel/article_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/widget/article_item.dart';
 import 'package:flutter/material.dart';
@@ -9,33 +8,33 @@ class ArticleList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final articleProvider = ref.watch(articleItemViewModelProvider);
+    // final articleProvider = ref.watch(articleItemViewModelProvider);
+
+    final articlesAsyncValue = ref.watch(articlesStreamProvider);
 
     return Expanded(
-      child: StreamBuilder<List<ArticleModel>>(
-        stream: articleProvider.fetchArticle(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No articles found'));
+      child: articlesAsyncValue.when(
+        data: (articles) {
+          if (articles.isEmpty) {
+            return Center(child: Text('Không có bài viết nào.'));
           }
-          final articles = snapshot.data!;
           return ListView.builder(
             itemCount: articles.length,
             padding: EdgeInsets.only(top: 0),
-            itemBuilder:
-                (context, index) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 16,
-                  ),
-                  child: ArticleItem(articles: articles[index]),
+            itemBuilder: (context, index) {
+              final article = articles[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 16,
                 ),
+                child: ArticleItem(articles: article),
+              );
+            },
           );
         },
+        loading: () => Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Center(child: Text('Lỗi tải bài viết: $error')),
       ),
     );
   }
