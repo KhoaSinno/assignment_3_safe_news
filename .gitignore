@@ -47,3 +47,4 @@ app.*.map.json
 
 # My custom additions
 firebase_options.dart
+*.env
