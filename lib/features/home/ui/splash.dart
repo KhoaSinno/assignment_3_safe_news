@@ -31,7 +31,7 @@ class SplashState extends State<Splash> {
                           width: double.infinity,
                           child: Column(
                             children: [
-                              Container(
+                              SizedBox(
                                 width: 169,
                                 height: 109,
                                 child: Image.network(

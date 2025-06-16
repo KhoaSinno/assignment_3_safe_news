@@ -1,8 +1,8 @@
 extension StringExtensions on String {
   // Capitalizes the first letter of the string
   String capitalize() {
-    if (this.isEmpty) return this;
-    return '${this[0].toUpperCase()}${this.substring(1)}';
+    if (isEmpty) return this;
+    return '${this[0].toUpperCase()}${substring(1)}';
   }
 
   // Validates if the string is a valid email format
@@ -15,7 +15,7 @@ extension StringExtensions on String {
 
   // Validates if the string is a valid password (at least 6 characters)
   bool isValidPassword() {
-    return this.length >= 6;
+    return length >= 6;
   }
 }
 
