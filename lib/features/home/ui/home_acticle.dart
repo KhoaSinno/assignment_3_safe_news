@@ -226,20 +226,6 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           const SizedBox(height: 16.0),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Yêu thích',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Hồ sơ'),
-        ],
-        currentIndex: 0,
-        onTap: (index) {
-          // Xử lý sự kiện khi người dùng nhấn vào một mục trong thanh điều hướng
-        },
-      ),
     );
   }
 }
