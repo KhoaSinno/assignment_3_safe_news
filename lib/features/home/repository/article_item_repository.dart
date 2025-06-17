@@ -26,6 +26,11 @@ class ArticleItemRepository {
     );
   }
 
+  static String removeMarkdownBold(String text) {
+    // Remove **...** at the start or anywhere in the text
+    return text.replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1').trim();
+  }
+
   static Future<String> summaryContentGemini(String content) async {
     final model = FirebaseAI.googleAI().generativeModel(
       model: 'gemini-2.0-flash',
@@ -37,13 +42,13 @@ class ArticleItemRepository {
     try {
       final prompt = [
         Content.text(
-          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn, phong cách báo trí, mạch lạc dễ hiểu và cuốn hút: $content',
+          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn, phong cách báo chí, mạch lạc dễ hiểu và cuốn hút. Chỉ trả về văn bản thuần túy, không sử dụng bất kỳ ký tự đặc biệt, markdown, hoặc định dạng nào: $content',
         ),
       ];
 
       final response = await model.generateContent(prompt);
-
-      return response.text ?? "Không thể tạo tóm tắt.";
+      final rawText = response.text ?? "Không thể tạo tóm tắt.";
+      return removeMarkdownBold(rawText);
     } catch (e) {
       print('Error with Gemini API: $e');
       return "Lỗi khi gọi API tóm tắt.";

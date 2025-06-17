@@ -4,6 +4,7 @@ import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 // PACKAGES
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 // File import
@@ -22,6 +23,11 @@ class _DetailArticleState extends State<DetailArticle> {
   bool _isLoadingSummary = false;
   String? _articleHtmlContent;
   bool _isLoadingArticle = false;
+  String _plainTextContent = '';
+  bool _isPressingBrief = false;
+  bool _isPressingFull = false;
+
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -50,6 +56,7 @@ class _DetailArticleState extends State<DetailArticle> {
 
       final plainTextContent = extractTextFromHtml(fetchedHtmlContent);
       if (plainTextContent.isNotEmpty) {
+        _plainTextContent = plainTextContent;
         final summary = await ArticleItemRepository.summaryContentGemini(
           plainTextContent,
         );
@@ -204,12 +211,30 @@ class _DetailArticleState extends State<DetailArticle> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          SizedBox(width: 4),
                           _isLoadingSummary
                               ? SizedBox()
                               : IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  setState(() {
+                                    _isPressingBrief = !_isPressingBrief;
+                                  });
+                                  if (_isPressingBrief) {
+                                    flutterTts.setLanguage('vi-VN');
+                                    flutterTts.speak(
+                                      _summary ??
+                                          'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
+                                    );
+                                  }
+                                  if (!_isPressingBrief) {
+                                    flutterTts.stop();
+                                  }
+                                },
                                 icon: Icon(Icons.volume_up),
+                                iconSize: 40,
+                                color:
+                                    _isPressingBrief
+                                        ? const Color.fromARGB(255, 44, 8, 204)
+                                        : Colors.black54,
                               ),
                         ],
                       ),
@@ -227,15 +252,40 @@ class _DetailArticleState extends State<DetailArticle> {
                           ),
 
                       SizedBox(height: 24),
-                      Text(
-                        'Chi tiết bài báo',
-                        style: TextStyle(
-                          color: const Color(0xFF231F20),
-                          fontSize: 20,
-                          fontFamily: 'Aleo',
-                          fontWeight: FontWeight.w700,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            'Chi tiết bài báo',
+                            style: TextStyle(
+                              color: const Color(0xFF231F20),
+                              fontSize: 20,
+                              fontFamily: 'Aleo',
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _isPressingFull = !_isPressingFull;
+                              });
+                              if (_isPressingFull) {
+                                flutterTts.setLanguage('vi-VN');
+                                flutterTts.speak(_plainTextContent);
+                              }
+                              if (!_isPressingFull) {
+                                flutterTts.stop();
+                              }
+                            },
+                            icon: Icon(Icons.volume_up),
+                            iconSize: 40,
+                            color:
+                                _isPressingFull
+                                    ? const Color.fromARGB(255, 44, 8, 204)
+                                    : Colors.black54,
+                          ),
+                        ],
                       ),
+
                       SizedBox(height: 8),
                       _isLoadingArticle
                           ? Center(child: CircularProgressIndicator())
