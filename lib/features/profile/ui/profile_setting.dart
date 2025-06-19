@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 
-class ProfileSetting extends StatefulWidget {
+class ProfileSetting extends ConsumerWidget {
   const ProfileSetting({Key? key}) : super(key: key);
-
   @override
-  _ProfileSettingState createState() => _ProfileSettingState();
-}
-
-class _ProfileSettingState extends State<ProfileSetting> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeNotifier = ref.read(themeProvider.notifier);
+    final isDarkMode = ref.watch(themeProvider.notifier).isDarkMode;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -157,6 +155,19 @@ class _ProfileSettingState extends State<ProfileSetting> {
               ),
               trailing: Icon(Icons.chevron_right),
               onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              title: Text(
+                'Chế độ tối',
+                style: TextStyle(color: const Color(0xFF231F20), fontSize: 14),
+              ),
+              trailing: Switch(
+                value: isDarkMode,
+                onChanged: (bool value) {
+                  themeNotifier.toggleTheme();
+                },
+              ),
             ),
           ],
         ),
