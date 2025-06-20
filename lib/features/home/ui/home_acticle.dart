@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
+import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,21 +14,16 @@ class HomeArticle extends ConsumerStatefulWidget {
 class _HomeArticleState extends ConsumerState<HomeArticle> {
   @override
   Widget build(BuildContext context) {
-    // final articleProvider = ref.watch(articleItemViewModelProvider);
-
-    // Stream<List<ArticleModel>> articles = articleProvider.fetchArticle();
-    // print('articles: $articles');
-
     return Scaffold(
       body: Column(
         children: [
-          // header logo top
+          // Header logo top
           Container(
             width: double.infinity,
             height: 120,
             padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
             decoration: BoxDecoration(
-              color: const Color(0xFFE9EEFA),
+              color: Theme.of(context).appBarTheme.backgroundColor,
               borderRadius: const BorderRadius.vertical(
                 bottom: Radius.circular(40),
               ),
@@ -54,21 +50,21 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Safe News',
-                          style: TextStyle(
-                            color: Color(0xFF9F224E),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineLarge?.copyWith(
+                            color: const Color(0xFF9F224E),
                             fontSize: 24,
-                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           'Discover',
-                          style: TextStyle(
-                            color: Color(0xFF8E8E93),
-                            fontSize: 16,
-                          ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(fontSize: 16),
                         ),
                       ],
                     ),
@@ -79,13 +75,18 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Row(
-                      children: const [
-                        Icon(Icons.wb_sunny, color: Colors.black, size: 24),
-                        SizedBox(width: 5),
+                      children: [
+                        Icon(
+                          Icons.wb_sunny,
+                          color: Theme.of(context).iconTheme.color,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 5),
                         Text(
                           '32°C',
-                          style: TextStyle(
-                            color: Color(0xFF6D6265),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
@@ -95,15 +96,13 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                     const SizedBox(height: 5),
                     Text(
                       'Xin chào, Anh Khoa',
-                      style: TextStyle(
-                        color: const Color(0xFF6D6265),
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
                       'Thứ 6, 13/06/2025 09:18',
-                      style: TextStyle(
-                        color: const Color(0xFF231F20),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
@@ -113,8 +112,8 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
               ],
             ),
           ),
-          SizedBox(height: 16.0),
-          // Thanh tìm kiếm
+          const SizedBox(height: 16.0),
+          // Search bar
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
@@ -126,7 +125,10 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(28),
-                color: const Color(0xFFCAABB4),
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF3A3A3A)
+                        : const Color(0xFFCAABB4),
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0x3F000000),
@@ -142,7 +144,10 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                       decoration: InputDecoration(
                         hintText: 'Tìm kiếm',
                         hintStyle: TextStyle(
-                          color: Colors.white70,
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white70
+                                  : Colors.black54,
                           fontSize: 16,
                           fontFamily: 'Aleo',
                           fontWeight: FontWeight.w400,
@@ -150,95 +155,37 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                         border: InputBorder.none,
                       ),
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontFamily: 'Aleo',
-                        fontWeight: FontWeight.w700,
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black87,
                       ),
+                      onChanged:
+                          (value) => {
+                            ref
+                                .read(debouncedSearchProvider.notifier)
+                                .updateSearchQuery(value),
+                          },
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.search,
-                      color: Color(0xFFCAABB4),
-                      size: 20,
-                    ),
+                  Icon(
+                    Icons.search,
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.black54,
                   ),
                 ],
               ),
             ),
           ),
-          // Mục tin tức
           const SizedBox(height: 16.0),
-          Container(
-            width: double.infinity,
-            height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xCCF5EAEA),
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: const Color(0xFFCAABB4),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0x3F000000),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'VNExpress',
-                      style: TextStyle(
-                        color: Color(0xFFCAABB4),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          // Danh mục loại bài viết
-          CategoryList(),
+          // Category List
+          const CategoryList(),
           const SizedBox(height: 16.0),
-          // Danh sách bài viết
-          ArticleList(),
-          const SizedBox(height: 16.0),
+          // Article List
+          const Expanded(child: ArticleList()),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Trang chủ'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Yêu thích',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Hồ sơ'),
-        ],
-        currentIndex: 0,
-        onTap: (index) {
-          // Xử lý sự kiện khi người dùng nhấn vào một mục trong thanh điều hướng
-        },
       ),
     );
   }

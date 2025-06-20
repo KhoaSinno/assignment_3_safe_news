@@ -4,6 +4,7 @@ import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 // PACKAGES
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 // File import
@@ -22,6 +23,11 @@ class _DetailArticleState extends State<DetailArticle> {
   bool _isLoadingSummary = false;
   String? _articleHtmlContent;
   bool _isLoadingArticle = false;
+  String _plainTextContent = '';
+  bool _isPressingBrief = false;
+  bool _isPressingFull = false;
+
+  final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -50,6 +56,7 @@ class _DetailArticleState extends State<DetailArticle> {
 
       final plainTextContent = extractTextFromHtml(fetchedHtmlContent);
       if (plainTextContent.isNotEmpty) {
+        _plainTextContent = plainTextContent;
         final summary = await ArticleItemRepository.summaryContentGemini(
           plainTextContent,
         );
@@ -150,97 +157,189 @@ class _DetailArticleState extends State<DetailArticle> {
                 Container(
                   transform: Matrix4.translationValues(0.0, -50.0, 0.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(32),
                     ),
                   ),
                   padding: const EdgeInsets.all(32),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         widget.article.title,
-                        style: TextStyle(
-                          color: const Color(0xFF231F20),
-                          fontSize: 24,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                        ),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineLarge
+                            ?.copyWith(fontSize: 24, fontFamily: 'Inter'),
                       ),
                       SizedBox(height: 16),
-                      Row(
-                        children: [
-                          // CircleAvatar(
-                          //   radius: 12,
-                          //   backgroundImage: NetworkImage(
-                          //     "https://placehold.co/24x24",
-                          //   ),
-                          // ),
-                          // SizedBox(width: 8),
-                          Text(
-                            // 'Anh Khoa · Thứ 3 ngày 10 năm 2025',
-                            DateFormat(
-                              'dd/MM/yyyy HH:mm',
-                            ).format(widget.article.published).toString(),
-                            style: TextStyle(
-                              color: const Color(0xFF6D6265),
-                              fontSize: 12,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
+                      Center(
+                        child: Text(
+                          // 'Anh Khoa · Thứ 3 ngày 10 năm 2025',
+                          DateFormat(
+                            'dd/MM/yyyy HH:mm',
+                          ).format(widget.article.published).toString(),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
                           ),
-                        ],
+                        ),
                       ),
                       SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Text(
-                            'Bản tóm tắt',
-                            style: TextStyle(
-                              color: const Color(0xFF231F20),
-                              fontSize: 20,
-                              fontFamily: 'Aleo',
-                              fontWeight: FontWeight.w700,
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Bản tóm tắt',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
                             ),
-                          ),
-                          SizedBox(width: 4),
-                          _isLoadingSummary
-                              ? SizedBox()
-                              : IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.volume_up),
-                              ),
-                        ],
+                            _isLoadingSummary
+                                ? SizedBox()
+                                : IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPressingBrief = !_isPressingBrief;
+                                    });
+                                    if (_isPressingBrief) {
+                                      flutterTts.setLanguage('vi-VN');
+                                      flutterTts.speak(
+                                        _summary ??
+                                            'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
+                                      );
+                                    }
+                                    if (!_isPressingBrief) {
+                                      flutterTts.stop();
+                                    }
+                                  },
+                                  icon: Icon(Icons.volume_up),
+                                  iconSize: 40,
+                                  color:
+                                      _isPressingBrief
+                                          ? const Color.fromARGB(
+                                            255,
+                                            44,
+                                            8,
+                                            204,
+                                          )
+                                          : Theme.of(
+                                            context,
+                                          ).iconTheme.color?.withOpacity(0.54),
+                                ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 8),
                       _isLoadingSummary
                           ? Center(child: CircularProgressIndicator())
-                          : Text(
-                            _summary ?? 'Đang tải tóm tắt...',
-                            style: TextStyle(
-                              color: const Color(0xFF231F20),
-                              fontSize: 16,
-                              fontFamily: 'Merriweather',
-                              fontWeight: FontWeight.w400,
+                          : Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: Text(
+                              _summary ?? 'Đang tải tóm tắt...',
+                              textAlign: TextAlign.justify,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
+                                fontSize: 16,
+                                fontFamily: 'Merriweather',
+                                fontWeight: FontWeight.w400,
+                                height: 1.5,
+                              ),
                             ),
                           ),
-
                       SizedBox(height: 24),
-                      Text(
-                        'Chi tiết bài báo',
-                        style: TextStyle(
-                          color: const Color(0xFF231F20),
-                          fontSize: 20,
-                          fontFamily: 'Aleo',
-                          fontWeight: FontWeight.w700,
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Chi tiết bài báo',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
+                            ),
+                            _isLoadingArticle
+                                ? SizedBox()
+                                : IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPressingFull = !_isPressingFull;
+                                    });
+                                    if (_isPressingFull) {
+                                      flutterTts.setLanguage('vi-VN');
+                                      flutterTts.speak(_plainTextContent);
+                                    }
+                                    if (!_isPressingFull) {
+                                      flutterTts.stop();
+                                    }
+                                  },
+                                  icon: Icon(Icons.volume_up),
+                                  iconSize: 40,
+                                  color:
+                                      _isPressingFull
+                                          ? const Color.fromARGB(
+                                            255,
+                                            44,
+                                            8,
+                                            204,
+                                          )
+                                          : Theme.of(
+                                            context,
+                                          ).iconTheme.color?.withOpacity(0.54),
+                                ),
+                          ],
                         ),
                       ),
                       SizedBox(height: 8),
                       _isLoadingArticle
                           ? Center(child: CircularProgressIndicator())
-                          : HtmlWidget(
-                            _articleHtmlContent ?? '<p>Không có nội dung.</p>',
+                          : Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: HtmlWidget(
+                              _articleHtmlContent ??
+                                  '<p>Không có nội dung.</p>',
+                              textStyle: TextStyle(
+                                fontSize: 16,
+                                height: 1.6,
+                                fontFamily: 'Merriweather',
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
+                              ),
+                              customStylesBuilder: (element) {
+                                if (element.localName == 'p') {
+                                  return {
+                                    'text-align': 'justify',
+                                    'line-height': '1.6',
+                                    'margin-bottom': '16px',
+                                  };
+                                }
+                                if (element.localName == 'div') {
+                                  return {
+                                    'text-align': 'justify',
+                                    'line-height': '1.6',
+                                  };
+                                }
+                                if (element.localName == 'h1' ||
+                                    element.localName == 'h2' ||
+                                    element.localName == 'h3') {
+                                  return {
+                                    'text-align': 'center',
+                                    'margin': '20px 0 16px 0',
+                                    'font-weight': 'bold',
+                                  };
+                                }
+                                return null;
+                              },
+                            ),
                           ),
                     ],
                   ),
