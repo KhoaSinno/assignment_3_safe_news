@@ -164,127 +164,157 @@ class _DetailArticleState extends State<DetailArticle> {
                   ),
                   padding: const EdgeInsets.all(32),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
                         widget.article.title,
+                        textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineLarge
                             ?.copyWith(fontSize: 24, fontFamily: 'Inter'),
                       ),
                       SizedBox(height: 16),
-                      Row(
-                        children: [
-                          // CircleAvatar(
-                          //   radius: 12,
-                          //   backgroundImage: NetworkImage(
-                          //     "https://placehold.co/24x24",
-                          //   ),
-                          // ),
-                          // SizedBox(width: 8),
-                          Text(
-                            // 'Anh Khoa · Thứ 3 ngày 10 năm 2025',
-                            DateFormat(
-                              'dd/MM/yyyy HH:mm',
-                            ).format(widget.article.published).toString(),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.copyWith(
-                              fontSize: 12,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                            ),
+                      Center(
+                        child: Text(
+                          // 'Anh Khoa · Thứ 3 ngày 10 năm 2025',
+                          DateFormat(
+                            'dd/MM/yyyy HH:mm',
+                          ).format(widget.article.published).toString(),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
                           ),
-                        ],
+                        ),
                       ),
                       SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Text(
-                            'Bản tóm tắt',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
-                          ),
-                          _isLoadingSummary
-                              ? SizedBox()
-                              : IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isPressingBrief = !_isPressingBrief;
-                                  });
-                                  if (_isPressingBrief) {
-                                    flutterTts.setLanguage('vi-VN');
-                                    flutterTts.speak(
-                                      _summary ??
-                                          'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
-                                    );
-                                  }
-                                  if (!_isPressingBrief) {
-                                    flutterTts.stop();
-                                  }
-                                },
-                                icon: Icon(Icons.volume_up),
-                                iconSize: 40,
-                                color:
-                                    _isPressingBrief
-                                        ? const Color.fromARGB(255, 44, 8, 204)
-                                        : Theme.of(
-                                          context,
-                                        ).iconTheme.color?.withOpacity(0.54),
-                              ),
-                        ],
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Bản tóm tắt',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
+                            ),
+                            _isLoadingSummary
+                                ? SizedBox()
+                                : IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPressingBrief = !_isPressingBrief;
+                                    });
+                                    if (_isPressingBrief) {
+                                      flutterTts.setLanguage('vi-VN');
+                                      flutterTts.speak(
+                                        _summary ??
+                                            'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
+                                      );
+                                    }
+                                    if (!_isPressingBrief) {
+                                      flutterTts.stop();
+                                    }
+                                  },
+                                  icon: Icon(Icons.volume_up),
+                                  iconSize: 40,
+                                  color:
+                                      _isPressingBrief
+                                          ? const Color.fromARGB(
+                                            255,
+                                            44,
+                                            8,
+                                            204,
+                                          )
+                                          : Theme.of(
+                                            context,
+                                          ).iconTheme.color?.withOpacity(0.54),
+                                ),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 8),
                       _isLoadingSummary
                           ? Center(child: CircularProgressIndicator())
-                          : Text(
-                            _summary ?? 'Đang tải tóm tắt...',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyLarge?.copyWith(
-                              fontSize: 16,
-                              fontFamily: 'Merriweather',
-                              fontWeight: FontWeight.w400,
+                          : Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: Text(
+                              _summary ?? 'Đang tải tóm tắt...',
+                              textAlign: TextAlign.justify,
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge?.copyWith(
+                                fontSize: 16,
+                                fontFamily: 'Merriweather',
+                                fontWeight: FontWeight.w400,
+                                height: 1.5,
+                              ),
                             ),
                           ),
-
                       SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Text(
-                            'Chi tiết bài báo',
-                            style: Theme.of(context).textTheme.headlineMedium
-                                ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _isPressingFull = !_isPressingFull;
-                              });
-                              if (_isPressingFull) {
-                                flutterTts.setLanguage('vi-VN');
-                                flutterTts.speak(_plainTextContent);
-                              }
-                              if (!_isPressingFull) {
-                                flutterTts.stop();
-                              }
-                            },
-                            icon: Icon(Icons.volume_up),
-                            iconSize: 40,
-                            color:
-                                _isPressingFull
-                                    ? const Color.fromARGB(255, 44, 8, 204)
-                                    : Theme.of(
-                                      context,
-                                    ).iconTheme.color?.withOpacity(0.54),
-                          ),
-                        ],
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Chi tiết bài báo',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
+                            ),
+                            _isLoadingArticle
+                                ? SizedBox()
+                                : IconButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isPressingFull = !_isPressingFull;
+                                    });
+                                    if (_isPressingFull) {
+                                      flutterTts.setLanguage('vi-VN');
+                                      flutterTts.speak(_plainTextContent);
+                                    }
+                                    if (!_isPressingFull) {
+                                      flutterTts.stop();
+                                    }
+                                  },
+                                  icon: Icon(Icons.volume_up),
+                                  iconSize: 40,
+                                  color:
+                                      _isPressingFull
+                                          ? const Color.fromARGB(
+                                            255,
+                                            44,
+                                            8,
+                                            204,
+                                          )
+                                          : Theme.of(
+                                            context,
+                                          ).iconTheme.color?.withOpacity(0.54),
+                                ),
+                          ],
+                        ),
                       ),
-
                       SizedBox(height: 8),
                       _isLoadingArticle
                           ? Center(child: CircularProgressIndicator())
-                          : HtmlWidget(
-                            _articleHtmlContent ?? '<p>Không có nội dung.</p>',
+                          : Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4.0,
+                            ),
+                            child: HtmlWidget(
+                              _articleHtmlContent ??
+                                  '<p>Không có nội dung.</p>',
+                              textStyle: TextStyle(
+                                fontSize: 16,
+                                height: 1.6,
+                                fontFamily: 'Merriweather',
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
+                              ),
+                            ),
                           ),
                     ],
                   ),
