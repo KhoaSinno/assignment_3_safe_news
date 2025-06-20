@@ -12,7 +12,9 @@ class ArticleItem extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailArticle(article: article)),
+          MaterialPageRoute(
+            builder: (context) => DetailArticle(article: article),
+          ),
         );
       },
       child: Row(
@@ -38,8 +40,8 @@ class ArticleItem extends StatelessWidget {
                   article.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Color(0xFF231F20),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.headlineMedium?.color,
                     fontSize: 18,
                     fontFamily: 'Aleo',
                     fontWeight: FontWeight.w600,
@@ -48,8 +50,8 @@ class ArticleItem extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   getNameFromCategory(article.category),
-                  style: const TextStyle(
-                    color: Color(0xFF6D6265),
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontSize: 14,
                     fontFamily: 'Merriweather',
                     fontWeight: FontWeight.w400,
@@ -68,8 +70,8 @@ class ArticleItem extends StatelessWidget {
                             .end, // This will now align the text to the right
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color(0xFF6D6265),
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontSize: 14,
                       fontFamily: 'Merriweather',
                       fontWeight: FontWeight.w400,

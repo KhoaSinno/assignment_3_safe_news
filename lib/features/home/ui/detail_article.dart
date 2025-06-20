@@ -157,7 +157,7 @@ class _DetailArticleState extends State<DetailArticle> {
                 Container(
                   transform: Matrix4.translationValues(0.0, -50.0, 0.0),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(32),
                     ),
@@ -168,12 +168,8 @@ class _DetailArticleState extends State<DetailArticle> {
                     children: [
                       Text(
                         widget.article.title,
-                        style: TextStyle(
-                          color: const Color(0xFF231F20),
-                          fontSize: 24,
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: Theme.of(context).textTheme.headlineLarge
+                            ?.copyWith(fontSize: 24, fontFamily: 'Inter'),
                       ),
                       SizedBox(height: 16),
                       Row(
@@ -190,8 +186,9 @@ class _DetailArticleState extends State<DetailArticle> {
                             DateFormat(
                               'dd/MM/yyyy HH:mm',
                             ).format(widget.article.published).toString(),
-                            style: TextStyle(
-                              color: const Color(0xFF6D6265),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
                               fontSize: 12,
                               fontFamily: 'Inter',
                               fontWeight: FontWeight.w400,
@@ -204,12 +201,8 @@ class _DetailArticleState extends State<DetailArticle> {
                         children: [
                           Text(
                             'Bản tóm tắt',
-                            style: TextStyle(
-                              color: const Color(0xFF231F20),
-                              fontSize: 20,
-                              fontFamily: 'Aleo',
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
                           ),
                           _isLoadingSummary
                               ? SizedBox()
@@ -234,7 +227,9 @@ class _DetailArticleState extends State<DetailArticle> {
                                 color:
                                     _isPressingBrief
                                         ? const Color.fromARGB(255, 44, 8, 204)
-                                        : Colors.black54,
+                                        : Theme.of(
+                                          context,
+                                        ).iconTheme.color?.withOpacity(0.54),
                               ),
                         ],
                       ),
@@ -243,8 +238,9 @@ class _DetailArticleState extends State<DetailArticle> {
                           ? Center(child: CircularProgressIndicator())
                           : Text(
                             _summary ?? 'Đang tải tóm tắt...',
-                            style: TextStyle(
-                              color: const Color(0xFF231F20),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyLarge?.copyWith(
                               fontSize: 16,
                               fontFamily: 'Merriweather',
                               fontWeight: FontWeight.w400,
@@ -256,12 +252,8 @@ class _DetailArticleState extends State<DetailArticle> {
                         children: [
                           Text(
                             'Chi tiết bài báo',
-                            style: TextStyle(
-                              color: const Color(0xFF231F20),
-                              fontSize: 20,
-                              fontFamily: 'Aleo',
-                              fontWeight: FontWeight.w700,
-                            ),
+                            style: Theme.of(context).textTheme.headlineMedium
+                                ?.copyWith(fontSize: 20, fontFamily: 'Aleo'),
                           ),
                           IconButton(
                             onPressed: () {
@@ -281,7 +273,9 @@ class _DetailArticleState extends State<DetailArticle> {
                             color:
                                 _isPressingFull
                                     ? const Color.fromARGB(255, 44, 8, 204)
-                                    : Colors.black54,
+                                    : Theme.of(
+                                      context,
+                                    ).iconTheme.color?.withOpacity(0.54),
                           ),
                         ],
                       ),

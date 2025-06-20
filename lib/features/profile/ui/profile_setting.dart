@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 
 class ProfileSetting extends ConsumerWidget {
-  const ProfileSetting({Key? key}) : super(key: key);
+  const ProfileSetting({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.read(themeProvider.notifier);
@@ -12,14 +12,14 @@ class ProfileSetting extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           'Hồ sơ cá nhân',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineLarge?.copyWith(fontSize: 24),
         ),
-        backgroundColor: const Color(0xFFE9EEFA),
-        elevation: 0,
         actions: [IconButton(icon: Icon(Icons.edit), onPressed: () {})],
       ),
       body: Container(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,21 +32,18 @@ class ProfileSetting extends ConsumerWidget {
                     backgroundImage: NetworkImage(
                       "https://placehold.co/120x120",
                     ),
-                    backgroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).cardColor,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Anh Khoa',
-                    style: TextStyle(
-                      color: const Color(0xFF231F20),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(fontSize: 24),
                   ),
                   Text(
                     'Chiến thần đọc sách',
-                    style: TextStyle(
-                      color: const Color(0xFF577BD9),
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
@@ -62,18 +59,15 @@ class ProfileSetting extends ConsumerWidget {
                   children: [
                     Text(
                       'Báo đã đọc',
-                      style: TextStyle(
-                        color: const Color(0xFF8A8183),
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
                       '320',
-                      style: TextStyle(
-                        color: const Color(0xFF231F20),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(fontSize: 24),
                     ),
                   ],
                 ),
@@ -81,18 +75,15 @@ class ProfileSetting extends ConsumerWidget {
                   children: [
                     Text(
                       'Chuỗi đọc',
-                      style: TextStyle(
-                        color: const Color(0xFF8A8183),
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
                       '345 Days',
-                      style: TextStyle(
-                        color: const Color(0xFF231F20),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(fontSize: 24),
                     ),
                   ],
                 ),
@@ -100,40 +91,37 @@ class ProfileSetting extends ConsumerWidget {
                   children: [
                     Text(
                       'Hạng',
-                      style: TextStyle(
-                        color: const Color(0xFF8A8183),
-                        fontSize: 14,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
                       '125',
-                      style: TextStyle(
-                        color: const Color(0xFF231F20),
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.headlineMedium?.copyWith(fontSize: 24),
                     ),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Divider(color: const Color(0xFFE1DFE0), thickness: 1),
+            Divider(color: Theme.of(context).dividerColor, thickness: 1),
             const SizedBox(height: 16),
             Text(
               'Cài đặt',
-              style: TextStyle(
-                color: const Color(0xFF231F20),
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(fontSize: 18),
             ),
             const SizedBox(height: 16),
             ListTile(
               leading: Icon(Icons.person),
               title: Text(
                 'Tài khoản của tôi',
-                style: TextStyle(color: const Color(0xFF231F20), fontSize: 14),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Icon(Icons.chevron_right),
               onTap: () {},
@@ -142,7 +130,9 @@ class ProfileSetting extends ConsumerWidget {
               leading: Icon(Icons.lock),
               title: Text(
                 'Chính sách bảo mật',
-                style: TextStyle(color: const Color(0xFF231F20), fontSize: 14),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Icon(Icons.chevron_right),
               onTap: () {},
@@ -151,7 +141,9 @@ class ProfileSetting extends ConsumerWidget {
               leading: Icon(Icons.contact_mail),
               title: Text(
                 'Liên hệ',
-                style: TextStyle(color: const Color(0xFF231F20), fontSize: 14),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Icon(Icons.chevron_right),
               onTap: () {},
@@ -160,7 +152,9 @@ class ProfileSetting extends ConsumerWidget {
               leading: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
               title: Text(
                 'Chế độ tối',
-                style: TextStyle(color: const Color(0xFF231F20), fontSize: 14),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Switch(
                 value: isDarkMode,

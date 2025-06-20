@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class BookmarkArticle extends StatefulWidget {
-  const BookmarkArticle({Key? key}) : super(key: key);
+  const BookmarkArticle({super.key});
 
   @override
   _BookmarkArticleState createState() => _BookmarkArticleState();
@@ -53,14 +53,14 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
       appBar: AppBar(
         title: Text(
           'Bookmark',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineLarge?.copyWith(fontSize: 24),
         ),
-        backgroundColor: const Color(0xFFE9EEFA),
-        elevation: 0,
         actions: [IconButton(icon: Icon(Icons.refresh), onPressed: () {})],
       ),
       body: Container(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: bookmarks.length,
@@ -110,17 +110,15 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
                               bookmark['title']!,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Color(0xFF231F20),
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(fontSize: 18),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               bookmark['category']!,
-                              style: const TextStyle(
-                                color: Color(0xFF6D6265),
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
                               ),

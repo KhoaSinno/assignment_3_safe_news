@@ -27,17 +27,31 @@ class CategoryItem extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.black : const Color(0xFFF2F2F7),
+            color:
+                isSelected
+                    ? Theme.of(context).primaryColor
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF2A2A2A)
+                        : const Color(0xFFF2F2F7)),
             borderRadius: BorderRadius.circular(8),
             border:
                 isSelected
                     ? null
-                    : Border.all(color: const Color(0xFFCAABB4), width: 1),
+                    : Border.all(
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF555555)
+                              : const Color(0xFFCAABB4),
+                      width: 1,
+                    ),
           ),
           child: Text(
             category.name,
             style: TextStyle(
-              color: isSelected ? Colors.white : Colors.black,
+              color:
+                  isSelected
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyLarge?.color,
               fontSize: 12,
               fontFamily: 'Aleo',
               fontWeight: FontWeight.w700,
