@@ -4,17 +4,22 @@ import 'package:firebase_ai/firebase_ai.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Stream<List<ArticleModel>> fetchArticle({String categorySlug = 'all'}) {
+  Stream<List<ArticleModel>> fetchArticle({
+    String categorySlug = 'all',
+    String? title,
+  }) {
     Query query = _firestore.collection('news-crawler');
+
+    // Áp dụng filter category trước
     if (categorySlug != 'all') {
       query = query.where('category', isEqualTo: categorySlug);
     }
 
+    // Sắp xếp theo published
     query = query.orderBy('published', descending: true);
 
-    return query.snapshots().map(
-      (snapshot) =>
+    return query.snapshots().map((snapshot) {
+      List<ArticleModel> articles =
           snapshot.docs
               .map(
                 (doc) => ArticleModel.fromJson(
@@ -22,8 +27,18 @@ class ArticleItemRepository {
                   doc.id,
                 ),
               )
-              .toList(),
-    );
+              .toList();
+
+      // Áp dụng filter tìm kiếm title ở client-side
+      if (title != null && title.isNotEmpty) {
+        articles =
+            articles.where((article) {
+              return article.title.toLowerCase().contains(title.toLowerCase());
+            }).toList();
+      }
+
+      return articles;
+    });
   }
 
   static String removeMarkdownBold(String text) {

@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
+import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -146,7 +147,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                           color:
                               Theme.of(context).brightness == Brightness.dark
                                   ? Colors.white70
-                                  : Colors.white70,
+                                  : Colors.black54,
                           fontSize: 16,
                           fontFamily: 'Aleo',
                           fontWeight: FontWeight.w400,
@@ -157,8 +158,14 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                         color:
                             Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white
-                                : Colors.white,
+                                : Colors.black87,
                       ),
+                      onChanged:
+                          (value) => {
+                            ref
+                                .read(debouncedSearchProvider.notifier)
+                                .updateSearchQuery(value),
+                          },
                     ),
                   ),
                   Icon(
@@ -166,7 +173,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                     color:
                         Theme.of(context).brightness == Brightness.dark
                             ? Colors.white70
-                            : Colors.white70,
+                            : Colors.black54,
                   ),
                 ],
               ),
