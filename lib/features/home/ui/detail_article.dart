@@ -314,6 +314,31 @@ class _DetailArticleState extends State<DetailArticle> {
                                       context,
                                     ).textTheme.bodyLarge?.color,
                               ),
+                              customStylesBuilder: (element) {
+                                if (element.localName == 'p') {
+                                  return {
+                                    'text-align': 'justify',
+                                    'line-height': '1.6',
+                                    'margin-bottom': '16px',
+                                  };
+                                }
+                                if (element.localName == 'div') {
+                                  return {
+                                    'text-align': 'justify',
+                                    'line-height': '1.6',
+                                  };
+                                }
+                                if (element.localName == 'h1' ||
+                                    element.localName == 'h2' ||
+                                    element.localName == 'h3') {
+                                  return {
+                                    'text-align': 'center',
+                                    'margin': '20px 0 16px 0',
+                                    'font-weight': 'bold',
+                                  };
+                                }
+                                return null;
+                              },
                             ),
                           ),
                     ],
