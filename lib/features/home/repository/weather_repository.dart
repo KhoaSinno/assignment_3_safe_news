@@ -12,28 +12,18 @@ class WeatherRepository {
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5';
   Future<WeatherModel?> getCurrentWeather() async {
     try {
-      print('Debug: Starting weather fetch...');
-
       // Lấy vị trí hiện tại
       Position position = await _getCurrentPosition();
-      print('Debug: Got location: ${position.latitude}, ${position.longitude}');
 
       // Gọi API thời tiết
       final url =
           '$_baseUrl/weather?lat=${position.latitude}&lon=${position.longitude}&appid=$_apiKey&units=metric&lang=vi';
 
-      print('Debug: Calling weather API...');
       final response = await http.get(Uri.parse(url));
-      print('Debug: API response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print(
-          'Debug: Weather data received: ${data['name']}, ${data['main']['temp']}°C',
-        );
         return WeatherModel.fromJson(data);
-      } else {
-        print('Debug: API error: ${response.statusCode} - ${response.body}');
       }
       return null;
     } on PlatformException catch (e) {
@@ -49,7 +39,6 @@ class WeatherRepository {
 
   Future<WeatherModel?> _getDefaultWeather() async {
     try {
-      print('Debug: Using default location (Hanoi)...');
       // Sử dụng tọa độ mặc định của Hà Nội
       const double defaultLat = 21.0285;
       const double defaultLon = 105.8542;
@@ -57,20 +46,11 @@ class WeatherRepository {
       final url =
           '$_baseUrl/weather?lat=$defaultLat&lon=$defaultLon&appid=$_apiKey&units=metric&lang=vi';
 
-      print('Debug: Calling default weather API...');
       final response = await http.get(Uri.parse(url));
-      print('Debug: Default API response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print(
-          'Debug: Default weather data: ${data['name']}, ${data['main']['temp']}°C',
-        );
         return WeatherModel.fromJson(data);
-      } else {
-        print(
-          'Debug: Default API error: ${response.statusCode} - ${response.body}',
-        );
       }
       return null;
     } catch (e) {

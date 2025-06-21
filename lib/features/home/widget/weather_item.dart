@@ -11,17 +11,12 @@ class WeatherWidget extends ConsumerWidget {
     String apiKey = '';
     try {
       apiKey = (dotenv.env['WEATHER_API_KEY'] ?? '').trim();
-      print(
-        'Debug: API key loaded: ${apiKey.isNotEmpty ? "Yes (${apiKey.length} chars)" : "No"}',
-      );
     } catch (e) {
       // dotenv chưa được khởi tạo (trong test hoặc lỗi khác)
-      print('Debug: Failed to load dotenv: $e');
       apiKey = '';
     }
 
     if (apiKey.isEmpty || apiKey == 'YOUR_OPENWEATHERMAP_API_KEY') {
-      print('Debug: API key is empty or placeholder: "$apiKey"');
       return Row(
         children: [
           Icon(
@@ -42,7 +37,6 @@ class WeatherWidget extends ConsumerWidget {
       );
     }
 
-    print('Debug: API key is valid, proceeding to weather provider');
     final weatherAsync = ref.watch(weatherProvider);
     final weatherRepository = ref.watch(weatherRepositoryProvider);
 

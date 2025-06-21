@@ -4,6 +4,7 @@ import 'package:assignment_3_safe_news/features/home/widget/weather_item.dart';
 import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class HomeArticle extends ConsumerStatefulWidget {
   const HomeArticle({super.key});
@@ -15,6 +16,11 @@ class HomeArticle extends ConsumerStatefulWidget {
 class _HomeArticleState extends ConsumerState<HomeArticle> {
   @override
   Widget build(BuildContext context) {
+    String currentDay =
+        DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()).toString();
+    
+    print(currentDay);
+
     return Scaffold(
       body: Column(
         children: [
@@ -91,7 +97,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                       ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
-                      'Thứ 6, 13/06/2025 09:18',
+                      'Thứ 6, $currentDay',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
