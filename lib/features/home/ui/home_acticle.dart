@@ -14,12 +14,25 @@ class HomeArticle extends ConsumerStatefulWidget {
 }
 
 class _HomeArticleState extends ConsumerState<HomeArticle> {
+  // Hàm lấy thứ trong tuần bằng tiếng Việt
+  String getVietnameseDayOfWeek(DateTime date) {
+    const List<String> daysInVietnamese = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ nhật',
+    ];
+    return daysInVietnamese[date.weekday - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
-    String currentDay =
-        DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()).toString();
-    
-    print(currentDay);
+    DateTime now = DateTime.now();
+    String dayOfWeek = getVietnameseDayOfWeek(now);
+    String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(now);
 
     return Scaffold(
       body: Column(
@@ -97,7 +110,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                       ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     ),
                     Text(
-                      'Thứ 6, $currentDay',
+                      '$dayOfWeek, $currentDay',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,

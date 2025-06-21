@@ -7,8 +7,8 @@ import 'package:geolocator/geolocator.dart';
 import '../model/weather_model.dart';
 
 class WeatherRepository {
-  // Lấy API key từ .env file
   static String get _apiKey => dotenv.env['WEATHER_API_KEY'] ?? '';
+
   static const String _baseUrl = 'https://api.openweathermap.org/data/2.5';
   Future<WeatherModel?> getCurrentWeather() async {
     try {
@@ -50,6 +50,7 @@ class WeatherRepository {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        print('Default weather data: $data');
         return WeatherModel.fromJson(data);
       }
       return null;
