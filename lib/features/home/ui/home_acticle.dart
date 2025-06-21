@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
+import 'package:assignment_3_safe_news/features/home/widget/weather_item.dart';
 import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,9 +43,13 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                 Row(
                   children: [
                     const SizedBox(
-                      width: 35,
-                      height: 35,
-                      child: Icon(Icons.newspaper, color: Color(0xFF9F224E)),
+                      width: 50,
+                      height: 50,
+                      child: Icon(
+                        Icons.newspaper,
+                        color: Color(0xFF9F224E),
+                        size: 50,
+                      ),
                     ),
                     const SizedBox(width: 10),
                     Column(
@@ -64,7 +69,10 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                           'Discover',
                           style: Theme.of(
                             context,
-                          ).textTheme.bodyMedium?.copyWith(fontSize: 16),
+                          ).textTheme.bodyMedium?.copyWith(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -74,25 +82,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.wb_sunny,
-                          color: Theme.of(context).iconTheme.color,
-                          size: 24,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          '32°C',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
+                    WeatherWidget(),
                     const SizedBox(height: 5),
                     Text(
                       'Xin chào, Anh Khoa',

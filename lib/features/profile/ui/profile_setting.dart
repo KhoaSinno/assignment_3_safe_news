@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
+import 'package:assignment_3_safe_news/features/debug/debug_page.dart';
 
 class ProfileSetting extends ConsumerWidget {
   const ProfileSetting({super.key});
@@ -162,6 +163,23 @@ class ProfileSetting extends ConsumerWidget {
                   themeNotifier.toggleTheme();
                 },
               ),
+            ),
+            const Divider(),
+            ListTile(
+              leading: Icon(Icons.bug_report),
+              title: Text(
+                'Debug - Weather & Location',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontSize: 14),
+              ),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DebugPage()),
+                );
+              },
             ),
           ],
         ),
