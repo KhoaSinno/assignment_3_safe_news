@@ -5,6 +5,7 @@ import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 class HomeArticle extends ConsumerStatefulWidget {
   const HomeArticle({super.key});
@@ -14,6 +15,26 @@ class HomeArticle extends ConsumerStatefulWidget {
 }
 
 class _HomeArticleState extends ConsumerState<HomeArticle> {
+  Timer? _timer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    // Cập nhật thời gian mỗi giây
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Hủy timer khi widget bị dispose
+    super.dispose();
+  }
+
   // Hàm lấy thứ trong tuần bằng tiếng Việt
   String getVietnameseDayOfWeek(DateTime date) {
     const List<String> daysInVietnamese = [
@@ -30,9 +51,8 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    String dayOfWeek = getVietnameseDayOfWeek(now);
-    String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(now);
+    String dayOfWeek = getVietnameseDayOfWeek(_currentTime);
+    String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(_currentTime);
 
     return Scaffold(
       body: Column(

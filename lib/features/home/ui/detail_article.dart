@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 // File import
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 
@@ -100,18 +101,79 @@ class _DetailArticleState extends State<DetailArticle> {
         backgroundColor: Colors.transparent,
         elevation: 0, // Remove shadow
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
+            icon: Icon(Icons.share, color: Theme.of(context).iconTheme.color),
+            onPressed: () async {
+              try {
+                final String shareText =
+                    widget.article.link != null &&
+                            widget.article.link!.isNotEmpty
+                        ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
+                        : 'Check out this article: ${widget.article.title}';
+
+                print('Attempting to share: $shareText'); // Debug log
+
+                // Try to share
+                final result = await Share.share(shareText);
+
+                print('Share result: $result'); // Debug log
+                print('Share completed successfully'); // Debug log
+
+                // Show success message on emulator
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Chia sẻ thành công! (Trên thiết bị thật sẽ mở app share)',
+                      ),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                }
+              } catch (e) {
+                print('Share error: $e'); // Debug log
+
+                // Show the content that would be shared
+                if (mounted) {
+                  final String shareText =
+                      widget.article.link != null &&
+                              widget.article.link!.isNotEmpty
+                          ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
+                          : 'Check out this article: ${widget.article.title}';
+
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: Text('Nội dung chia sẻ'),
+                          content: SelectableText(shareText),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Đóng'),
+                            ),
+                          ],
+                        ),
+                  );
+                }
+              }
+            },
           ),
           IconButton(
-            icon: Icon(Icons.bookmark_border, color: Colors.black),
+            icon: Icon(
+              Icons.bookmark_border,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: () {},
           ),
         ],
