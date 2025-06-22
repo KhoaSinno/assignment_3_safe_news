@@ -13,13 +13,13 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables first
+  // Load environment: 1
   await dotenv.load(fileName: ".env");
 
-  // Initialize Firebase BEFORE anything else that uses it
+  // Initialize Firebase: 2
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize Hive
+  // Initialize Hive: 3
   await Hive.initFlutter();
 
   // Initialize bookmark repository AFTER Firebase using singleton

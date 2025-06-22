@@ -1,54 +1,23 @@
+import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
+import 'package:assignment_3_safe_news/providers/bookmark_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class BookmarkArticle extends StatefulWidget {
+class BookmarkArticle extends ConsumerStatefulWidget {
   const BookmarkArticle({super.key});
 
   @override
   _BookmarkArticleState createState() => _BookmarkArticleState();
 }
 
-class _BookmarkArticleState extends State<BookmarkArticle> {
-  final List<Map<String, String>> bookmarks = [
-    {
-      'title': 'How to Setup Your Workspace',
-      'category': 'Interior',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title':
-          'Discovering Hidden Gems: 8 Off-The-Beaten-Path Travel Destinations',
-      'category': 'Travel',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title': 'Exploring the World\'s Best Beaches: Top 5 Picks',
-      'category': 'Travel',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title': 'Travel Destinations That Won\'t Break the Bank',
-      'category': 'Travel',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title': 'How Working Remotely Will Make You More Happy',
-      'category': 'Business',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title': 'Destinations for Authentic Local Experiences',
-      'category': 'Business',
-      'image': 'https://placehold.co/112x80',
-    },
-    {
-      'title': 'A Guide to Seasonal Gardening',
-      'category': 'Travel',
-      'image': 'https://placehold.co/112x80',
-    },
-  ];
-
+class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
   @override
   Widget build(BuildContext context) {
+    final _bookmarkProvider = ref.watch(bookmarkProvider);
+
+    final BookmarkRepository _bookmarkRepository = BookmarkRepository.instance;
+    final bookmarks = _bookmarkRepository.getBookmarks();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -67,7 +36,7 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
           itemBuilder: (context, index) {
             final bookmark = bookmarks[index];
             return Dismissible(
-              key: Key(bookmark['title']!),
+              key: Key(bookmark.title!),
               direction: DismissDirection.endToStart,
               background: Container(
                 color: Colors.red,
@@ -76,9 +45,12 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
               onDismissed: (direction) {
-                bookmarks.removeAt(index);
+                // bookmarks.removeAt(index);
+                _bookmarkProvider.toggleBookmark(bookmarks[index]);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${bookmark['title']} removed')),
+                  SnackBar(
+                    content: Text('${bookmark.title} được xóa thành công'),
+                  ),
                 );
               },
               child: Card(
@@ -96,7 +68,7 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
-                            image: NetworkImage(bookmark['image']!),
+                            image: NetworkImage(bookmark.imageUrl),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -107,7 +79,7 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              bookmark['title']!,
+                              bookmark.title,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.headlineMedium
@@ -115,7 +87,7 @@ class _BookmarkArticleState extends State<BookmarkArticle> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              bookmark['category']!,
+                              bookmark.title,
                               style: Theme.of(
                                 context,
                               ).textTheme.bodyMedium?.copyWith(

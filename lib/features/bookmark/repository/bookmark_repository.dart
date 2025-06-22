@@ -75,6 +75,7 @@ class BookmarkRepository {
   }
 
   List<BookmarkModel> getBookmarks() {
+    // Cascade Operator
     return _safeBookmarkBox.values.toList()
       ..sort((a, b) => b.bookmarkedAt.compareTo(a.bookmarkedAt));
   }

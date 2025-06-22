@@ -1,27 +1,27 @@
 import 'dart:ui';
 // APP
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
-import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
+import 'package:assignment_3_safe_news/providers/bookmark_provider.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
+import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 // PACKAGES
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-// File import
-import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 
-class DetailArticle extends StatefulWidget {
+class DetailArticle extends ConsumerStatefulWidget {
   const DetailArticle({super.key, required this.article});
   final ArticleModel article;
 
   @override
-  _DetailArticleState createState() => _DetailArticleState();
+  ConsumerState<DetailArticle> createState() => _DetailArticleState();
 }
 
-class _DetailArticleState extends State<DetailArticle> {
+class _DetailArticleState extends ConsumerState<DetailArticle> {
   String? _summary;
   bool _isLoadingSummary = false;
   String? _articleHtmlContent;
@@ -30,16 +30,11 @@ class _DetailArticleState extends State<DetailArticle> {
   bool _isPressingBrief = false;
   bool _isPressingFull = false;
 
-  final BookmarkRepository _bookmarkRepository = BookmarkRepository.instance;
-  bool _isBookmarked = false;
-
   final FlutterTts flutterTts = FlutterTts();
-
   @override
   void initState() {
     super.initState();
     _loadArticleAndGenerateSummary();
-    _checkBookmarkStatus();
   }
 
   Future<void> _loadArticleAndGenerateSummary() async {
@@ -92,65 +87,45 @@ class _DetailArticleState extends State<DetailArticle> {
     } finally {
       if (mounted) {
         setState(() {
-          _isLoadingSummary = false; // Ensure summary loading is set to false
+          _isLoadingSummary = false;
         });
       }
     }
   }
 
-  void _checkBookmarkStatus() {
-    final isBookmarked = _bookmarkRepository.isBookmarked(widget.article.id);
-    if (mounted) {
-      setState(() {
-        _isBookmarked = isBookmarked;
-      });
-    }
-  }
+  Future<void> _toggleBookmark() async {
+    final bookmarkNotifier = ref.read(bookmarkProvider);
 
-  void _toggleBookmark() {
     try {
-      if (_isBookmarked) {
-        _bookmarkRepository.removeBookmark(widget.article.id);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Đã bỏ bookmark bài viết "${widget.article.title}"',
-              ),
-              backgroundColor: Colors.red,
-              duration: Duration(seconds: 2),
+      final bookmark = BookmarkModel(
+        id: widget.article.id,
+        title: widget.article.title,
+        imageUrl: widget.article.imageUrl,
+        link: widget.article.link!,
+        published: widget.article.published,
+        summary: _summary ?? 'Chưa có tóm tắt',
+        htmlContent: _articleHtmlContent ?? '',
+        plainTextContent: _plainTextContent,
+        bookmarkedAt: DateTime.now(),
+      );
+
+      await bookmarkNotifier.toggleBookmark(bookmark);
+
+      final isBookmarked = bookmarkNotifier.isBookmarked(widget.article.id);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isBookmarked
+                  ? 'Đã bookmark bài viết "${widget.article.title}"'
+                  : 'Đã bỏ bookmark bài viết "${widget.article.title}"',
             ),
-          );
-        }
-      } else {
-        _bookmarkRepository.addBookmark(
-          // Wrong link here
-          BookmarkModel(
-            id: widget.article.id,
-            title: widget.article.title,
-            imageUrl: widget.article.imageUrl,
-            link: widget.article.link!,
-            published: widget.article.published,
-            summary: _summary!,
-            htmlContent: _articleHtmlContent!,
-            plainTextContent: _plainTextContent,
-            bookmarkedAt: DateTime.now(),
+            backgroundColor: isBookmarked ? Colors.green : Colors.red,
+            duration: Duration(seconds: 2),
           ),
         );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Đã bookmark bài viết "${widget.article.title}"'),
-              backgroundColor: Colors.green,
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
       }
-      // SetSate
-      setState(() {
-        _isBookmarked = !_isBookmarked;
-      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -161,9 +136,7 @@ class _DetailArticleState extends State<DetailArticle> {
           ),
         );
       }
-      return;
     }
-    _checkBookmarkStatus();
   }
 
   @override
@@ -230,15 +203,24 @@ class _DetailArticleState extends State<DetailArticle> {
               }
             },
           ),
-          IconButton(
-            icon: Icon(
-              _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-              color:
-                  _isBookmarked
-                      ? Colors.blue
-                      : Theme.of(context).iconTheme.color,
-            ),
-            onPressed: _toggleBookmark,
+          Consumer(
+            builder: (context, ref, child) {
+              final bookmarkNotifier = ref.watch(bookmarkProvider);
+              final isBookmarked = bookmarkNotifier.isBookmarked(
+                widget.article.id,
+              );
+
+              return IconButton(
+                icon: Icon(
+                  isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                  color:
+                      isBookmarked
+                          ? Colors.blue
+                          : Theme.of(context).iconTheme.color,
+                ),
+                onPressed: _toggleBookmark,
+              );
+            },
           ),
         ],
       ),
