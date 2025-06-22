@@ -1,5 +1,7 @@
 import 'dart:ui';
 // APP
+import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
+import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 // PACKAGES
@@ -28,12 +30,16 @@ class _DetailArticleState extends State<DetailArticle> {
   bool _isPressingBrief = false;
   bool _isPressingFull = false;
 
+  final BookmarkRepository _bookmarkRepository = BookmarkRepository.instance;
+  bool _isBookmarked = false;
+
   final FlutterTts flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
     _loadArticleAndGenerateSummary();
+    _checkBookmarkStatus();
   }
 
   Future<void> _loadArticleAndGenerateSummary() async {
@@ -90,6 +96,74 @@ class _DetailArticleState extends State<DetailArticle> {
         });
       }
     }
+  }
+
+  void _checkBookmarkStatus() {
+    final isBookmarked = _bookmarkRepository.isBookmarked(widget.article.id);
+    if (mounted) {
+      setState(() {
+        _isBookmarked = isBookmarked;
+      });
+    }
+  }
+
+  void _toggleBookmark() {
+    try {
+      if (_isBookmarked) {
+        _bookmarkRepository.removeBookmark(widget.article.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Đã bỏ bookmark bài viết "${widget.article.title}"',
+              ),
+              backgroundColor: Colors.red,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } else {
+        _bookmarkRepository.addBookmark(
+          // Wrong link here
+          BookmarkModel(
+            id: widget.article.id,
+            title: widget.article.title,
+            imageUrl: widget.article.imageUrl,
+            link: widget.article.link!,
+            published: widget.article.published,
+            summary: _summary!,
+            htmlContent: _articleHtmlContent!,
+            plainTextContent: _plainTextContent,
+            bookmarkedAt: DateTime.now(),
+          ),
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Đã bookmark bài viết "${widget.article.title}"'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+      // SetSate
+      setState(() {
+        _isBookmarked = !_isBookmarked;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đã xảy ra lỗi khi cập nhật bookmark: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+      return;
+    }
+    _checkBookmarkStatus();
   }
 
   @override
@@ -158,10 +232,13 @@ class _DetailArticleState extends State<DetailArticle> {
           ),
           IconButton(
             icon: Icon(
-              Icons.bookmark_border,
-              color: Theme.of(context).iconTheme.color,
+              _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color:
+                  _isBookmarked
+                      ? Colors.blue
+                      : Theme.of(context).iconTheme.color,
             ),
-            onPressed: () {},
+            onPressed: _toggleBookmark,
           ),
         ],
       ),

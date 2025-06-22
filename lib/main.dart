@@ -1,20 +1,29 @@
 import 'package:assignment_3_safe_news/features/authentication/ui/login_screen.dart';
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
+import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
+  // Load environment variables first
   await dotenv.load(fileName: ".env");
 
+  // Initialize Firebase BEFORE anything else that uses it
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Initialize bookmark repository AFTER Firebase using singleton
+  await BookmarkRepository.instance.init();
 
   runApp(ProviderScope(child: SafeNewsApp()));
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ArticleList extends ConsumerWidget {
   const ArticleList({super.key});
+  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final articlesAsyncValue = ref.watch(articlesStreamProvider);
