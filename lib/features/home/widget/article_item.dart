@@ -6,7 +6,7 @@ import 'package:share_plus/share_plus.dart';
 
 class ArticleItem extends StatelessWidget {
   const ArticleItem({super.key, required this.article});
-  final article;
+  final dynamic article;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -85,13 +85,8 @@ class ArticleItem extends StatelessWidget {
                                   ? 'Check out this article: ${article.title}\n\n${article.link}'
                                   : 'Check out this article: ${article.title}';
 
-                          print('Sharing from list: $shareText'); // Debug log
-
                           await Share.share(shareText);
 
-                          print('Share from list completed'); // Debug log
-
-                          // Show success on emulator
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Chia sẻ thành công!'),
@@ -100,9 +95,6 @@ class ArticleItem extends StatelessWidget {
                             ),
                           );
                         } catch (e) {
-                          print('Share from list error: $e'); // Debug log
-
-                          // Show fallback dialog with content
                           final String shareText =
                               article.link != null && article.link.isNotEmpty
                                   ? 'Check out this article: ${article.title}\n\n${article.link}'

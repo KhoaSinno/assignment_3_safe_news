@@ -83,7 +83,6 @@ class _DetailArticleState extends State<DetailArticle> {
           _isLoadingArticle = false;
         });
       }
-      print('Error loading article or generating summary: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -120,30 +119,18 @@ class _DetailArticleState extends State<DetailArticle> {
                         ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
                         : 'Check out this article: ${widget.article.title}';
 
-                print('Attempting to share: $shareText'); // Debug log
+                await Share.share(shareText);
 
-                // Try to share
-                final result = await Share.share(shareText);
-
-                print('Share result: $result'); // Debug log
-                print('Share completed successfully'); // Debug log
-
-                // Show success message on emulator
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        'Chia sẻ thành công! (Trên thiết bị thật sẽ mở app share)',
-                      ),
+                      content: Text('Chia sẻ thành công!'),
                       backgroundColor: Colors.green,
                       duration: Duration(seconds: 2),
                     ),
                   );
                 }
               } catch (e) {
-                print('Share error: $e'); // Debug log
-
-                // Show the content that would be shared
                 if (mounted) {
                   final String shareText =
                       widget.article.link != null &&
