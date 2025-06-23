@@ -1,7 +1,7 @@
 import 'dart:ui';
 // APP
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
-import 'package:assignment_3_safe_news/providers/bookmark_provider.dart';
+import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
@@ -94,7 +94,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   }
 
   Future<void> _toggleBookmark() async {
-    final bookmarkNotifier = ref.read(bookmarkProvider);
+    final bookmarkViewModel = ref.read(bookmarkProvider);
 
     try {
       final bookmark = BookmarkModel(
@@ -109,9 +109,9 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
         bookmarkedAt: DateTime.now(),
       );
 
-      await bookmarkNotifier.toggleBookmark(bookmark);
+      await bookmarkViewModel.toggleBookmark(bookmark);
 
-      final isBookmarked = bookmarkNotifier.isBookmarked(widget.article.id);
+      final isBookmarked = bookmarkViewModel.isBookmarked(widget.article.id);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -205,8 +205,8 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
           ),
           Consumer(
             builder: (context, ref, child) {
-              final bookmarkNotifier = ref.watch(bookmarkProvider);
-              final isBookmarked = bookmarkNotifier.isBookmarked(
+              final bookmarkViewModel = ref.watch(bookmarkProvider);
+              final isBookmarked = bookmarkViewModel.isBookmarked(
                 widget.article.id,
               );
 

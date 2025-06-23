@@ -1,9 +1,9 @@
+import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
+import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/bookmark/repository/bookmark_repository.dart';
-import '../features/bookmark/model/bookmark_model.dart';
 
-class BookmarkNotifier extends ChangeNotifier {
+class BookmarkViewModel extends ChangeNotifier {
   final BookmarkRepository _repository = BookmarkRepository.instance;
 
   // Chỉ kiểm tra bookmark status - không duplicate logic
@@ -37,6 +37,6 @@ class BookmarkNotifier extends ChangeNotifier {
 }
 
 // Provider - đơn giản hơn
-final bookmarkProvider = ChangeNotifierProvider<BookmarkNotifier>((ref) {
-  return BookmarkNotifier();
+final bookmarkProvider = ChangeNotifierProvider<BookmarkViewModel>((ref) {
+  return BookmarkViewModel();
 });

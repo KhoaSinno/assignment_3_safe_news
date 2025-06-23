@@ -1,5 +1,4 @@
-import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
-import 'package:assignment_3_safe_news/providers/bookmark_provider.dart';
+import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -13,10 +12,8 @@ class BookmarkArticle extends ConsumerStatefulWidget {
 class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
   @override
   Widget build(BuildContext context) {
-    final _bookmarkProvider = ref.watch(bookmarkProvider);
-
-    final BookmarkRepository _bookmarkRepository = BookmarkRepository.instance;
-    final bookmarks = _bookmarkRepository.getBookmarks();
+    final bookmarkViewModel = ref.watch(bookmarkProvider);
+    final bookmarks = bookmarkViewModel.bookmarks;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +33,7 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
           itemBuilder: (context, index) {
             final bookmark = bookmarks[index];
             return Dismissible(
-              key: Key(bookmark.title!),
+              key: Key(bookmark.title),
               direction: DismissDirection.endToStart,
               background: Container(
                 color: Colors.red,
@@ -46,7 +43,7 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
               ),
               onDismissed: (direction) {
                 // bookmarks.removeAt(index);
-                _bookmarkProvider.toggleBookmark(bookmarks[index]);
+                bookmarkViewModel.toggleBookmark(bookmarks[index]);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('${bookmark.title} được xóa thành công'),
