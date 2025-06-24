@@ -34,6 +34,12 @@ class BookmarkViewModel extends ChangeNotifier {
       await addBookmark(bookmark);
     }
   }
+
+  // Refresh bookmarks - không duplicate logic
+  Future<void> refreshBookmarks() async {
+    await _repository.refreshBookmarks();
+    notifyListeners(); // Chỉ notify để update UI
+  }
 }
 
 // Provider - đơn giản hơn

@@ -31,6 +31,28 @@ class BookmarkRepository {
     _isInitialized = true;
   }
 
+  // Search local realtime in _bookmarkBox with title or description
+  List<BookmarkModel> searchBookmarks(String query) {
+    if (!_isInitialized) {
+      throw StateError(
+        'BookmarkRepository chưa được khởi tạo. Hãy gọi init() trước.',
+      );
+    }
+
+    if (query.isEmpty) return getBookmarks();
+
+    final lowerQuery = query.toLowerCase();
+    return _safeBookmarkBox.values
+        .where(
+          (bookmark) =>
+              bookmark.plainTextContent.toLowerCase().contains(lowerQuery) ||
+              bookmark.title.toLowerCase().contains(lowerQuery) ||
+              bookmark.summary.toLowerCase().contains(lowerQuery),
+        )
+        .toList()
+      ..sort((a, b) => b.bookmarkedAt.compareTo(a.bookmarkedAt));
+  }
+
   // Getter với kiểm tra initialization
   Box<BookmarkModel> get _safeBookmarkBox {
     if (_bookmarkBox == null || !_isInitialized) {
@@ -78,6 +100,11 @@ class BookmarkRepository {
     // Cascade Operator
     return _safeBookmarkBox.values.toList()
       ..sort((a, b) => b.bookmarkedAt.compareTo(a.bookmarkedAt));
+  }
+
+  Future<void> refreshBookmarks() async {
+    // Đồng bộ từ Firebase
+    await syncFromFirebase();
   }
 
   bool isBookmarked(String id) {
