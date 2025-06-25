@@ -1,3 +1,5 @@
+import 'package:assignment_3_safe_news/features/profile/ui/contact_page.dart';
+import 'package:assignment_3_safe_news/features/profile/ui/privacy_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
@@ -135,7 +137,14 @@ class ProfileSetting extends ConsumerWidget {
                 ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PrivacyPolicy(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.contact_mail),
@@ -146,7 +155,12 @@ class ProfileSetting extends ConsumerWidget {
                 ).textTheme.bodyLarge?.copyWith(fontSize: 14),
               ),
               trailing: Icon(Icons.chevron_right),
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ContactPage()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
