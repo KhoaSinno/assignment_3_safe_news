@@ -10,13 +10,15 @@ class BookmarkItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => BookmarkArticleDetail(article: bookmark),
-            ),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BookmarkArticleDetail(bookmark: bookmark),
           ),
+        );
+        // Không cần await và handle result vì Provider sẽ tự động update UI
+      },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 2,

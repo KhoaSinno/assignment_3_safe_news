@@ -1,18 +1,16 @@
-import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
-import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/bookmark/widgets/bookmark_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BookmarkList extends ConsumerWidget {
-  const BookmarkList({super.key, required this.bookmarks});
-  final List<BookmarkModel> bookmarks;
+  const BookmarkList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch provider để auto rebuild khi có thay đổi
     final bookmarkViewModel = ref.watch(bookmarkProvider);
-    final BookmarkRepository _repository = BookmarkRepository.instance;
+    final filteredBookmarks = bookmarkViewModel.filteredBookmarks;
 
     return Column(
       children: [
@@ -42,13 +40,13 @@ class BookmarkList extends ConsumerWidget {
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Tìm kiếm',
+                      hintText: 'Tìm kiếm theo tiêu đề, tóm tắt, nội dung...',
                       hintStyle: TextStyle(
                         color:
                             Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white70
                                 : Colors.black54,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontFamily: 'Aleo',
                         fontWeight: FontWeight.w400,
                       ),
@@ -60,7 +58,10 @@ class BookmarkList extends ConsumerWidget {
                               ? Colors.white
                               : Colors.black87,
                     ),
-                    onChanged: (value) => {_repository.searchBookmarks(value)},
+                    onChanged: (value) {
+                      // Sử dụng Provider để update search query
+                      bookmarkViewModel.updateSearchQuery(value);
+                    },
                   ),
                 ),
                 Icon(
@@ -76,32 +77,61 @@ class BookmarkList extends ConsumerWidget {
         ),
         // Bookmark list
         Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: bookmarks.length,
-            itemBuilder: (context, index) {
-              final bookmark = bookmarks[index];
-              return Dismissible(
-                key: Key(bookmark.title),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  child: const Icon(Icons.delete, color: Colors.white),
-                ),
-                onDismissed: (direction) {
-                  bookmarkViewModel.removeBookmark(bookmark.id);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${bookmark.title} được xóa thành công'),
+          child:
+              filteredBookmarks.isEmpty
+                  ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          bookmarkViewModel.searchQuery.isEmpty
+                              ? Icons.bookmark_border
+                              : Icons.search_off,
+                          size: 64,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          bookmarkViewModel.searchQuery.isEmpty
+                              ? 'Chưa có bookmark nào'
+                              : 'Không tìm thấy kết quả cho "${bookmarkViewModel.searchQuery}"',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-                child: BookmarkItem(bookmark: bookmark),
-              );
-            },
-          ),
+                  )
+                  : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filteredBookmarks.length,
+                    itemBuilder: (context, index) {
+                      final bookmark = filteredBookmarks[index];
+                      return Dismissible(
+                        key: Key(bookmark.title),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.only(right: 20),
+                          child: const Icon(Icons.delete, color: Colors.white),
+                        ),
+                        onDismissed: (direction) {
+                          bookmarkViewModel.removeBookmark(bookmark.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${bookmark.title} được xóa thành công',
+                              ),
+                            ),
+                          );
+                        },
+                        child: BookmarkItem(bookmark: bookmark),
+                      );
+                    },
+                  ),
         ),
       ],
     );

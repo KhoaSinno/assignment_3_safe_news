@@ -13,8 +13,8 @@ class BookmarkArticle extends ConsumerStatefulWidget {
 class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
   @override
   Widget build(BuildContext context) {
-    final bookmarkViewModel = ref.watch(bookmarkProvider);
-    final bookmarks = bookmarkViewModel.bookmarks;
+    // Watch provider để auto-rebuild khi có thay đổi
+    ref.watch(bookmarkProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -28,14 +28,15 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: () {
-              bookmarkViewModel.refreshBookmarks();
+              // Force refresh để sync lại data
+              setState(() {});
             },
           ),
         ],
       ),
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: BookmarkList(bookmarks: bookmarks),
+        child: BookmarkList(),
       ),
     );
   }

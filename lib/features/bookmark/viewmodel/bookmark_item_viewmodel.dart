@@ -5,6 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BookmarkViewModel extends ChangeNotifier {
   final BookmarkRepository _repository = BookmarkRepository.instance;
+  String _searchQuery = '';
+
+  // Search query getter
+  String get searchQuery => _searchQuery;
 
   // Chỉ kiểm tra bookmark status - không duplicate logic
   bool isBookmarked(String articleId) {
@@ -25,6 +29,17 @@ class BookmarkViewModel extends ChangeNotifier {
 
   // Wrapper cho getBookmarks - không duplicate logic
   List<BookmarkModel> get bookmarks => _repository.getBookmarks();
+
+  // Filtered bookmarks based on search query
+  List<BookmarkModel> get filteredBookmarks {
+    return _repository.searchBookmarks(_searchQuery);
+  }
+
+  // Update search query
+  void updateSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
 
   // Helper method cho toggle
   Future<void> toggleBookmark(BookmarkModel bookmark) async {

@@ -5,8 +5,6 @@ import 'dart:ui';
 // APP
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
-import 'package:assignment_3_safe_news/utils/article_parser.dart';
-import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 // PACKAGES
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
@@ -14,8 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
 class BookmarkArticleDetail extends ConsumerStatefulWidget {
-  const BookmarkArticleDetail({super.key, required this.article});
-  final dynamic article;
+  const BookmarkArticleDetail({super.key, required this.bookmark});
+  final BookmarkModel bookmark;
 
   @override
   _BookmarkArticleDetailState createState() => _BookmarkArticleDetailState();
@@ -34,62 +32,19 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
   @override
   void initState() {
     super.initState();
-    _loadArticleAndGenerateSummary();
+    _loadBookmarkData();
   }
 
-  Future<void> _loadArticleAndGenerateSummary() async {
+  Future<void> _loadBookmarkData() async {
+    // Sử dụng dữ liệu đã lưu trong bookmark thay vì tải từ web
     if (mounted) {
       setState(() {
-        _isLoadingArticle = true;
-        _isLoadingSummary = true;
+        _summary = widget.bookmark.summary;
+        _articleHtmlContent = widget.bookmark.htmlContent;
+        _plainTextContent = widget.bookmark.plainTextContent;
+        _isLoadingSummary = false;
+        _isLoadingArticle = false;
       });
-    }
-
-    try {
-      final fetchedHtmlContent = await fetchArticleContent(
-        url: widget.article.link,
-      );
-      if (mounted) {
-        setState(() {
-          _articleHtmlContent = fetchedHtmlContent;
-          _isLoadingArticle = false;
-        });
-      }
-
-      final plainTextContent = extractTextFromHtml(fetchedHtmlContent);
-      if (plainTextContent.isNotEmpty) {
-        _plainTextContent = plainTextContent;
-        final summary = await ArticleItemRepository.summaryContentGemini(
-          plainTextContent,
-        );
-        if (mounted) {
-          setState(() {
-            _summary = summary;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _summary = "Không thể trích xuất nội dung để tóm tắt.";
-          });
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          if (_isLoadingArticle) {
-            _articleHtmlContent = "<p>Lỗi khi tải nội dung: $e</p>";
-          }
-          _summary = "Lỗi khi xử lý bài viết: $e";
-          _isLoadingArticle = false;
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoadingSummary = false;
-        });
-      }
     }
   }
 
@@ -97,34 +52,18 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
     final bookmarkViewModel = ref.read(bookmarkProvider);
 
     try {
-      final bookmark = BookmarkModel(
-        id: widget.article.id,
-        title: widget.article.title,
-        imageUrl: widget.article.imageUrl,
-        link: widget.article.link!,
-        published: widget.article.published,
-        summary: _summary ?? 'Chưa có tóm tắt',
-        htmlContent: _articleHtmlContent ?? '',
-        plainTextContent: _plainTextContent,
-        bookmarkedAt: DateTime.now(),
-      );
-
-      await bookmarkViewModel.toggleBookmark(bookmark);
-
-      final isBookmarked = bookmarkViewModel.isBookmarked(widget.article.id);
+      await bookmarkViewModel.removeBookmark(widget.bookmark.id);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              isBookmarked
-                  ? 'Đã bookmark bài viết "${widget.article.title}"'
-                  : 'Đã bỏ bookmark bài viết "${widget.article.title}"',
-            ),
-            backgroundColor: isBookmarked ? Colors.green : Colors.red,
+            content: Text('Đã bỏ bookmark bài viết "${widget.bookmark.title}"'),
+            backgroundColor: Colors.red,
             duration: Duration(seconds: 2),
           ),
         );
+        // Return true để báo hiệu bookmark đã bị xóa
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
@@ -161,10 +100,9 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
             onPressed: () async {
               try {
                 final String shareText =
-                    widget.article.link != null &&
-                            widget.article.link!.isNotEmpty
-                        ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
-                        : 'Check out this article: ${widget.article.title}';
+                    widget.bookmark.link.isNotEmpty
+                        ? 'Check out this article: ${widget.bookmark.title}\n\n${widget.bookmark.link}'
+                        : 'Check out this article: ${widget.bookmark.title}';
 
                 await Share.share(shareText);
 
@@ -180,10 +118,10 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
               } catch (e) {
                 if (mounted) {
                   final String shareText =
-                      widget.article.link != null &&
-                              widget.article.link!.isNotEmpty
-                          ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
-                          : 'Check out this article: ${widget.article.title}';
+                      widget.bookmark.link.isNotEmpty &&
+                              widget.bookmark.link.isNotEmpty
+                          ? 'Check out this article: ${widget.bookmark.title}\n\n${widget.bookmark.link}'
+                          : 'Check out this article: ${widget.bookmark.title}';
 
                   showDialog(
                     context: context,
@@ -205,18 +143,11 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
           ),
           Consumer(
             builder: (context, ref, child) {
-              final bookmarkViewModel = ref.watch(bookmarkProvider);
-              final isBookmarked = bookmarkViewModel.isBookmarked(
-                widget.article.id,
-              );
-
               return IconButton(
                 icon: Icon(
-                  isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                  color:
-                      isBookmarked
-                          ? Colors.blue
-                          : Theme.of(context).iconTheme.color,
+                  Icons
+                      .bookmark, // Luôn hiển thị bookmark filled vì đây là trang bookmark
+                  color: Colors.blue,
                 ),
                 onPressed: _toggleBookmark,
               );
@@ -227,7 +158,6 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
       body: Stack(
         // Use Stack to layer blur effect and content, isn't work
         children: [
-         
           // Frosted glass effect, isn't work
           ClipRect(
             child: BackdropFilter(
@@ -243,15 +173,15 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
                   height: 300,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(widget.article.imageUrl),
+                      image: NetworkImage(widget.bookmark.imageUrl),
                       fit: BoxFit.cover,
                       onError: (exception, stackTrace) {},
                     ),
                   ),
                   child:
-                      widget.article.imageUrl.isEmpty ||
+                      widget.bookmark.imageUrl.isEmpty ||
                               Uri.tryParse(
-                                    widget.article.imageUrl,
+                                    widget.bookmark.imageUrl,
                                   )?.hasAbsolutePath !=
                                   true
                           ? Center(
@@ -276,7 +206,7 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        widget.article.title,
+                        widget.bookmark.title,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineLarge
                             ?.copyWith(fontSize: 24, fontFamily: 'Inter'),
@@ -287,7 +217,7 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
                           // 'Anh Khoa · Thứ 3 ngày 10 năm 2025',
                           DateFormat(
                             'dd/MM/yyyy HH:mm',
-                          ).format(widget.article.published).toString(),
+                          ).format(widget.bookmark.published).toString(),
                           style: Theme.of(
                             context,
                           ).textTheme.bodyMedium?.copyWith(
