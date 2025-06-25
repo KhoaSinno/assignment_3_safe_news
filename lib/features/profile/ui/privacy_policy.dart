@@ -51,46 +51,46 @@ class PrivacyPolicy extends StatelessWidget {
               context,
               'Thông tin chúng tôi thu thập',
               '''• Thông tin tài khoản: Tên, email, mật khẩu khi bạn đăng ký tài khoản
-• Thông tin sử dụng: Các bài báo bạn đọc, bookmark, thời gian sử dụng ứng dụng
-• Thông tin thiết bị: Loại thiết bị, hệ điều hành, phiên bản ứng dụng
-• Thông tin vị trí: Để cung cấp tin tức địa phương (chỉ khi bạn cho phép)''',
+          • Thông tin sử dụng: Các bài báo bạn đọc, bookmark, thời gian sử dụng ứng dụng
+          • Thông tin thiết bị: Loại thiết bị, hệ điều hành, phiên bản ứng dụng
+          • Thông tin vị trí: Để cung cấp tin tức địa phương (chỉ khi bạn cho phép)''',
             ),
 
             _buildSection(
               context,
               'Cách chúng tôi sử dụng thông tin',
               '''• Cung cấp và cải thiện dịch vụ ứng dụng
-• Cá nhân hóa nội dung tin tức theo sở thích của bạn
-• Gửi thông báo về tin tức mới và cập nhật ứng dụng
-• Phân tích và cải thiện hiệu suất ứng dụng
-• Đảm bảo an ninh và ngăn chặn gian lận''',
+          • Cá nhân hóa nội dung tin tức theo sở thích của bạn
+          • Gửi thông báo về tin tức mới và cập nhật ứng dụng
+          • Phân tích và cải thiện hiệu suất ứng dụng
+          • Đảm bảo an ninh và ngăn chặn gian lận''',
             ),
 
             _buildSection(
               context,
               'Chia sẻ thông tin',
               '''Chúng tôi không bán, cho thuê hoặc chia sẻ thông tin cá nhân của bạn với bên thứ ba, trừ trong các trường hợp sau:
-• Khi có sự đồng ý rõ ràng từ bạn
-• Để tuân thủ pháp luật hoặc yêu cầu từ cơ quan có thẩm quyền
-• Để bảo vệ quyền lợi và an toàn của chúng tôi và người dùng''',
+        • Khi có sự đồng ý rõ ràng từ bạn
+        • Để tuân thủ pháp luật hoặc yêu cầu từ cơ quan có thẩm quyền
+        • Để bảo vệ quyền lợi và an toàn của chúng tôi và người dùng''',
             ),
 
             _buildSection(
               context,
               'Bảo mật thông tin',
               '''Chúng tôi áp dụng các biện pháp bảo mật kỹ thuật và tổ chức phù hợp để bảo vệ thông tin của bạn:
-• Mã hóa dữ liệu trong quá trình truyền tải
-• Lưu trữ an toàn trên máy chủ được bảo mật
-• Kiểm soát quyền truy cập nghiêm ngặt
-• Giám sát liên tục để phát hiện và ngăn chặn vi phạm''',
+      • Mã hóa dữ liệu trong quá trình truyền tải
+      • Lưu trữ an toàn trên máy chủ được bảo mật
+      • Kiểm soát quyền truy cập nghiêm ngặt
+      • Giám sát liên tục để phát hiện và ngăn chặn vi phạm''',
             ),
 
             _buildSection(context, 'Quyền của bạn', '''Bạn có quyền:
-• Truy cập và xem thông tin cá nhân của mình
-• Chỉnh sửa hoặc cập nhật thông tin
-• Xóa tài khoản và dữ liệu liên quan
-• Từ chối việc thu thập một số loại thông tin
-• Khiếu nại về việc xử lý dữ liệu cá nhân'''),
+      • Truy cập và xem thông tin cá nhân của mình
+      • Chỉnh sửa hoặc cập nhật thông tin
+      • Xóa tài khoản và dữ liệu liên quan
+      • Từ chối việc thu thập một số loại thông tin
+      • Khiếu nại về việc xử lý dữ liệu cá nhân'''),
 
             _buildSection(
               context,

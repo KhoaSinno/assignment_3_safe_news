@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
@@ -80,9 +79,8 @@ class ContactPage extends StatelessWidget {
               context,
               icon: Icons.email,
               title: 'Email',
-              subtitle: 'support@safenews.com',
+              subtitle: 'safenews@gmail.com',
               description: 'Gửi email cho chúng tôi bất cứ lúc nào',
-              onTap: () => _launchEmail('support@safenews.com'),
             ),
 
             _buildContactItem(
@@ -91,7 +89,6 @@ class ContactPage extends StatelessWidget {
               title: 'Điện thoại',
               subtitle: '+84 123 456 789',
               description: 'Thời gian hỗ trợ: 8:00 - 22:00 (T2-CN)',
-              onTap: () => _launchPhone('+84123456789'),
             ),
 
             _buildContactItem(
@@ -100,7 +97,6 @@ class ContactPage extends StatelessWidget {
               title: 'Địa chỉ văn phòng',
               subtitle: '256 Nguyễn Văn Cừ',
               description: 'Ninh Kiều, TP. Cần Thơ, Việt Nam',
-              onTap: () => _launchMaps(),
             ),
 
             _buildContactItem(
@@ -109,7 +105,6 @@ class ContactPage extends StatelessWidget {
               title: 'Giờ làm việc',
               subtitle: 'Thứ 2 - Chủ nhật',
               description: '8:00 AM - 10:00 PM',
-              onTap: null,
             ),
 
             const SizedBox(height: 32),
@@ -132,21 +127,18 @@ class ContactPage extends StatelessWidget {
                   icon: Icons.facebook,
                   label: 'Facebook',
                   color: const Color(0xFF1877F2),
-                  onTap: () => _launchUrl('https://facebook.com/safenews'),
                 ),
                 _buildSocialButton(
                   context,
-                  icon: Icons.send, // Telegram icon substitute
+                  icon: Icons.send, // Twitter icon substitute
                   label: 'Twitter',
                   color: const Color(0xFF1DA1F2),
-                  onTap: () => _launchUrl('https://twitter.com/safenews'),
                 ),
                 _buildSocialButton(
                   context,
                   icon: Icons.camera_alt, // Instagram icon substitute
                   label: 'Instagram',
                   color: const Color(0xFFE4405F),
-                  onTap: () => _launchUrl('https://instagram.com/safenews'),
                 ),
               ],
             ),
@@ -186,7 +178,7 @@ class ContactPage extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Contact Form Hint
+            // Contact Action Buttons
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -217,28 +209,69 @@ class ContactPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Ý kiến của bạn rất quan trọng với chúng tôi. Hãy gửi email để chia sẻ trải nghiệm và đề xuất cải thiện ứng dụng.',
+                    'Ý kiến của bạn rất quan trọng với chúng tôi. Hãy liên hệ qua email hoặc điện thoại để chia sẻ trải nghiệm và đề xuất cải thiện ứng dụng.',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () => _launchEmail('feedback@safenews.com'),
-                    icon: const Icon(Icons.send),
-                    label: const Text('Gửi phản hồi'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Email: safenews@gmail.com'),
+                              action: SnackBarAction(
+                                label: 'Đóng',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.email),
+                        label: const Text('Email'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Điện thoại: +84 123 456 789'),
+                              action: SnackBarAction(
+                                label: 'Đóng',
+                                onPressed: () {},
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.phone),
+                        label: const Text('Gọi'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -255,7 +288,6 @@ class ContactPage extends StatelessWidget {
     required String title,
     required String subtitle,
     required String description,
-    VoidCallback? onTap,
   }) {
     return Card(
       elevation: 2,
@@ -298,15 +330,6 @@ class ContactPage extends StatelessWidget {
             ),
           ],
         ),
-        trailing:
-            onTap != null
-                ? Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Colors.grey[400],
-                )
-                : null,
-        onTap: onTap,
       ),
     );
   }
@@ -316,10 +339,16 @@ class ContactPage extends StatelessWidget {
     required IconData icon,
     required String label,
     required Color color,
-    required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đang mở $label...'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
         decoration: BoxDecoration(
@@ -374,60 +403,5 @@ class ContactPage extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<void> _launchEmail(String email) async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: email,
-      query: 'subject=Liên hệ từ Safe News App',
-    );
-
-    try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
-      }
-    } catch (e) {
-      // Handle error - could show a snackbar or dialog
-      print('Could not launch email: $e');
-    }
-  }
-
-  Future<void> _launchPhone(String phone) async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: phone);
-
-    try {
-      if (await canLaunchUrl(phoneUri)) {
-        await launchUrl(phoneUri);
-      }
-    } catch (e) {
-      print('Could not launch phone: $e');
-    }
-  }
-
-  Future<void> _launchMaps() async {
-    final Uri mapsUri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=123+Nguyen+Van+Cu+District+5+Ho+Chi+Minh+City',
-    );
-
-    try {
-      if (await canLaunchUrl(mapsUri)) {
-        await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
-      print('Could not launch maps: $e');
-    }
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
-
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
-      print('Could not launch URL: $e');
-    }
   }
 }

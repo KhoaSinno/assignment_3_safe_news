@@ -100,7 +100,7 @@ class SafeNewsApp extends ConsumerWidget {
         dividerColor: Color(0xFF333333),
       ),
       themeMode: themeMode,
-      home: authViewModel.user != null ? LoginScreen() : MainScreen(),
+      home: authViewModel.user != null ? MainScreen() : LoginScreen(),
     );
   }
 }
