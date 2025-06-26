@@ -1,20 +1,28 @@
-import 'package:assignment_3_safe_news/features/authentication/ui/login_screen.dart';
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
+import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
+  // Load environment: 1
   await dotenv.load(fileName: ".env");
 
+  // Initialize Firebase: 2
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Hive: 3
+  await Hive.initFlutter();
+
+  // Initialize bookmark repository AFTER Firebase using singleton
+  await BookmarkRepository.instance.init();
 
   runApp(ProviderScope(child: SafeNewsApp()));
 }
@@ -23,7 +31,7 @@ class SafeNewsApp extends ConsumerWidget {
   const SafeNewsApp({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authViewModel = ref.watch(authViewModelProvider);
+    // final authViewModel = ref.watch(authViewModelProvider);
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
@@ -91,7 +99,9 @@ class SafeNewsApp extends ConsumerWidget {
         dividerColor: Color(0xFF333333),
       ),
       themeMode: themeMode,
-      home: authViewModel.user != null ? LoginScreen() : MainScreen(),
+      // home: authViewModel.user != null ? MainScreen() : LoginScreen(),
+      // Vào thẳng trang chủ
+      home: MainScreen(),
     );
   }
 }

@@ -2,10 +2,11 @@ import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/ui/detail_article.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ArticleItem extends StatelessWidget {
   const ArticleItem({super.key, required this.article});
-  final article;
+  final dynamic article;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -58,25 +59,75 @@ class ArticleItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                SizedBox(
-                  // Wrap the Text widget with SizedBox for full width
-                  width: double.infinity,
-                  child: Text(
-                    DateFormat(
-                      'dd/MM/yyyy HH:mm',
-                    ).format(article.published).toString(),
-                    textAlign:
-                        TextAlign
-                            .end, // This will now align the text to the right
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
-                      fontSize: 14,
-                      fontFamily: 'Merriweather',
-                      fontWeight: FontWeight.w400,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        DateFormat(
+                          'dd/MM/yyyy HH:mm',
+                        ).format(article.published).toString(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                          fontSize: 14,
+                          fontFamily: 'Merriweather',
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                     ),
-                  ),
+                    IconButton(
+                      onPressed: () async {
+                        try {
+                          final String shareText =
+                              article.link != null && article.link.isNotEmpty
+                                  ? 'Check out this article: ${article.title}\n\n${article.link}'
+                                  : 'Check out this article: ${article.title}';
+
+                          await Share.share(shareText);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Chia sẻ thành công!'),
+                              backgroundColor: Colors.green,
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        } catch (e) {
+                          final String shareText =
+                              article.link != null && article.link.isNotEmpty
+                                  ? 'Check out this article: ${article.title}\n\n${article.link}'
+                                  : 'Check out this article: ${article.title}';
+
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: Text('Nội dung chia sẻ'),
+                                  content: SelectableText(shareText),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text('Đóng'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        }
+                      },
+                      icon: Icon(
+                        Icons.share_outlined,
+                        size: 20,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 32,
+                        minHeight: 32,
+                      ),
+                      padding: EdgeInsets.zero,
+                    ),
+                  ],
                 ),
               ],
             ),

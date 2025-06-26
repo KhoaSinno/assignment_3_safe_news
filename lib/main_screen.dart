@@ -20,6 +20,7 @@ class MainScreen extends ConsumerWidget {
     ];
 
     return Scaffold(
+      extendBody: true,
       body: IndexedStack(index: currentIndex, children: screens),
       bottomNavigationBar: const CustomBottomNavBar(),
     );

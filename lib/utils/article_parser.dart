@@ -7,7 +7,6 @@ Future<String> fetchArticleContent({required String? url}) async {
     return '<p>Article URL is missing.</p>';
   }
   final response = await http.get(Uri.parse(url));
-  print('Fetching article content from: $url');
 
   if (response.statusCode == 200) {
     final document = parser.parse(response.body);
@@ -53,10 +52,7 @@ Future<String> fetchArticleContent({required String? url}) async {
 
 String extractTextFromHtml(String htmlString) {
   final document = parser.parse(htmlString);
-  // Using document.body?.text directly can sometimes be too aggressive.
-  // A more refined approach might involve selecting specific text-bearing elements.
-  // For now, this provides a basic text extraction.
   final String parsedString =
       parser.parse(document.body?.text).documentElement?.text ?? "";
-  return parsedString.trim(); // Trim whitespace
+  return parsedString.trim();
 }

@@ -1,3 +1,4 @@
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/widget/article_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/category_list.dart';
 import 'package:assignment_3_safe_news/features/home/widget/weather_item.dart';
@@ -5,21 +6,56 @@ import 'package:assignment_3_safe_news/providers/search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'dart:async';
 
 class HomeArticle extends ConsumerStatefulWidget {
   const HomeArticle({super.key});
 
   @override
-  _HomeArticleState createState() => _HomeArticleState();
+  ConsumerState<HomeArticle> createState() => _HomeArticleState();
 }
 
 class _HomeArticleState extends ConsumerState<HomeArticle> {
+  Timer? _timer;
+  DateTime _currentTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    // Cập nhật thời gian mỗi giây
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _currentTime = DateTime.now();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // Hủy timer khi widget bị dispose
+    super.dispose();
+  }
+
+  // Hàm lấy thứ trong tuần bằng tiếng Việt
+  String getVietnameseDayOfWeek(DateTime date) {
+    const List<String> daysInVietnamese = [
+      'Thứ 2',
+      'Thứ 3',
+      'Thứ 4',
+      'Thứ 5',
+      'Thứ 6',
+      'Thứ 7',
+      'Chủ nhật',
+    ];
+    return daysInVietnamese[date.weekday - 1];
+  }
+
   @override
   Widget build(BuildContext context) {
-    String currentDay =
-        DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()).toString();
-    
-    print(currentDay);
+    String dayOfWeek = getVietnameseDayOfWeek(_currentTime);
+    String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(_currentTime);
+    final authViewModel = ref.watch(authViewModelProvider);
+    final isLoggedIn = authViewModel.user != null;
 
     return Scaffold(
       body: Column(
@@ -46,64 +82,94 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  children: [
-                    const SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Icon(
-                        Icons.newspaper,
-                        color: Color(0xFF9F224E),
-                        size: 50,
+                Flexible(
+                  flex: 3,
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Icon(
+                          Icons.newspaper,
+                          color: Color(0xFF9F224E),
+                          size: 50,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Safe News',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.headlineLarge?.copyWith(
-                            color: const Color(0xFF9F224E),
-                            fontSize: 24,
-                          ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Safe News',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.headlineLarge?.copyWith(
+                                color: const Color(0xFF9F224E),
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.visible,
+                            ),
+                            Text(
+                              'Discover',
+                              style: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.visible,
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Discover',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    WeatherWidget(),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Xin chào, Anh Khoa',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(fontSize: 14),
-                    ),
-                    Text(
-                      'Thứ 6, $currentDay',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                const SizedBox(width: 12),
+                Flexible(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [WeatherWidget()],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 5),
+                      isLoggedIn
+                          ? Text(
+                            'Xin chào, ${authViewModel.user?.name ?? 'Người dùng'}',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.end,
+                          )
+                          : Text(
+                            'Càng đọc càng vui!',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.end,
+                          ),
+                      Text(
+                        '$dayOfWeek, $currentDay',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.end,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
