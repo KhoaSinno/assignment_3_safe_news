@@ -1,4 +1,3 @@
-import 'package:assignment_3_safe_news/features/authentication/ui/login_screen.dart';
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
@@ -32,7 +31,7 @@ class SafeNewsApp extends ConsumerWidget {
   const SafeNewsApp({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authViewModel = ref.watch(authViewModelProvider);
+    // final authViewModel = ref.watch(authViewModelProvider);
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
@@ -100,7 +99,9 @@ class SafeNewsApp extends ConsumerWidget {
         dividerColor: Color(0xFF333333),
       ),
       themeMode: themeMode,
-      home: authViewModel.user != null ? MainScreen() : LoginScreen(),
+      // home: authViewModel.user != null ? MainScreen() : LoginScreen(),
+      // Vào thẳng trang chủ
+      home: MainScreen(),
     );
   }
 }
