@@ -10,17 +10,18 @@ Tạo hệ thống thành tựu **đơn giản**, **dễ implement** và **hiệ
 
 ### 1. 📊 **3 METRICS CHÍNH + USER PROFILE**
 
-```dart
-class UserStats {
-  int articlesRead = 0;      // Số bài đã đọc
-  int currentStreak = 0;     // Chuỗi đọc hiện tại (ngày)
-  int globalRank = 0;        // Hạng so với tất cả người đọc
-  
-  // User profile info (cho email/password users)
-  String? displayName;       // Tên hiển thị
-  String? profileImageUrl;   // URL ảnh đại diện
-}
-```
+**Sử dụng `UserAchievementStats` duy nhất** để lưu trữ tất cả thông tin user:
+
+- **articlesRead**: Số bài đã đọc
+- **currentStreak**: Chuỗi đọc hiện tại (ngày)
+- **globalRank**: Hạng toàn cầu so với tất cả người đọc
+- **displayName**: Tên hiển thị (cho email/password users)
+- **profileImageUrl**: URL ảnh đại diện
+- **unlockedAchievements**: Danh sách thành tựu đã mở khóa
+- **readCategories**: Các chủ đề đã đọc
+- **totalReadingTimeMinutes**: Tổng thời gian đọc
+
+> Chi tiết đầy đủ của `UserAchievementStats` model xem phần **Firebase Structure** bên dưới.
 
 ### 2. ⏱️ **TRACKING TRONG DETAIL_ARTICLE.DART**
 
@@ -59,7 +60,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   }
   
   void _recordArticleRead() {
-    final userStatsNotifier = ref.read(userStatsProvider.notifier);
+    final userStatsNotifier = ref.read(userStatsNotifierProvider);
     userStatsNotifier.incrementArticleRead(
       category: widget.article.category,
       readingTime: _timeSpent,
@@ -133,19 +134,38 @@ class UserAchievementStats {
   
   Map<String, dynamic> toFirestore() {
     return {
-      'userId': userId,
-      'articlesRead': articlesRead,
-      'currentStreak': currentStreak,
-      'longestStreak': longestStreak,
-      'lastReadDate': Timestamp.fromDate(lastReadDate),
-      'readCategories': readCategories,
-      'unlockedAchievements': unlockedAchievements.map((a) => a.name).toList(),
-      'totalReadingTimeMinutes': totalReadingTimeMinutes,
-      'displayName': displayName,
-      'profileImageUrl': profileImageUrl,
-      'globalRank': globalRank,
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'user_id': userId,
+      'articles_read': articlesRead,
+      'current_streak': currentStreak,
+      'longest_streak': longestStreak,
+      'last_read_date': Timestamp.fromDate(lastReadDate),
+      'read_categories': readCategories,
+      'unlocked_achievements': unlockedAchievements.map((a) => a.name).toList(),
+      'total_reading_time_minutes': totalReadingTimeMinutes,
+      'display_name': displayName,
+      'profile_image_url': profileImageUrl,
+      'global_rank': globalRank,
+      'updated_at': Timestamp.fromDate(updatedAt),
     };
+  }
+  
+  factory UserAchievementStats.fromFirestore(Map<String, dynamic> data) {
+    return UserAchievementStats(
+      userId: data['user_id'] ?? '',
+      articlesRead: data['articles_read'] ?? 0,
+      currentStreak: data['current_streak'] ?? 0,
+      longestStreak: data['longest_streak'] ?? 0,
+      lastReadDate: (data['last_read_date'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      readCategories: List<String>.from(data['read_categories'] ?? []),
+      unlockedAchievements: (data['unlocked_achievements'] as List<dynamic>?)
+          ?.map((name) => Achievement.values.firstWhere((a) => a.name == name))
+          .toList() ?? [],
+      totalReadingTimeMinutes: data['total_reading_time_minutes'] ?? 0,
+      displayName: data['display_name'],
+      profileImageUrl: data['profile_image_url'],
+      globalRank: data['global_rank'] ?? 0,
+      updatedAt: (data['updated_at'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
   }
 }
 ```
@@ -204,9 +224,9 @@ class UserStatsFirebaseService {
         .collection('stats')
         .doc('achievements')
         .update({
-          'displayName': displayName,
-          'profileImageUrl': profileImageUrl,
-          'updatedAt': Timestamp.now(),
+          'display_name': displayName,
+          'profile_image_url': profileImageUrl,
+          'updated_at': Timestamp.now(),
         });
   }
 }
@@ -255,7 +275,7 @@ void _recordArticleCompletion() {
   _hasRecordedRead = true;
   
   // Update user stats
-  ref.read(userStatsProvider.notifier).incrementArticleRead(
+  ref.read(userStatsNotifierProvider).incrementArticleRead(
     category: widget.article.category,
     readingTimeSeconds: _timeSpent,
   );
@@ -446,7 +466,7 @@ class UserStatsNotifier {
                                isNewDay ? currentStats.currentStreak + 1 : currentStats.currentStreak),
         lastReadDate: now,
         readCategories: _addUniqueCategory(currentStats.readCategories, category),
-        unlockedAchievements: _checkNewAchievements(currentStats),
+        unlockedAchievements: _checkNewAchievements(currentStats, currentStats.articlesRead + 1, _addUniqueCategory(currentStats.readCategories, category)),
         totalReadingTimeMinutes: currentStats.totalReadingTimeMinutes + (readingTimeSeconds ~/ 60),
         displayName: currentStats.displayName,
         profileImageUrl: currentStats.profileImageUrl,
@@ -471,11 +491,15 @@ class UserStatsNotifier {
     return categories;
   }
   
-  List<Achievement> _checkNewAchievements(UserAchievementStats stats) {
-    final achievements = List<Achievement>.from(stats.unlockedAchievements);
+  List<Achievement> _checkNewAchievements(
+    UserAchievementStats currentStats, 
+    int newArticlesRead, 
+    List<String> newCategories
+  ) {
+    final achievements = List<Achievement>.from(currentStats.unlockedAchievements);
     
     // Check first read
-    if (stats.articlesRead >= 1 && !achievements.contains(Achievement.firstRead)) {
+    if (newArticlesRead >= 1 && !achievements.contains(Achievement.firstRead)) {
       achievements.add(Achievement.firstRead);
     }
     
@@ -483,17 +507,17 @@ class UserStatsNotifier {
     // This would need additional logic to track daily reads
     
     // Check week streak
-    if (stats.currentStreak >= 7 && !achievements.contains(Achievement.weekStreak)) {
+    if (currentStats.currentStreak >= 7 && !achievements.contains(Achievement.weekStreak)) {
       achievements.add(Achievement.weekStreak);
     }
     
     // Check explorer (3 different categories)
-    if (stats.readCategories.length >= 3 && !achievements.contains(Achievement.explorer)) {
+    if (newCategories.length >= 3 && !achievements.contains(Achievement.explorer)) {
       achievements.add(Achievement.explorer);
     }
     
     // Check bookworm (50 articles)
-    if (stats.articlesRead >= 50 && !achievements.contains(Achievement.bookworm)) {
+    if (newArticlesRead >= 50 && !achievements.contains(Achievement.bookworm)) {
       achievements.add(Achievement.bookworm);
     }
     
@@ -544,7 +568,7 @@ class RankingService {
           .collection('stats')
           .doc('achievements');
       
-      batch.update(docRef, {'globalRank': rank});
+      batch.update(docRef, {'global_rank': rank});
     }
     
     await batch.commit();
@@ -583,9 +607,9 @@ class ProfileUpdateService {
         .collection('stats')
         .doc('achievements')
         .update({
-          'displayName': displayName,
-          'profileImageUrl': profileImageUrl,
-          'updatedAt': Timestamp.now(),
+          'display_name': displayName,
+          'profile_image_url': profileImageUrl,
+          'updated_at': Timestamp.now(),
         });
   }
   
