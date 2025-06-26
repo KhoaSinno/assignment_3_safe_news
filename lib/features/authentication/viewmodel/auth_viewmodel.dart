@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import '../repository/auth_repository.dart';
 import '../model/user_model.dart';
 
@@ -51,7 +52,10 @@ class AuthViewModel extends ChangeNotifier {
           name: userCredential.user!.displayName,
           photoUrl: userCredential.user!.photoURL,
         );
-        print(userCredential.user!.photoURL);
+        AppLogger.debug(
+          'User photo URL: ${userCredential.user!.photoURL}',
+          tag: 'AuthViewModel',
+        );
       } else {
         throw Exception('Google sign-in failed');
       }

@@ -132,7 +132,7 @@ class ProfileSetting extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -143,7 +143,9 @@ class ProfileSetting extends ConsumerWidget {
                       Icon(
                         Icons.account_circle,
                         size: 80,
-                        color: Theme.of(context).primaryColor.withOpacity(0.7),
+                        color: Theme.of(
+                          context,
+                        ).primaryColor.withValues(alpha: 0.7),
                       ),
                       const SizedBox(height: 16),
                       Text(

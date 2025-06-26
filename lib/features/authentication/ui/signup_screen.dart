@@ -1,6 +1,6 @@
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/ui/home_acticle.dart';
-import 'package:assignment_3_safe_news/features/home/ui/home_screen.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -58,7 +58,7 @@ class SignupScreen extends ConsumerWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Đăng ký thất bại: $e')),
                   );
-                  print('Đăng ký thất bại: $e');
+                  AppLogger.error('Đăng ký thất bại: $e', tag: 'SignupScreen');
                 }
               },
               child: Text('Đăng ký'),

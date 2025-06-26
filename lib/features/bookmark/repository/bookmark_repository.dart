@@ -1,4 +1,5 @@
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -133,7 +134,7 @@ class BookmarkRepository {
         await _safeBookmarkBox.put(bookmark.id, bookmark);
       }
     } catch (e) {
-      print('Error syncing from Firebase: $e');
+      AppLogger.error('Error syncing from Firebase: $e');
     }
   }
 
@@ -154,7 +155,7 @@ class BookmarkRepository {
             .set(bookmark.toJson());
       }
     } catch (e) {
-      print('Error syncing to Firebase: $e');
+      AppLogger.error('Error syncing to Firebase: $e');
     }
   }
 

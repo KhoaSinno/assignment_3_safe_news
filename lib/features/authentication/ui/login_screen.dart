@@ -1,9 +1,10 @@
 import 'package:assignment_3_safe_news/features/authentication/ui/signup_screen.dart';
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:assignment_3_safe_news/widgets/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../viewmodel/auth_viewmodel.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -173,28 +174,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         _passwordController.text,
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng nhập thành công!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (!mounted) return;
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
-      }
+      AppLogger.info('Đăng nhập thành công', tag: 'LoginScreen');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đăng nhập thành công!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng nhập thất bại: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      AppLogger.error('Đăng nhập thất bại: $e', tag: 'LoginScreen');
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đăng nhập thất bại: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -213,28 +216,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final authViewModel = ref.read(authViewModelProvider);
       await authViewModel.signInWithGoogle();
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng nhập bằng Google thành công!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+      if (!mounted) return;
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => MainScreen()),
-        );
-      }
+      AppLogger.info('Đăng nhập bằng Google thành công', tag: 'LoginScreen');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đăng nhập bằng Google thành công!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đăng nhập bằng Google thất bại: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      AppLogger.error('Đăng nhập bằng Google thất bại: $e', tag: 'LoginScreen');
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đăng nhập bằng Google thất bại: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() {

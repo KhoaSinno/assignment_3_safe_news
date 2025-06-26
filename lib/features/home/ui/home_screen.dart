@@ -41,14 +41,14 @@ class HomeScreen extends ConsumerWidget {
             ],
             ElevatedButton(
               onPressed: () async {
-                // Kiểm tra xem widget có còn được gắn kết không trước khi gọi signOut
-                if (!context.mounted) return;
                 try {
                   await authViewModel.signOut();
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Đăng xuất thành công!')),
                   );
                 } catch (e) {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Đăng xuất thất bại: $e')),
                   );
