@@ -18,6 +18,8 @@ class AppLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const primaryAppColor = Color(0xFF9F224E);
+
     return Column(
       children: [
         Container(
@@ -25,17 +27,14 @@ class AppLogo extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [
-                Theme.of(context).primaryColor,
-                Theme.of(context).primaryColor.withValues(alpha: 0.7),
-              ],
+              colors: [primaryAppColor, primaryAppColor.withValues(alpha: 0.7)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                color: primaryAppColor.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
               ),
@@ -50,7 +49,7 @@ class AppLogo extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
               fontSize: titleFontSize,
               fontWeight: FontWeight.bold,
-              color: Theme.of(context).primaryColor,
+              color: primaryAppColor,
             ),
           ),
         ],
