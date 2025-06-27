@@ -1,5 +1,5 @@
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
-import 'package:assignment_3_safe_news/features/home/ui/home_acticle.dart';
+import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +50,7 @@ class SignupScreen extends ConsumerWidget {
                   Navigator.pushReplacement(
                     // Consider using pushReplacement to avoid going back to signup
                     context,
-                    MaterialPageRoute(builder: (context) => HomeArticle()),
+                    MaterialPageRoute(builder: (context) => MainScreen()),
                   );
                 } catch (e) {
                   // Check if the widget is still mounted
