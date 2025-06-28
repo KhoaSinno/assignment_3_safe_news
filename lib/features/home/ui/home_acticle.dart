@@ -189,8 +189,8 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                 borderRadius: BorderRadius.circular(28),
                 color:
                     Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF3A3A3A)
-                        : const Color(0xFFCAABB4),
+                        ? Theme.of(context).cardTheme.color
+                        : Theme.of(context).appBarTheme.backgroundColor,
                 boxShadow: [
                   BoxShadow(
                     color: const Color(0x3F000000),
@@ -206,21 +206,23 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                       decoration: InputDecoration(
                         hintText: 'Tìm kiếm',
                         hintStyle: TextStyle(
-                          color:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white70
-                                  : Colors.black54,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                           fontSize: 16,
                           fontFamily: 'Aleo',
                           fontWeight: FontWeight.w400,
                         ),
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        filled: false,
+                        contentPadding: EdgeInsets.zero,
                       ),
                       style: TextStyle(
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black87,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                       onChanged:
                           (value) => {
@@ -232,10 +234,9 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
                   ),
                   Icon(
                     Icons.search,
-                    color:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white70
-                            : Colors.black54,
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                   ),
                 ],
               ),

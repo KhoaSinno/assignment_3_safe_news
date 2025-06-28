@@ -168,38 +168,36 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
 
                 await Share.share(shareText);
 
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Chia sẻ thành công!'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Chia sẻ thành công!'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
               } catch (e) {
-                if (mounted) {
-                  final String shareText =
-                      widget.article.link != null &&
-                              widget.article.link!.isNotEmpty
-                          ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
-                          : 'Check out this article: ${widget.article.title}';
+                if (!mounted) return;
+                final String shareText =
+                    widget.article.link != null &&
+                            widget.article.link!.isNotEmpty
+                        ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
+                        : 'Check out this article: ${widget.article.title}';
 
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => AlertDialog(
-                          title: Text('Nội dung chia sẻ'),
-                          content: SelectableText(shareText),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text('Đóng'),
-                            ),
-                          ],
-                        ),
-                  );
-                }
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: Text('Nội dung chia sẻ'),
+                        content: SelectableText(shareText),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Đóng'),
+                          ),
+                        ],
+                      ),
+                );
               }
             },
           ),
@@ -231,7 +229,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
           ClipRect(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(color: Colors.black.withOpacity(0.1)),
+              child: Container(color: Colors.black.withValues(alpha: 0.1)),
             ),
           ),
           SingleChildScrollView(
@@ -334,9 +332,8 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                                             8,
                                             204,
                                           )
-                                          : Theme.of(
-                                            context,
-                                          ).iconTheme.color?.withOpacity(0.54),
+                                          : Theme.of(context).iconTheme.color
+                                              ?.withValues(alpha: 0.54),
                                 ),
                           ],
                         ),
@@ -396,9 +393,8 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                                             8,
                                             204,
                                           )
-                                          : Theme.of(
-                                            context,
-                                          ).iconTheme.color?.withOpacity(0.54),
+                                          : Theme.of(context).iconTheme.color
+                                              ?.withValues(alpha: 0.54),
                                 ),
                           ],
                         ),

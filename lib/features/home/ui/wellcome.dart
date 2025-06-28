@@ -69,8 +69,7 @@ class WelcomeState extends State<Welcome> {
                     children: [
                       InkWell(
                         onTap: () {
-                          print('Pressed');
-                          // Navigate to your desired screen, e.g., LoginScreen or HomeScreen
+                          // Navigate to desired screen
                           // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
                         },
                         child: Container(
@@ -134,7 +133,7 @@ class WelcomeState extends State<Welcome> {
                         shadows: [
                           Shadow(
                             blurRadius: 5.0,
-                            color: Colors.black.withOpacity(0.7),
+                            color: Colors.black.withValues(alpha: 0.7),
                             offset: Offset(2.0, 2.0),
                           ),
                         ],
@@ -145,12 +144,12 @@ class WelcomeState extends State<Welcome> {
                     Text(
                       "From Politics to Entertainment: Your One-Stop Source for Comprehensive Coverage of the Latest News and Developments Across the Glob will be right on your hand.",
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.95),
+                        color: Colors.white.withValues(alpha: 0.95),
                         fontSize: 18,
                         shadows: [
                           Shadow(
                             blurRadius: 4.0,
-                            color: Colors.black.withOpacity(0.6),
+                            color: Colors.black.withValues(alpha: 0.6),
                             offset: Offset(1.0, 1.0),
                           ),
                         ],

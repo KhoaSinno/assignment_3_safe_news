@@ -25,8 +25,8 @@ class BookmarkList extends ConsumerWidget {
               borderRadius: BorderRadius.circular(28),
               color:
                   Theme.of(context).brightness == Brightness.dark
-                      ? const Color(0xFF3A3A3A)
-                      : const Color(0xFFCAABB4),
+                      ? Theme.of(context).cardTheme.color
+                      : Theme.of(context).appBarTheme.backgroundColor,
               boxShadow: [
                 BoxShadow(
                   color: const Color(0x3F000000),
@@ -42,21 +42,23 @@ class BookmarkList extends ConsumerWidget {
                     decoration: InputDecoration(
                       hintText: 'Tìm kiếm theo tiêu đề, tóm tắt, nội dung...',
                       hintStyle: TextStyle(
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white70
-                                : Colors.black54,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                         fontSize: 14,
                         fontFamily: 'Aleo',
                         fontWeight: FontWeight.w400,
                       ),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      filled: false,
+                      contentPadding: EdgeInsets.zero,
                     ),
                     style: TextStyle(
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black87,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                     onChanged: (value) {
                       // Sử dụng Provider để update search query
@@ -66,10 +68,9 @@ class BookmarkList extends ConsumerWidget {
                 ),
                 Icon(
                   Icons.search,
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white70
-                          : Colors.black54,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                 ),
               ],
             ),

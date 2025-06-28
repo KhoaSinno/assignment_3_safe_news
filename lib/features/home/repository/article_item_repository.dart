@@ -1,4 +1,5 @@
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 
@@ -65,7 +66,7 @@ class ArticleItemRepository {
       final rawText = response.text ?? "Không thể tạo tóm tắt.";
       return removeMarkdownBold(rawText);
     } catch (e) {
-      print('Error with Gemini API: $e');
+      AppLogger.error('Error with Gemini API: $e');
       return "Lỗi khi gọi API tóm tắt.";
     }
   }

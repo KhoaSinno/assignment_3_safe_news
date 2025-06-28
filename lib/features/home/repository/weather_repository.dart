@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
+import 'package:assignment_3_safe_news/utils/logger.dart';
 import '../model/weather_model.dart';
 
 class WeatherRepository {
@@ -27,11 +28,11 @@ class WeatherRepository {
       }
       return null;
     } on PlatformException catch (e) {
-      print('Platform error getting location: ${e.message}');
+      AppLogger.error('Platform error getting location: ${e.message}');
       // Trả về thời tiết mặc định cho Hà Nội
       return _getDefaultWeather();
     } catch (e) {
-      print('Error fetching weather: $e');
+      AppLogger.error('Error fetching weather: $e');
       // Trả về thời tiết mặc định cho Hà Nội
       return _getDefaultWeather();
     }
@@ -50,12 +51,12 @@ class WeatherRepository {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('Default weather data: $data');
+        AppLogger.debug('Default weather data: $data');
         return WeatherModel.fromJson(data);
       }
       return null;
     } catch (e) {
-      print('Error fetching default weather: $e');
+      AppLogger.error('Error fetching default weather: $e');
       return null;
     }
   }

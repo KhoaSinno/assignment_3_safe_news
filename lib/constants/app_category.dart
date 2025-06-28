@@ -1,6 +1,11 @@
 import 'package:assignment_3_safe_news/features/home/model/category_model.dart';
 
+/// App Category constants and utilities
+/// Contains all news categories used throughout the application
 class AppCategory {
+  AppCategory._(); // Private constructor to prevent instantiation
+
+  // Category constants
   static const String tinMoiNhat = 'tin-moi-nhat';
   static const String tinXemNhieu = 'tin-xem-nhieu';
   static const String theGioi = 'the-gioi';
@@ -21,6 +26,7 @@ class AppCategory {
   static const String cuoi = 'cuoi';
 }
 
+/// Map of all available categories with their display names and slugs
 const Map<String, CategoryModel> categories = {
   AppCategory.tinMoiNhat: CategoryModel(
     name: "Tin mới nhất",
@@ -81,18 +87,19 @@ const Map<String, CategoryModel> categories = {
   AppCategory.cuoi: CategoryModel(name: "Cười", slug: AppCategory.cuoi),
 };
 
-// Hàm ánh xạ từ slug sang tên danh mục
+/// Gets the display name from category slug
+/// Returns empty string if category not found
 String getNameFromCategory(String slug) {
-  return categories[slug]?.name ??
-      ''; // Trả về chuỗi rỗng hoặc tên mặc định nếu không tìm thấy
+  return categories[slug]?.name ?? '';
 }
 
-// Hàm ánh xạ tên danh mục sang slug
+/// Gets the slug from category display name
+/// Returns empty string if category not found
 String getSlugFromName(String name) {
   for (var entry in categories.entries) {
     if (entry.value.name.toLowerCase() == name.toLowerCase()) {
       return entry.key;
     }
   }
-  return ''; // Trả về chuỗi rỗng hoặc slug mặc định nếu không tìm thấy
+  return '';
 }
