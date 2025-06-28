@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:ui';
 // APP
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
+import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 // PACKAGES
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -30,11 +33,51 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   bool _isPressingBrief = false;
   bool _isPressingFull = false;
 
+  // Tracking user reading article
+  Timer? _readingTimer;
+  int _seconds = 0;
+  bool _hasTracking = false;
+
   final FlutterTts flutterTts = FlutterTts();
   @override
   void initState() {
     super.initState();
     _loadArticleAndGenerateSummary();
+    _startReadingTimer();
+    flutterTts.setLanguage('vi-VN');
+    flutterTts.setPitch(1.0); // Set pitch to normal
+    flutterTts.setVolume(1.0); // Set volume to maximum
+  }
+
+  void _startReadingTimer() {
+    if (FirebaseAuth.instance.currentUser == null) return;
+
+    _readingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          _seconds++;
+        });
+        if (_seconds >= 60 && !_hasTracking) {
+          _hasTracking = true;
+
+          _onReadCompleted();
+          _readingTimer?.cancel();
+          _readingTimer = null;
+        }
+      }
+    });
+  }
+
+  // Call riverpod to update info
+  void _onReadCompleted() {
+    final userStatsNotifier = ref.read(userStatsNotifierProvider);
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    userStatsNotifier.incrementArticleRead(
+      category: widget.article.category,
+      readingTimeSeconds: _seconds,
+      user: user,
+    );
   }
 
   Future<void> _loadArticleAndGenerateSummary() async {

@@ -41,15 +41,13 @@ final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
 
 class UserStatsNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> incrementArticleRead({
     required String category,
     required int readingTimeSeconds,
+    required User user,
   }) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
     // SIMPLIFIED: Flat structure - direct access to /users/{userId}
     final docRef = _firestore.collection('users').doc(user.uid);
 
@@ -57,6 +55,7 @@ class UserStatsNotifier {
       final snapshot = await transaction.get(docRef);
 
       UserAchievementStatsModel currentStats;
+
       if (snapshot.exists) {
         currentStats = UserAchievementStatsModel.fromFirestore(
           snapshot.data()!,
@@ -71,10 +70,17 @@ class UserStatsNotifier {
       }
 
       // Update stats
-      final now = DateTime.now();
-      final isNewDay = !_isSameDay(currentStats.lastReadDate, now);
+      final now = Timestamp.now().toDate();
 
-      final updatedStats = UserAchievementStatsModel(
+      final isNewDay = !_isSameDay(currentStats.lastReadDate, now);
+      print('isNewDay: $isNewDay');
+
+      List<String> updatedCategories = _addUniqueCategory(
+        currentStats.readCategories,
+        category,
+      );
+
+      final UserAchievementStatsModel updatedStats = UserAchievementStatsModel(
         userId: currentStats.userId,
         articlesRead: currentStats.articlesRead + 1,
         currentStreak:
@@ -82,17 +88,24 @@ class UserStatsNotifier {
                 ? currentStats.currentStreak + 1
                 : currentStats.currentStreak,
         lastReadDate: now,
-        readCategories: _addUniqueCategory(
-          currentStats.readCategories,
-          category,
-        ),
+        readCategories: updatedCategories,
         unlockedAchievements: _checkNewAchievements(
           currentStats,
           currentStats.articlesRead + 1,
-          _addUniqueCategory(currentStats.readCategories, category),
+          updatedCategories,
         ),
         updatedAt: now,
       );
+
+      // Print thông tin của updatedStats
+      print('Updated Stats:');
+      print('User ID: ${updatedStats.userId}');
+      print('Articles Read: ${updatedStats.articlesRead}');
+      print('Current Streak: ${updatedStats.currentStreak}');
+      print('Last Read Date: ${updatedStats.lastReadDate}');
+      print('Read Categories: ${updatedStats.readCategories}');
+      print('Unlocked Achievements: ${updatedStats.unlockedAchievements}');
+      print('Updated At: ${updatedStats.updatedAt}');
 
       transaction.set(docRef, updatedStats.toFirestore());
     });
