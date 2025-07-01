@@ -337,18 +337,23 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                             : IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _isPressingBrief = !_isPressingBrief;
+                                  // Nếu đang đọc summary, toggle nó
+                                  // Nếu không đang đọc summary, tắt full và bật summary
+                                  if (_isPressingBrief) {
+                                    _isPressingBrief = false;
+                                    flutterTts.stop();
+                                  } else {
+                                    _isPressingBrief = true;
+                                    _isPressingFull =
+                                        false; 
+                                    flutterTts.stop();
+                                    flutterTts.setLanguage('vi-VN');
+                                    flutterTts.speak(
+                                      _summary ??
+                                          'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
+                                    );
+                                  }
                                 });
-                                if (_isPressingBrief) {
-                                  flutterTts.setLanguage('vi-VN');
-                                  flutterTts.speak(
-                                    _summary ??
-                                        'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
-                                  );
-                                }
-                                if (!_isPressingBrief) {
-                                  flutterTts.stop();
-                                }
                               },
                               icon: Icon(Icons.volume_up),
                               iconSize: 40,
@@ -394,15 +399,19 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                             : IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _isPressingFull = !_isPressingFull;
+                                  // Nếu đang đọc full content, toggle nó
+                                  // Nếu không đang đọc full content, tắt summary và bật full content
+                                  if (_isPressingFull) {
+                                    _isPressingFull = false;
+                                    flutterTts.stop();
+                                  } else {
+                                    _isPressingFull = true;
+                                    _isPressingBrief = false; 
+                                    flutterTts.stop();
+                                    flutterTts.setLanguage('vi-VN');
+                                    flutterTts.speak(_plainTextContent);
+                                  }
                                 });
-                                if (_isPressingFull) {
-                                  flutterTts.setLanguage('vi-VN');
-                                  flutterTts.speak(_plainTextContent);
-                                }
-                                if (!_isPressingFull) {
-                                  flutterTts.stop();
-                                }
                               },
                               icon: Icon(Icons.volume_up),
                               iconSize: 40,
