@@ -8,15 +8,17 @@ class ArticleItemRepository {
   Stream<List<ArticleModel>> fetchArticle({
     String categorySlug = 'all',
     String? title,
+    String sortTime = 'AllTime',
   }) {
     Query query = _firestore.collection('news-crawler');
+    // Query query = _firestore.collection('test_30_articles_new');
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {
       query = query.where('category', isEqualTo: categorySlug);
     }
 
-    // Sắp xếp theo published
+    // Chỉ sắp xếp theo published (không filter ở Firestore vì published là string)
     query = query.orderBy('published', descending: true);
 
     return query.snapshots().map((snapshot) {
@@ -30,6 +32,15 @@ class ArticleItemRepository {
               )
               .toList();
 
+      // Áp dụng filter thời gian ở client-side
+      if (sortTime != 'AllTime') {
+        DateTime filterDate = _getFilterDate(sortTime);
+        articles =
+            articles.where((article) {
+              return article.published.isAfter(filterDate);
+            }).toList();
+      }
+
       // Áp dụng filter tìm kiếm title ở client-side
       if (title != null && title.isNotEmpty) {
         articles =
@@ -40,6 +51,25 @@ class ArticleItemRepository {
 
       return articles;
     });
+  }
+
+  /// Tính toán ngày để lọc dựa trên sortTime
+  DateTime _getFilterDate(String sortTime) {
+    DateTime now = DateTime.now();
+    DateTime startOfDay = DateTime(now.year, now.month, now.day);
+
+    switch (sortTime) {
+      case 'Today':
+        return startOfDay; // Từ 00:00:00 hôm nay
+      case '3DaysAgo':
+        return startOfDay.subtract(const Duration(days: 3)); // 3 ngày trước
+      case '7DaysAgo':
+        return startOfDay.subtract(const Duration(days: 7)); // 7 ngày trước
+      case '1MonthAgo':
+        return startOfDay.subtract(const Duration(days: 30)); // 30 ngày trước
+      default:
+        return DateTime(1970); // Trả về ngày rất xa trong quá khứ cho AllTime
+    }
   }
 
   static String removeMarkdownBold(String text) {
