@@ -95,7 +95,7 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
                 const SizedBox(height: 5),
                 isLoggedIn
                     ? Text(
-                      'Xin chào, ${authViewModel.user?.name ?? 'Người dùng'}',
+                      'Hi, ${authViewModel.user?.name ?? 'Người dùng'}',
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium?.copyWith(fontSize: 14),

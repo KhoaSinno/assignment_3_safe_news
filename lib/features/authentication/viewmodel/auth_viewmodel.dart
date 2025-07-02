@@ -15,9 +15,13 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> signIn(String email, String password) async {
     try {
+      print('🔑 Signing in with email: $email');
       _user = await _authRepository.signIn(email, password);
+      print('✅ SignIn completed for: ${_user?.email}');
+
       notifyListeners();
     } catch (e) {
+      print('❌ SignIn error: $e');
       rethrow;
     }
   }
@@ -25,6 +29,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> signUp(String email, String password) async {
     try {
       _user = await _authRepository.signUp(email, password);
+
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -33,16 +38,21 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     try {
+      print('🔓 Signing out user: ${_user?.email}');
       await _authRepository.signOut();
       _user = null;
+
       notifyListeners();
+      print('✅ SignOut completed');
     } catch (e) {
+      print('❌ SignOut error: $e');
       rethrow;
     }
   }
 
   Future<void> signInWithGoogle() async {
     try {
+      print('🔑 Signing in with Google');
       final UserCredential userCredential =
           await _authRepository.signInWithGoogle();
       if (userCredential.user != null && userCredential.user!.email != null) {
@@ -52,6 +62,7 @@ class AuthViewModel extends ChangeNotifier {
           name: userCredential.user!.displayName,
           photoUrl: userCredential.user!.photoURL,
         );
+        print('✅ Google SignIn completed for: ${_user?.email}');
         AppLogger.debug(
           'User photo URL: ${userCredential.user!.photoURL}',
           tag: 'AuthViewModel',
@@ -62,6 +73,7 @@ class AuthViewModel extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
+      print('❌ Google SignIn error: $e');
       rethrow;
     }
   }

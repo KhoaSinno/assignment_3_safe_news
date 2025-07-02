@@ -1,38 +1,48 @@
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/profile/model/achievement_model.dart';
 import 'package:assignment_3_safe_news/features/profile/model/user_achievement_stats_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ✅ Provider phụ thuộc vào auth state để auto-refresh
 final userStatsProvider = StreamProvider<UserAchievementStatsModel?>((ref) {
+  // ✅ Watch auth provider để auto-invalidate khi user thay đổi
+  final authViewModel = ref.watch(authViewModelProvider);
   final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return Stream.value(null);
 
-  // SIMPLIFIED: Flat structure - tất cả trong /users/{userId}
-  return FirebaseFirestore.instance
-      .collection('users')
-      .doc(user.uid)
-      .snapshots()
-      .map((snapshot) {
-        if (!snapshot.exists) {
-          // Tạo user document mặc định với achievement stats
-          final defaultStats = UserAchievementStatsModel(
-            userId: user.uid,
-            lastReadDate: DateTime.now(),
-            unlockedAchievements: [
-              Achievement.newbie,
-            ], // Mặc định có "Người mới"
-            updatedAt: DateTime.now(),
-          );
+  if (user == null || authViewModel.user == null) {
+    print('📊 No authenticated user - returning null');
+    return Stream.value(null);
+  }
 
-          // Async tạo document mặc định
-          final data = defaultStats.toFirestore();
-          snapshot.reference.set(data, SetOptions(merge: true));
-          return defaultStats;
-        }
+  print('📊 Setting up stats stream for user: ${user.uid}');
 
-        return UserAchievementStatsModel.fromFirestore(snapshot.data()!);
-      });
+  // ✅ Tạo một stream mới cho mỗi user khác nhau
+  return FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().map((
+    snapshot,
+  ) {
+    if (!snapshot.exists) {
+      // ⚠️ KHÔNG tạo document ở đây - để auth_repository.dart xử lý
+      // Return default stats để UI hiển thị, nhưng không save vào Firestore
+      print(
+        '📊 User document not found for ${user.uid} - returning default stats for UI',
+      );
+      return UserAchievementStatsModel(
+        userId: user.uid,
+        lastReadDate: DateTime.now(),
+        unlockedAchievements: [Achievement.newbie],
+        updatedAt: DateTime.now(),
+      );
+    }
+
+    print('📊 Loading user stats from Firestore for: ${user.uid}');
+    final stats = UserAchievementStatsModel.fromFirestore(snapshot.data()!);
+    print(
+      '📊 Stats loaded - achievements: ${stats.unlockedAchievements.map((a) => a.name).join(', ')}',
+    );
+    return stats;
+  });
 });
 
 final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
