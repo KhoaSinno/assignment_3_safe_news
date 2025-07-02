@@ -1,12 +1,15 @@
 import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
+import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:assignment_3_safe_news/theme/app_theme.dart';
+import 'package:assignment_3_safe_news/utils/tts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'dart:async';
 import 'firebase_options.dart';
 
 void main() async {
@@ -23,6 +26,14 @@ void main() async {
 
   // Initialize bookmark repository AFTER Firebase using singleton
   await BookmarkRepository.instance.init();
+
+  // Initialize TTS Service
+  await TTSService().initialize();
+
+  // Setup periodic cache cleanup (every 6 hours)
+  Timer.periodic(Duration(hours: 6), (timer) {
+    ArticleItemRepository.clearExpiredCache();
+  });
 
   runApp(ProviderScope(child: SafeNewsApp()));
 }

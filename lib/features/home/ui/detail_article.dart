@@ -86,9 +86,9 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
     }
 
     try {
-      final fetchedHtmlContent = await fetchArticleContent(
-        url: widget.article.link,
-      );
+      // Sử dụng cached content fetching
+      final fetchedHtmlContent =
+          await ArticleItemRepository.getContentWithCache(widget.article.link);
       if (mounted) {
         setState(() {
           _articleHtmlContent = fetchedHtmlContent;
@@ -99,6 +99,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
       final plainTextContent = extractTextFromHtml(fetchedHtmlContent);
       if (plainTextContent.isNotEmpty) {
         _plainTextContent = plainTextContent;
+        // Sử dụng cached summary generation
         final summary = await ArticleItemRepository.summaryContentGemini(
           plainTextContent,
         );
@@ -344,8 +345,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                                     flutterTts.stop();
                                   } else {
                                     _isPressingBrief = true;
-                                    _isPressingFull =
-                                        false; 
+                                    _isPressingFull = false;
                                     flutterTts.stop();
                                     flutterTts.setLanguage('vi-VN');
                                     flutterTts.speak(
@@ -406,7 +406,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                                     flutterTts.stop();
                                   } else {
                                     _isPressingFull = true;
-                                    _isPressingBrief = false; 
+                                    _isPressingBrief = false;
                                     flutterTts.stop();
                                     flutterTts.setLanguage('vi-VN');
                                     flutterTts.speak(_plainTextContent);

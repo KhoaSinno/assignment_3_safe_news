@@ -1,12 +1,79 @@
 import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/ui/detail_article.dart';
+import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
+import 'package:assignment_3_safe_news/utils/tts_service.dart';
+import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 
-class ArticleItem extends StatelessWidget {
+class ArticleItem extends StatefulWidget {
   const ArticleItem({super.key, required this.article});
   final dynamic article;
+
+  @override
+  State<ArticleItem> createState() => _ArticleItemState();
+}
+
+class _ArticleItemState extends State<ArticleItem> {
+  final TTSService _ttsService = TTSService();
+  bool _isLoadingSummary = false;
+  String? _cachedSummary;
+
+  @override
+  void initState() {
+    super.initState();
+    _ttsService.initialize();
+  }
+
+  Future<void> _speakArticleSummary() async {
+    // Nếu đang đọc summary này, thì dừng
+    String summaryText = _cachedSummary ?? widget.article.description;
+    if (_ttsService.isSpeaking(summaryText)) {
+      await _ttsService.stop();
+      return;
+    }
+
+    // Nếu chưa có summary cached, thì tạo mới
+    if (_cachedSummary == null) {
+      setState(() {
+        _isLoadingSummary = true;
+      });
+
+      try {
+        // Fetch content và tạo summary
+        String content = await ArticleItemRepository.getContentWithCache(
+          widget.article.link,
+        );
+        String plainText = extractTextFromHtml(content);
+
+        if (plainText.isNotEmpty) {
+          _cachedSummary = await ArticleItemRepository.summaryContentGemini(
+            plainText,
+          );
+        } else {
+          _cachedSummary = widget.article.description;
+        }
+
+        setState(() {
+          _isLoadingSummary = false;
+        });
+
+        // Speak summary sau khi load xong
+        await _ttsService.speak(_cachedSummary!);
+      } catch (e) {
+        setState(() {
+          _isLoadingSummary = false;
+          _cachedSummary = widget.article.description;
+        });
+        await _ttsService.speak(_cachedSummary!);
+      }
+    } else {
+      // Đã có cache, speak ngay
+      await _ttsService.speak(_cachedSummary!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -14,7 +81,7 @@ class ArticleItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailArticle(article: article),
+            builder: (context) => DetailArticle(article: widget.article),
           ),
         );
       },
@@ -27,7 +94,7 @@ class ArticleItem extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: DecorationImage(
-                image: NetworkImage(article.imageUrl),
+                image: NetworkImage(widget.article.imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
@@ -38,7 +105,7 @@ class ArticleItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  article.title,
+                  widget.article.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -49,14 +116,43 @@ class ArticleItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  getNameFromCategory(article.category),
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyMedium?.color,
-                    fontSize: 14,
-                    fontFamily: 'Merriweather',
-                    fontWeight: FontWeight.w400,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      getNameFromCategory(widget.article.category),
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
+                        fontSize: 14,
+                        fontFamily: 'Merriweather',
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed:
+                          _isLoadingSummary ? null : _speakArticleSummary,
+                      icon:
+                          _isLoadingSummary
+                              ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Icon(
+                                Icons.volume_up,
+                                color:
+                                    _ttsService.isSpeaking(
+                                          _cachedSummary ??
+                                              widget.article.description,
+                                        )
+                                        ? const Color.fromARGB(255, 44, 8, 204)
+                                        : Theme.of(context).iconTheme.color
+                                            ?.withValues(alpha: 0.54),
+                              ),
+                      iconSize: 30,
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Row(
@@ -66,7 +162,7 @@ class ArticleItem extends StatelessWidget {
                       child: Text(
                         DateFormat(
                           'dd/MM/yyyy HH:mm',
-                        ).format(article.published).toString(),
+                        ).format(widget.article.published).toString(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -81,9 +177,10 @@ class ArticleItem extends StatelessWidget {
                       onPressed: () async {
                         try {
                           final String shareText =
-                              article.link != null && article.link.isNotEmpty
-                                  ? 'Check out this article: ${article.title}\n\n${article.link}'
-                                  : 'Check out this article: ${article.title}';
+                              widget.article.link != null &&
+                                      widget.article.link.isNotEmpty
+                                  ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
+                                  : 'Check out this article: ${widget.article.title}';
 
                           await Share.share(shareText);
 
@@ -96,9 +193,10 @@ class ArticleItem extends StatelessWidget {
                           );
                         } catch (e) {
                           final String shareText =
-                              article.link != null && article.link.isNotEmpty
-                                  ? 'Check out this article: ${article.title}\n\n${article.link}'
-                                  : 'Check out this article: ${article.title}';
+                              widget.article.link != null &&
+                                      widget.article.link.isNotEmpty
+                                  ? 'Check out this article: ${widget.article.title}\n\n${widget.article.link}'
+                                  : 'Check out this article: ${widget.article.title}';
 
                           showDialog(
                             context: context,
