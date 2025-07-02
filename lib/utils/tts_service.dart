@@ -23,7 +23,6 @@ class TTSService {
     });
 
     _flutterTts.setErrorHandler((message) {
-      print('TTS Error: $message');
       _isPlaying = false;
       _currentText = null;
     });

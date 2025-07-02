@@ -12,37 +12,29 @@ final userStatsProvider = StreamProvider<UserAchievementStatsModel?>((ref) {
   final user = FirebaseAuth.instance.currentUser;
 
   if (user == null || authViewModel.user == null) {
-    print('📊 No authenticated user - returning null');
     return Stream.value(null);
   }
 
-  print('📊 Setting up stats stream for user: ${user.uid}');
-
   // ✅ Tạo một stream mới cho mỗi user khác nhau
-  return FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().map((
-    snapshot,
-  ) {
-    if (!snapshot.exists) {
-      // ⚠️ KHÔNG tạo document ở đây - để auth_repository.dart xử lý
-      // Return default stats để UI hiển thị, nhưng không save vào Firestore
-      print(
-        '📊 User document not found for ${user.uid} - returning default stats for UI',
-      );
-      return UserAchievementStatsModel(
-        userId: user.uid,
-        lastReadDate: DateTime.now(),
-        unlockedAchievements: [Achievement.newbie],
-        updatedAt: DateTime.now(),
-      );
-    }
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(user.uid)
+      .snapshots()
+      .map((snapshot) {
+        if (!snapshot.exists) {
+          // ⚠️ KHÔNG tạo document ở đây - để auth_repository.dart xử lý
+          // Return default stats để UI hiển thị, nhưng không save vào Firestore
+          return UserAchievementStatsModel(
+            userId: user.uid,
+            lastReadDate: DateTime.now(),
+            unlockedAchievements: [Achievement.newbie],
+            updatedAt: DateTime.now(),
+          );
+        }
 
-    print('📊 Loading user stats from Firestore for: ${user.uid}');
-    final stats = UserAchievementStatsModel.fromFirestore(snapshot.data()!);
-    print(
-      '📊 Stats loaded - achievements: ${stats.unlockedAchievements.map((a) => a.name).join(', ')}',
-    );
-    return stats;
-  });
+        final stats = UserAchievementStatsModel.fromFirestore(snapshot.data()!);
+        return stats;
+      });
 });
 
 final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
@@ -83,7 +75,6 @@ class UserStatsNotifier {
       final now = Timestamp.now().toDate();
 
       final isNewDay = !_isSameDay(currentStats.lastReadDate, now);
-      print('isNewDay: $isNewDay');
 
       List<String> updatedCategories = _addUniqueCategory(
         currentStats.readCategories,
@@ -106,16 +97,6 @@ class UserStatsNotifier {
         ),
         updatedAt: now,
       );
-
-      // Print thông tin của updatedStats
-      print('Updated Stats:');
-      print('User ID: ${updatedStats.userId}');
-      print('Articles Read: ${updatedStats.articlesRead}');
-      print('Current Streak: ${updatedStats.currentStreak}');
-      print('Last Read Date: ${updatedStats.lastReadDate}');
-      print('Read Categories: ${updatedStats.readCategories}');
-      print('Unlocked Achievements: ${updatedStats.unlockedAchievements}');
-      print('Updated At: ${updatedStats.updatedAt}');
 
       transaction.set(docRef, updatedStats.toFirestore());
     });

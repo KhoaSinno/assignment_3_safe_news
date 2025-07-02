@@ -29,7 +29,6 @@ class HomeArticleSortTime extends ConsumerWidget {
             if (newValue != null) {
               // Cập nhật sort time trực tiếp thông qua provider
               updateSortTime(ref, newValue);
-              print('Selected sort option (value: $newValue)');
             }
           },
         ),

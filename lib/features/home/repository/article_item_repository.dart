@@ -99,7 +99,6 @@ class ArticleItemRepository {
     if (content.length > _maxContentLength * 2) {
       // 100KB limit cho input
       content = content.substring(0, _maxContentLength * 2);
-      print('Content truncated for Gemini API: ${content.length} chars');
     }
 
     // Tạo cache key từ content hash
@@ -110,7 +109,6 @@ class ArticleItemRepository {
       DateTime? cachedTime = _cacheTimestamp[cacheKey];
       if (cachedTime != null &&
           DateTime.now().difference(cachedTime) < _cacheExpiry) {
-        print('Cache hit for summary: $cacheKey');
         return _summaryCache[cacheKey]!;
       } else {
         // Cache expired, remove it
@@ -158,7 +156,6 @@ class ArticleItemRepository {
       DateTime? cachedTime = _cacheTimestamp['content_$cacheKey'];
       if (cachedTime != null &&
           DateTime.now().difference(cachedTime) < _cacheExpiry) {
-        print('Cache hit for content: $cacheKey');
         return _contentCache[cacheKey]!;
       } else {
         // Cache expired, remove it
@@ -175,9 +172,6 @@ class ArticleItemRepository {
       String processedContent = content;
       if (content.length > _maxContentLength) {
         processedContent = content.substring(0, _maxContentLength);
-        print(
-          'Content truncated for caching: ${content.length} -> ${processedContent.length} chars',
-        );
       }
 
       // Cache kết quả với size limit
@@ -192,7 +186,6 @@ class ArticleItemRepository {
 
   /// Clear expired cache entries và log memory usage
   static void clearExpiredCache() {
-    final statsBeforeClean = getCacheStats();
     final now = DateTime.now();
     final expiredKeys = <String>[];
 
@@ -211,20 +204,10 @@ class ArticleItemRepository {
       }
     }
 
-    if (expiredKeys.isNotEmpty) {
-      final statsAfterClean = getCacheStats();
-      print('Cleared ${expiredKeys.length} expired cache entries');
-      print('Memory before cleanup: ${statsBeforeClean['totalMemoryKB']}KB');
-      print('Memory after cleanup: ${statsAfterClean['totalMemoryKB']}KB');
-    }
-
     // Nếu memory vẫn cao, clear thêm để tránh memory pressure
     final currentStats = getCacheStats();
     if (currentStats['totalMemoryKB'] > 5000) {
       // 5MB threshold
-      print(
-        'Memory still high (${currentStats['totalMemoryKB']}KB), clearing all cache',
-      );
       clearAllCache();
     }
   }
@@ -233,7 +216,6 @@ class ArticleItemRepository {
   static void _cacheWithLimit(String key, String value, bool isContent) {
     // Kiểm tra độ dài content trước khi cache
     if (value.length > _maxContentLength) {
-      print('Content too large to cache: ${value.length} chars');
       return;
     }
 
@@ -247,10 +229,6 @@ class ArticleItemRepository {
 
     cache[key] = value;
     _cacheTimestamp[timestampKey] = DateTime.now();
-
-    print(
-      'Cached ${isContent ? 'content' : 'summary'} for key: $key (${cache.length}/$_maxCacheSize)',
-    );
   }
 
   /// Xóa entry cũ nhất trong cache để giải phóng memory
@@ -273,9 +251,6 @@ class ArticleItemRepository {
     if (oldestKey != null) {
       cache.remove(oldestKey);
       _cacheTimestamp.remove(isContent ? 'content_$oldestKey' : oldestKey);
-      print(
-        'Removed oldest ${isContent ? 'content' : 'summary'} cache entry: $oldestKey',
-      );
     }
   }
 
@@ -303,10 +278,8 @@ class ArticleItemRepository {
 
   /// Force clear all cache (for debugging hoặc memory pressure)
   static void clearAllCache() {
-    final stats = getCacheStats();
     _summaryCache.clear();
     _contentCache.clear();
     _cacheTimestamp.clear();
-    print('All cache cleared. Previous stats: $stats');
   }
 }

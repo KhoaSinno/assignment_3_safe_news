@@ -31,12 +31,9 @@ class AuthRepository {
         );
 
         await userDoc.set(defaultStats.toFirestore());
-        print('✅ Created new user document for: $userId');
-      } else {
-        print('✅ User document already exists for: $userId - không tạo mới');
       }
     } catch (e) {
-      print('❌ Error creating default user document: $e');
+      // Handle error silently or use proper logging
     }
   }
 
