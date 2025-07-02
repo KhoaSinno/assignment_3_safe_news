@@ -5,6 +5,7 @@ import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:assignment_3_safe_news/theme/app_theme.dart';
 import 'package:assignment_3_safe_news/utils/tts_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,6 +15,17 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Cấu hình ẩn thanh trạng thái và thanh điều hướng
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.immersiveSticky, // Ẩn hoàn toàn status bar và navigation bar
+  );
+
+  // Hoặc nếu muốn chỉ ẩn status bar mà giữ navigation bar:
+  // SystemChrome.setEnabledSystemUIMode(
+  //   SystemUiMode.manual,
+  //   overlays: [SystemUiOverlay.bottom], // Chỉ hiển thị navigation bar
+  // );
 
   // Load environment: 1
   await dotenv.load(fileName: ".env");
@@ -46,8 +58,28 @@ class SafeNewsApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        // Cấu hình additional cho status bar trong light theme
+        appBarTheme: AppTheme.lightTheme.appBarTheme.copyWith(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent, // Transparent status bar
+            statusBarIconBrightness:
+                Brightness.dark, // Dark icons trên light theme
+            systemNavigationBarColor: Colors.transparent,
+          ),
+        ),
+      ),
+      darkTheme: AppTheme.darkTheme.copyWith(
+        // Cấu hình additional cho status bar trong dark theme
+        appBarTheme: AppTheme.darkTheme.appBarTheme.copyWith(
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent, // Transparent status bar
+            statusBarIconBrightness:
+                Brightness.light, // Light icons trên dark theme
+            systemNavigationBarColor: Colors.transparent,
+          ),
+        ),
+      ),
       themeMode: themeMode,
       // home: authViewModel.user != null ? MainScreen() : LoginScreen(),
       // Vào thẳng trang chủ
