@@ -4,6 +4,7 @@ import 'package:assignment_3_safe_news/features/profile/ui/contact_page.dart';
 import 'package:assignment_3_safe_news/features/profile/ui/privacy_policy.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/achievement_badge.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/achievement_stat.dart';
+import 'package:assignment_3_safe_news/features/profile/widget/notification_settings_widget.dart';
 import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -143,6 +144,26 @@ class ProfileSetting extends ConsumerWidget {
                   trailing: Icon(Icons.chevron_right),
                   onTap: () {},
                 ),
+
+              // Notification Settings - always show
+              ListTile(
+                leading: Icon(Icons.notifications),
+                title: Text(
+                  'Cài đặt thông báo',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(fontSize: 14),
+                ),
+                trailing: Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NotificationSettingsWidget(),
+                    ),
+                  );
+                },
+              ),
 
               ListTile(
                 leading: Icon(Icons.lock),
