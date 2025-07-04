@@ -47,7 +47,7 @@ class ArticleItemRepository {
 
       // Áp dụng filter thời gian ở client-side
       if (sortTime != 'AllTime') {
-        DateTime filterDate = _getFilterDate(sortTime);
+        final DateTime filterDate = _getFilterDate(sortTime);
         articles =
             articles.where((article) {
               return article.published.isAfter(filterDate);
@@ -68,8 +68,8 @@ class ArticleItemRepository {
 
   /// Tính toán ngày để lọc dựa trên sortTime
   DateTime _getFilterDate(String sortTime) {
-    DateTime now = DateTime.now();
-    DateTime startOfDay = DateTime(now.year, now.month, now.day);
+    final DateTime now = DateTime.now();
+    final DateTime startOfDay = DateTime(now.year, now.month, now.day);
 
     switch (sortTime) {
       case 'Today':
@@ -92,7 +92,7 @@ class ArticleItemRepository {
 
   static Future<String> summaryContentGemini(String content) async {
     if (content.isEmpty) {
-      return "Nội dung trống, không thể tóm tắt.";
+      return 'Nội dung trống, không thể tóm tắt.';
     }
 
     // Kiểm tra content quá dài - có thể gây memory issue
@@ -102,11 +102,11 @@ class ArticleItemRepository {
     }
 
     // Tạo cache key từ content hash
-    String cacheKey = content.hashCode.toString();
+    final String cacheKey = content.hashCode.toString();
 
     // Check cache trước
     if (_summaryCache.containsKey(cacheKey)) {
-      DateTime? cachedTime = _cacheTimestamp[cacheKey];
+      final DateTime? cachedTime = _cacheTimestamp[cacheKey];
       if (cachedTime != null &&
           DateTime.now().difference(cachedTime) < _cacheExpiry) {
         return _summaryCache[cacheKey]!;
@@ -129,7 +129,7 @@ class ArticleItemRepository {
       ];
 
       final response = await model.generateContent(prompt);
-      final rawText = response.text ?? "Không thể tạo tóm tắt.";
+      final rawText = response.text ?? 'Không thể tạo tóm tắt.';
       final result = removeMarkdownBold(rawText);
 
       // Cache kết quả với size limit
@@ -138,7 +138,7 @@ class ArticleItemRepository {
       return result;
     } catch (e) {
       AppLogger.error('Error with Gemini API: $e');
-      return "Lỗi khi gọi API tóm tắt.";
+      return 'Lỗi khi gọi API tóm tắt.';
     }
   }
 
@@ -149,11 +149,11 @@ class ArticleItemRepository {
     }
 
     // Tạo cache key từ URL
-    String cacheKey = url.hashCode.toString();
+    final String cacheKey = url.hashCode.toString();
 
     // Check cache trước
     if (_contentCache.containsKey(cacheKey)) {
-      DateTime? cachedTime = _cacheTimestamp['content_$cacheKey'];
+      final DateTime? cachedTime = _cacheTimestamp['content_$cacheKey'];
       if (cachedTime != null &&
           DateTime.now().difference(cachedTime) < _cacheExpiry) {
         return _contentCache[cacheKey]!;
@@ -195,7 +195,7 @@ class ArticleItemRepository {
       }
     });
 
-    for (String key in expiredKeys) {
+    for (final String key in expiredKeys) {
       _cacheTimestamp.remove(key);
       if (key.startsWith('content_')) {
         _contentCache.remove(key.substring(8));
@@ -258,11 +258,11 @@ class ArticleItemRepository {
   static Map<String, dynamic> getCacheStats() {
     final summaryMemory = _summaryCache.values.fold<int>(
       0,
-      (sum, content) => sum + content.length,
+      (total, content) => total + content.length,
     );
     final contentMemory = _contentCache.values.fold<int>(
       0,
-      (sum, content) => sum + content.length,
+      (total, content) => total + content.length,
     );
 
     return {

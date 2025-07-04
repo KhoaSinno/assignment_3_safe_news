@@ -1,0 +1,23 @@
+# cSpell Settings
+# Ignore patterns for Vietnamese language in Flutter project
+
+# Vietnamese words with diacritics
+[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]+
+
+# Common Vietnamese UI text patterns
+.*[Đđ]ăng.*[kK]ý.*
+.*[Tt]hông.*[Tt]in.*
+.*[Mm]ật.*[Kk]hẩu.*
+.*[Tt]ài.*[Kk]hoản.*
+.*[Xx]ác.*[Nn]hận.*
+.*[Tt]hành.*[Cc]ông.*
+.*[Tt]hất.*[Bb]ại.*
+
+# Category names in Vietnamese
+.*[Tt]in.*[Mm]oi.*
+.*[Tt]hể.*[Tt]hao.*
+.*[Gg]iải.*[Tt]rí.*
+.*[Kk]inh.*[Dd]oanh.*
+.*[Pp]háp.*[Ll]uật.*
+.*[Gg]iáo.*[Dd]ục.*
+.*[Ss]ức.*[Kk]hỏe.*

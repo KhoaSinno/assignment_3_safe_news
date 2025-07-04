@@ -46,7 +46,7 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
           HomeArticleHeaderLogo(currentTime: _currentTime),
           const SizedBox(height: 16.0),
           // Search bar
-          HomeArticleSearch(),
+          const HomeArticleSearch(),
           const SizedBox(height: 16.0),
           // Category List
           const CategoryList(),

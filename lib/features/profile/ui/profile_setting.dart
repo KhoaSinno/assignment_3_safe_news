@@ -34,7 +34,7 @@ class ProfileSetting extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Container(
           color: Theme.of(context).scaffoldBackgroundColor,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -97,7 +97,7 @@ class ProfileSetting extends ConsumerWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
+                                builder: (context) => const LoginScreen(),
                               ),
                             );
                           },
@@ -134,27 +134,27 @@ class ProfileSetting extends ConsumerWidget {
               // Chỉ hiển thị "Tài khoản của tôi" khi đã đăng nhập
               if (isLoggedIn)
                 ListTile(
-                  leading: Icon(Icons.person),
+                  leading: const Icon(Icons.person),
                   title: Text(
                     'Tài khoản của tôi',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                   ),
-                  trailing: Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right),
                   onTap: () {},
                 ),
 
               // Notification Settings - always show
               ListTile(
-                leading: Icon(Icons.notifications),
+                leading: const Icon(Icons.notifications),
                 title: Text(
                   'Cài đặt thông báo',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 ),
-                trailing: Icon(Icons.chevron_right),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -166,14 +166,14 @@ class ProfileSetting extends ConsumerWidget {
               ),
 
               ListTile(
-                leading: Icon(Icons.lock),
+                leading: const Icon(Icons.lock),
                 title: Text(
                   'Chính sách bảo mật',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 ),
-                trailing: Icon(Icons.chevron_right),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -184,18 +184,18 @@ class ProfileSetting extends ConsumerWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.contact_mail),
+                leading: const Icon(Icons.contact_mail),
                 title: Text(
                   'Liên hệ',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                 ),
-                trailing: Icon(Icons.chevron_right),
+                trailing: const Icon(Icons.chevron_right),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ContactPage()),
+                    MaterialPageRoute(builder: (context) => const ContactPage()),
                   );
                 },
               ),
@@ -219,7 +219,7 @@ class ProfileSetting extends ConsumerWidget {
               if (isLoggedIn) ...[
                 const SizedBox(height: 16),
                 ListTile(
-                  leading: Icon(Icons.logout, color: Colors.red),
+                  leading: const Icon(Icons.logout, color: Colors.red),
                   title: Text(
                     'Đăng xuất',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -233,18 +233,18 @@ class ProfileSetting extends ConsumerWidget {
                       context: context,
                       builder:
                           (context) => AlertDialog(
-                            title: Text('Xác nhận đăng xuất'),
-                            content: Text(
+                            title: const Text('Xác nhận đăng xuất'),
+                            content: const Text(
                               'Bạn có chắc chắn muốn đăng xuất không?',
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context, false),
-                                child: Text('Hủy'),
+                                child: const Text('Hủy'),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context, true),
-                                child: Text(
+                                child: const Text(
                                   'Đăng xuất',
                                   style: TextStyle(color: Colors.red),
                                 ),
@@ -258,7 +258,7 @@ class ProfileSetting extends ConsumerWidget {
                         await authViewModel.signOut();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text('Đã đăng xuất thành công'),
                               backgroundColor: Colors.green,
                             ),

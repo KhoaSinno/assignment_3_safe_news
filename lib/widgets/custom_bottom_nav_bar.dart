@@ -30,7 +30,6 @@ class CustomBottomNavBar extends ConsumerWidget {
                     isDarkMode
                         ? Colors.white.withValues(alpha: 0.2)
                         : Colors.black.withValues(alpha: 0.1),
-                width: 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -103,8 +102,8 @@ class CustomBottomNavBar extends ConsumerWidget {
             color:
                 isSelected
                     ? (isDarkMode
-                            ? Color.fromARGB(181, 159, 34, 78)
-                            : Color(0xFF9F224E))
+                            ? const Color.fromARGB(181, 159, 34, 78)
+                            : const Color(0xFF9F224E))
                         .withValues(alpha: 0.2)
                     : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
@@ -115,8 +114,8 @@ class CustomBottomNavBar extends ConsumerWidget {
             color:
                 isSelected
                     ? (isDarkMode
-                        ? Color.fromARGB(181, 159, 34, 78)
-                        : Color(0xFF9F224E))
+                        ? const Color.fromARGB(181, 159, 34, 78)
+                        : const Color(0xFF9F224E))
                     : (isDarkMode ? Colors.grey[400] : Colors.grey[600]),
           ),
         ),

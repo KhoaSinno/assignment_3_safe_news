@@ -42,7 +42,7 @@ void main() async {
   );
 
   // Load environment: 1
-  await dotenv.load(fileName: ".env");
+  await dotenv.load();
 
   // Initialize Firebase: 2
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -64,15 +64,15 @@ void main() async {
 
   // Initialize and start News Notification Scheduler
   NewsNotificationScheduler().startPeriodicCheck(
-    interval: Duration(hours: 2), // Kiểm tra mỗi 2 giờ
+    interval: const Duration(hours: 2), // Kiểm tra mỗi 2 giờ
   );
 
   // Setup periodic cache cleanup (every 6 hours)
-  Timer.periodic(Duration(hours: 6), (timer) {
+  Timer.periodic(const Duration(hours: 6), (timer) {
     ArticleItemRepository.clearExpiredCache();
   });
 
-  runApp(ProviderScope(child: SafeNewsApp()));
+  runApp(const ProviderScope(child: SafeNewsApp()));
 }
 
 class SafeNewsApp extends ConsumerWidget {

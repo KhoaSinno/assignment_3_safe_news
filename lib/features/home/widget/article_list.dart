@@ -17,12 +17,11 @@ class ArticleList extends ConsumerWidget {
         }
         return ListView.builder(
           itemCount: articles.length,
-          padding: const EdgeInsets.only(top: 0),
+          padding: const EdgeInsets.only(),
           // Tối ưu performance với cacheExtent
           cacheExtent: 500.0,
           // Lazy loading với addAutomaticKeepAlives
           addAutomaticKeepAlives: false,
-          addRepaintBoundaries: true,
           itemBuilder: (context, index) {
             final article = articles[index];
             return Padding(

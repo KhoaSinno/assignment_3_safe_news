@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 /// Widget tối ưu performance cho các thành phần cần hiển thị nhiều lần
 class OptimizedContainer extends StatelessWidget {
@@ -59,7 +58,6 @@ class OptimizedListView extends StatelessWidget {
       padding: padding,
       cacheExtent: 500.0,
       addAutomaticKeepAlives: false,
-      addRepaintBoundaries: true,
       addSemanticIndexes: false,
       itemBuilder: itemBuilder,
     );

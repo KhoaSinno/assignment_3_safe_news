@@ -39,7 +39,6 @@ class NotificationSettingsNotifier extends StateNotifier<NotificationSettings> {
       state = NotificationSettings(
         isEnabled: isEnabled,
         categorySubscriptions: categorySubscriptions,
-        isLoading: false,
       );
     } catch (e) {
       state = state.copyWith(isLoading: false);

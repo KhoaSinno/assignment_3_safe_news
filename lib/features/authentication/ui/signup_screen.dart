@@ -5,6 +5,7 @@ import 'package:assignment_3_safe_news/widgets/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// cspell:disable
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
 
@@ -44,6 +45,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 const SizedBox(height: 60),
 
                 // Logo/App Name Section
+                // cspell:disable-next-line
                 const AppLogo(subtitle: 'Đăng ký với thông tin của bạn'),
 
                 const SizedBox(height: 48),
@@ -208,7 +210,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
       AppLogger.info('Đăng ký thành công', tag: 'SignupScreen');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Đăng ký thành công!'),
           backgroundColor: Colors.green,
         ),
@@ -216,7 +218,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } catch (e) {
       AppLogger.error('Đăng ký thất bại: $e', tag: 'SignupScreen');
@@ -250,7 +252,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
       AppLogger.info('Đăng ký bằng Google thành công', tag: 'SignupScreen');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Đăng ký bằng Google thành công!'),
           backgroundColor: Colors.green,
         ),
@@ -258,7 +260,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } catch (e) {
       AppLogger.error('Đăng ký bằng Google thất bại: $e', tag: 'SignupScreen');

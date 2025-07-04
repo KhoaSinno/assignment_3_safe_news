@@ -7,7 +7,7 @@ class BookmarkArticle extends ConsumerStatefulWidget {
   const BookmarkArticle({super.key});
 
   @override
-  _BookmarkArticleState createState() => _BookmarkArticleState();
+  ConsumerState<BookmarkArticle> createState() => _BookmarkArticleState();
 }
 
 class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
@@ -26,7 +26,7 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
               // Force refresh để sync lại data
               setState(() {});
@@ -36,7 +36,7 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
       ),
       body: Container(
         color: Theme.of(context).scaffoldBackgroundColor,
-        child: BookmarkList(),
+        child: const BookmarkList(),
       ),
     );
   }

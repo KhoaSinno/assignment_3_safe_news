@@ -2,6 +2,7 @@ import 'package:assignment_3_safe_news/features/home/model/category_model.dart';
 
 /// App Category constants and utilities
 /// Contains all news categories used throughout the application
+// cspell:disable
 class AppCategory {
   AppCategory._(); // Private constructor to prevent instantiation
 
@@ -29,62 +30,62 @@ class AppCategory {
 /// Map of all available categories with their display names and slugs
 const Map<String, CategoryModel> categories = {
   AppCategory.tinMoiNhat: CategoryModel(
-    name: "Tin mới nhất",
+    name: 'Tin mới nhất',
     slug: AppCategory.tinMoiNhat,
   ),
   AppCategory.tinXemNhieu: CategoryModel(
-    name: "Tin xem nhiều",
+    name: 'Tin xem nhiều',
     slug: AppCategory.tinXemNhieu,
   ),
   AppCategory.theGioi: CategoryModel(
-    name: "Thế giới",
+    name: 'Thế giới',
     slug: AppCategory.theGioi,
   ),
-  AppCategory.thoiSu: CategoryModel(name: "Thời sự", slug: AppCategory.thoiSu),
+  AppCategory.thoiSu: CategoryModel(name: 'Thời sự', slug: AppCategory.thoiSu),
   AppCategory.kinhDoanh: CategoryModel(
-    name: "Kinh doanh",
+    name: 'Kinh doanh',
     slug: AppCategory.kinhDoanh,
   ),
   AppCategory.startup: CategoryModel(
-    name: "Startup",
+    name: 'Startup',
     slug: AppCategory.startup,
   ),
   AppCategory.giaiTri: CategoryModel(
-    name: "Giải trí",
+    name: 'Giải trí',
     slug: AppCategory.giaiTri,
   ),
   AppCategory.theThao: CategoryModel(
-    name: "Thể thao",
+    name: 'Thể thao',
     slug: AppCategory.theThao,
   ),
   AppCategory.phapLuat: CategoryModel(
-    name: "Pháp luật",
+    name: 'Pháp luật',
     slug: AppCategory.phapLuat,
   ),
   AppCategory.giaoDuc: CategoryModel(
-    name: "Giáo dục",
+    name: 'Giáo dục',
     slug: AppCategory.giaoDuc,
   ),
   AppCategory.sucKhoe: CategoryModel(
-    name: "Sức khỏe",
+    name: 'Sức khỏe',
     slug: AppCategory.sucKhoe,
   ),
   AppCategory.giaDinh: CategoryModel(
-    name: "Gia đình",
+    name: 'Gia đình',
     slug: AppCategory.giaDinh,
   ),
-  AppCategory.duLich: CategoryModel(name: "Du lịch", slug: AppCategory.duLich),
+  AppCategory.duLich: CategoryModel(name: 'Du lịch', slug: AppCategory.duLich),
   AppCategory.khoaHocCongNghe: CategoryModel(
-    name: "Khoa học công nghệ",
+    name: 'Khoa học công nghệ',
     slug: AppCategory.khoaHocCongNghe,
   ),
   AppCategory.otoXeMay: CategoryModel(
-    name: "Ô tô xe máy",
+    name: 'Ô tô xe máy',
     slug: AppCategory.otoXeMay,
   ),
-  AppCategory.yKien: CategoryModel(name: "Ý kiến", slug: AppCategory.yKien),
-  AppCategory.tamSu: CategoryModel(name: "Tâm sự", slug: AppCategory.tamSu),
-  AppCategory.cuoi: CategoryModel(name: "Cười", slug: AppCategory.cuoi),
+  AppCategory.yKien: CategoryModel(name: 'Ý kiến', slug: AppCategory.yKien),
+  AppCategory.tamSu: CategoryModel(name: 'Tâm sự', slug: AppCategory.tamSu),
+  AppCategory.cuoi: CategoryModel(name: 'Cười', slug: AppCategory.cuoi),
 };
 
 /// Gets the display name from category slug
@@ -96,7 +97,7 @@ String getNameFromCategory(String slug) {
 /// Gets the slug from category display name
 /// Returns empty string if category not found
 String getSlugFromName(String name) {
-  for (var entry in categories.entries) {
+  for (final entry in categories.entries) {
     if (entry.value.name.toLowerCase() == name.toLowerCase()) {
       return entry.key;
     }

@@ -36,13 +36,7 @@ class NotificationService {
 
     // Request Firebase messaging permission
     final settings = await _firebaseMessaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
+      
     );
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -56,9 +50,7 @@ class NotificationService {
       '@mipmap/ic_launcher',
     );
     const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
+      
     );
 
     const initSettings = InitializationSettings(
@@ -158,10 +150,7 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      enableVibration: true,
       enableLights: true,
-      playSound: true,
-      showWhen: true,
     );
 
     const iosDetails = DarwinNotificationDetails(

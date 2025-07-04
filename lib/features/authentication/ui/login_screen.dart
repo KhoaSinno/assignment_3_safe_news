@@ -6,6 +6,7 @@ import 'package:assignment_3_safe_news/widgets/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// cspell:disable
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -136,7 +137,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignupScreen(),
+                            builder: (context) => const SignupScreen(),
                           ),
                         );
                       },
@@ -178,7 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       AppLogger.info('Đăng nhập thành công', tag: 'LoginScreen');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Đăng nhập thành công!'),
           backgroundColor: Colors.green,
         ),
@@ -186,7 +187,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } catch (e) {
       AppLogger.error('Đăng nhập thất bại: $e', tag: 'LoginScreen');
@@ -220,7 +221,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       AppLogger.info('Đăng nhập bằng Google thành công', tag: 'LoginScreen');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Đăng nhập bằng Google thành công!'),
           backgroundColor: Colors.green,
         ),
@@ -228,7 +229,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } catch (e) {
       AppLogger.error('Đăng nhập bằng Google thất bại: $e', tag: 'LoginScreen');

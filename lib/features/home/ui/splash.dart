@@ -12,13 +12,13 @@ class SplashState extends State<Splash> {
     return Scaffold(
       body: Container(
         constraints: const BoxConstraints.expand(),
-        color: Color(0xFFFFFFFF),
+        color: const Color(0xFFFFFFFF),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Container(
-                color: Color(0xFFE9EEFA),
+                color: const Color(0xFFE9EEFA),
                 width: double.infinity,
                 height: double.infinity,
                 child: SingleChildScrollView(
@@ -35,7 +35,7 @@ class SplashState extends State<Splash> {
                                 width: 169,
                                 height: 109,
                                 child: Image.network(
-                                  "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/r5ck43q9_expires_30_days.png",
+                                  'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/r5ck43q9_expires_30_days.png',
                                   fit: BoxFit.fill,
                                 ),
                               ),

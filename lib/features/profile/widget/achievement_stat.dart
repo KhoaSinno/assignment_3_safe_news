@@ -76,7 +76,7 @@ class AchievementStat extends StatelessWidget {
                       context,
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                   ),
-                  CircularProgressIndicator(),
+                  const CircularProgressIndicator(),
                 ],
               ),
               Column(
@@ -87,7 +87,7 @@ class AchievementStat extends StatelessWidget {
                       context,
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                   ),
-                  CircularProgressIndicator(),
+                  const CircularProgressIndicator(),
                 ],
               ),
               Column(
@@ -98,7 +98,7 @@ class AchievementStat extends StatelessWidget {
                       context,
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                   ),
-                  CircularProgressIndicator(),
+                  const CircularProgressIndicator(),
                 ],
               ),
             ],

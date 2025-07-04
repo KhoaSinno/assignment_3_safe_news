@@ -19,11 +19,11 @@ class HomeArticleSearch extends ConsumerWidget {
               Theme.of(context).brightness == Brightness.dark
                   ? Theme.of(context).cardTheme.color
                   : Theme.of(context).appBarTheme.backgroundColor,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              color: const Color(0x3F000000),
+              color: Color(0x3F000000),
               blurRadius: 4,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -36,7 +36,7 @@ class HomeArticleSearch extends ConsumerWidget {
                   hintStyle: TextStyle(
                     color: Theme.of(
                       context,
-                    ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    ).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
                     fontSize: 16,
                     fontFamily: 'Aleo',
                     fontWeight: FontWeight.w400,
@@ -64,7 +64,7 @@ class HomeArticleSearch extends ConsumerWidget {
               Icons.search,
               color: Theme.of(
                 context,
-              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
             ),
           ],
         ),

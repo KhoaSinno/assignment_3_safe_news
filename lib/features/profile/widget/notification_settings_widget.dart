@@ -76,7 +76,8 @@ class NotificationSettingsWidget extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                ScaffoldMessenger.of(context).showSnackBar(
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(
                     content: Text('Đang kiểm tra tin tức mới...'),
                     duration: Duration(seconds: 2),
@@ -86,7 +87,7 @@ class NotificationSettingsWidget extends ConsumerWidget {
                 // Kiểm tra tin tức mới ngay lập tức
                 await NewsNotificationScheduler().checkForNewNewsNow();
 
-                ScaffoldMessenger.of(context).showSnackBar(
+                scaffoldMessenger.showSnackBar(
                   const SnackBar(
                     content: Text('Đã kiểm tra xong!'),
                     duration: Duration(seconds: 2),

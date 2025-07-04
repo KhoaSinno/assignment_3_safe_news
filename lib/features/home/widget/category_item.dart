@@ -42,7 +42,6 @@ class CategoryItem extends ConsumerWidget {
                           Theme.of(context).brightness == Brightness.dark
                               ? const Color(0xFF555555)
                               : const Color(0xFFCAABB4),
-                      width: 1,
                     ),
           ),
           child: Text(

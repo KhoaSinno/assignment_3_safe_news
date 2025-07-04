@@ -42,7 +42,7 @@ class AchievementBadge extends ConsumerWidget {
             context,
             authViewModel,
             dimensions,
-            avatar: CircularProgressIndicator(),
+            avatar: const CircularProgressIndicator(),
             displayName: authViewModel.user?.name ?? 'Đang tải...',
           ),
       error:
