@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 // APP
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';

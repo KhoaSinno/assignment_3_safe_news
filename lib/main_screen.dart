@@ -9,6 +9,7 @@ import 'package:assignment_3_safe_news/widgets/custom_bottom_nav_bar.dart';
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
+  // Đảm bảo app chạy full screen edge-to-edge
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(bottomNavIndexProvider);
@@ -19,10 +20,18 @@ class MainScreen extends ConsumerWidget {
       const ProfileSetting(),
     ];
 
-    return Scaffold(
-      extendBody: true,
-      body: IndexedStack(index: currentIndex, children: screens),
-      bottomNavigationBar: const CustomBottomNavBar(),
+    // Sử dụng MediaQuery để loại bỏ padding system
+    return MediaQuery.removePadding(
+      context: context,
+      removeTop: false, // Giữ top padding cho status bar
+      removeBottom: false, // Giữ bottom padding cho navigation
+      child: Scaffold(
+        extendBody: true, // Mở rộng body đến edge
+        extendBodyBehindAppBar: true, // Mở rộng body phía sau app bar
+        resizeToAvoidBottomInset: false, // Không resize khi keyboard xuất hiện
+        body: IndexedStack(index: currentIndex, children: screens),
+        bottomNavigationBar: const CustomBottomNavBar(),
+      ),
     );
   }
 }

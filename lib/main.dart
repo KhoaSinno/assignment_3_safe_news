@@ -26,16 +26,20 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Cấu hình ẩn thanh trạng thái và thanh điều hướng
+  // Cấu hình cho Android - loại bỏ padding và edge-to-edge
   SystemChrome.setEnabledSystemUIMode(
-    SystemUiMode.immersiveSticky, // Ẩn hoàn toàn status bar và navigation bar
+    SystemUiMode.edgeToEdge, // Sử dụng edge-to-edge thay vì immersiveSticky
   );
 
-  // Hoặc nếu muốn chỉ ẩn status bar mà giữ navigation bar:
-  // SystemChrome.setEnabledSystemUIMode(
-  //   SystemUiMode.manual,
-  //   overlays: [SystemUiOverlay.bottom], // Chỉ hiển thị navigation bar
-  // );
+  // Cấu hình system UI overlay style cho Android
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+  );
 
   // Load environment: 1
   await dotenv.load(fileName: ".env");
@@ -79,32 +83,40 @@ class SafeNewsApp extends ConsumerWidget {
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
+      title: 'Safe News',
+      debugShowCheckedModeBanner: false, // Ẩn debug banner
       theme: AppTheme.lightTheme.copyWith(
         // Cấu hình additional cho status bar trong light theme
         appBarTheme: AppTheme.lightTheme.appBarTheme.copyWith(
-          systemOverlayStyle: SystemUiOverlayStyle(
+          systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent, // Transparent status bar
             statusBarIconBrightness:
                 Brightness.dark, // Dark icons trên light theme
             systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.dark,
           ),
         ),
+        // Loại bỏ default padding
+        scaffoldBackgroundColor: AppTheme.lightTheme.scaffoldBackgroundColor,
       ),
       darkTheme: AppTheme.darkTheme.copyWith(
         // Cấu hình additional cho status bar trong dark theme
         appBarTheme: AppTheme.darkTheme.appBarTheme.copyWith(
-          systemOverlayStyle: SystemUiOverlayStyle(
+          systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent, // Transparent status bar
             statusBarIconBrightness:
                 Brightness.light, // Light icons trên dark theme
             systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.light,
           ),
         ),
+        // Loại bỏ default padding
+        scaffoldBackgroundColor: AppTheme.darkTheme.scaffoldBackgroundColor,
       ),
       themeMode: themeMode,
       // home: authViewModel.user != null ? MainScreen() : LoginScreen(),
       // Vào thẳng trang chủ
-      home: MainScreen(),
+      home: const MainScreen(),
     );
   }
 }
