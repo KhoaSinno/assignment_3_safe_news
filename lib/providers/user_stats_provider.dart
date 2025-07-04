@@ -1,37 +1,39 @@
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/profile/model/achievement_model.dart';
 import 'package:assignment_3_safe_news/features/profile/model/user_achievement_stats_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ✅ Provider phụ thuộc vào auth state để auto-refresh
 final userStatsProvider = StreamProvider<UserAchievementStatsModel?>((ref) {
+  // ✅ Watch auth provider để auto-invalidate khi user thay đổi
+  final authViewModel = ref.watch(authViewModelProvider);
   final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return Stream.value(null);
 
-  // SIMPLIFIED: Flat structure - tất cả trong /users/{userId}
+  if (user == null || authViewModel.user == null) {
+    return Stream.value(null);
+  }
+
+  // ✅ Tạo một stream mới cho mỗi user khác nhau
   return FirebaseFirestore.instance
       .collection('users')
       .doc(user.uid)
       .snapshots()
       .map((snapshot) {
         if (!snapshot.exists) {
-          // Tạo user document mặc định với achievement stats
-          final defaultStats = UserAchievementStatsModel(
+          // ⚠️ KHÔNG tạo document ở đây - để auth_repository.dart xử lý
+          // Return default stats để UI hiển thị, nhưng không save vào Firestore
+          return UserAchievementStatsModel(
             userId: user.uid,
             lastReadDate: DateTime.now(),
-            unlockedAchievements: [
-              Achievement.newbie,
-            ], // Mặc định có "Người mới"
+            unlockedAchievements: [Achievement.newbie],
             updatedAt: DateTime.now(),
           );
-
-          // Async tạo document mặc định
-          final data = defaultStats.toFirestore();
-          snapshot.reference.set(data, SetOptions(merge: true));
-          return defaultStats;
         }
 
-        return UserAchievementStatsModel.fromFirestore(snapshot.data()!);
+        final stats = UserAchievementStatsModel.fromFirestore(snapshot.data()!);
+        return stats;
       });
 });
 
@@ -41,15 +43,13 @@ final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
 
 class UserStatsNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> incrementArticleRead({
     required String category,
     required int readingTimeSeconds,
+    required User user,
   }) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-
     // SIMPLIFIED: Flat structure - direct access to /users/{userId}
     final docRef = _firestore.collection('users').doc(user.uid);
 
@@ -57,6 +57,7 @@ class UserStatsNotifier {
       final snapshot = await transaction.get(docRef);
 
       UserAchievementStatsModel currentStats;
+
       if (snapshot.exists) {
         currentStats = UserAchievementStatsModel.fromFirestore(
           snapshot.data()!,
@@ -71,10 +72,16 @@ class UserStatsNotifier {
       }
 
       // Update stats
-      final now = DateTime.now();
+      final now = Timestamp.now().toDate();
+
       final isNewDay = !_isSameDay(currentStats.lastReadDate, now);
 
-      final updatedStats = UserAchievementStatsModel(
+      List<String> updatedCategories = _addUniqueCategory(
+        currentStats.readCategories,
+        category,
+      );
+
+      final UserAchievementStatsModel updatedStats = UserAchievementStatsModel(
         userId: currentStats.userId,
         articlesRead: currentStats.articlesRead + 1,
         currentStreak:
@@ -82,14 +89,11 @@ class UserStatsNotifier {
                 ? currentStats.currentStreak + 1
                 : currentStats.currentStreak,
         lastReadDate: now,
-        readCategories: _addUniqueCategory(
-          currentStats.readCategories,
-          category,
-        ),
+        readCategories: updatedCategories,
         unlockedAchievements: _checkNewAchievements(
           currentStats,
           currentStats.articlesRead + 1,
-          _addUniqueCategory(currentStats.readCategories, category),
+          updatedCategories,
         ),
         updatedAt: now,
       );

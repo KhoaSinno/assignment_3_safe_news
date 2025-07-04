@@ -8,29 +8,32 @@ import '../../profile/model/user_achievement_stats_model.dart';
 class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   /// Tạo document user mặc định với achievement "newbie" nếu chưa tồn tại
   Future<void> _createDefaultUserDocument(String userId) async {
     try {
       final userDoc = _firestore.collection('users').doc(userId);
 
-      // Tạo UserAchievementStatsModel mặc định với achievement "newbie"
-      final defaultStats = UserAchievementStatsModel(
-        userId: userId,
-        articlesRead: 0,
-        currentStreak: 0,
-        lastReadDate: DateTime.now(),
-        readCategories: [],
-        unlockedAchievements: [
-          Achievement.newbie,
-        ],
-        updatedAt: DateTime.now(),
-      );
+      // ✅ Kiểm tra xem document đã tồn tại chưa
+      final docSnapshot = await userDoc.get();
 
-      //  merge: true để không override data hiện có
-      await userDoc.set(defaultStats.toFirestore(), SetOptions(merge: true));
+      if (!docSnapshot.exists) {
+        // Chỉ tạo khi document chưa tồn tại
+        final defaultStats = UserAchievementStatsModel(
+          userId: userId,
+          articlesRead: 0,
+          currentStreak: 0,
+          lastReadDate: DateTime.now(),
+          readCategories: [],
+          unlockedAchievements: [Achievement.newbie],
+          updatedAt: DateTime.now(),
+        );
+
+        await userDoc.set(defaultStats.toFirestore());
+      }
     } catch (e) {
-      print('Error creating default user document: $e');
+      // Handle error silently or use proper logging
     }
   }
 
@@ -52,7 +55,7 @@ class AuthRepository {
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
@@ -97,6 +100,9 @@ class AuthRepository {
 
   Future<void> signOut() async {
     try {
+      // Sign out from Google first (để clear account cache)
+      await _googleSignIn.signOut();
+      // Then sign out from Firebase
       await _auth.signOut();
     } catch (e) {
       rethrow;

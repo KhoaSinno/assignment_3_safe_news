@@ -12,7 +12,6 @@ class AuthViewModel extends ChangeNotifier {
   UserModel? _user;
 
   UserModel? get user => _user;
-
   Future<void> signIn(String email, String password) async {
     try {
       _user = await _authRepository.signIn(email, password);
@@ -25,6 +24,7 @@ class AuthViewModel extends ChangeNotifier {
   Future<void> signUp(String email, String password) async {
     try {
       _user = await _authRepository.signUp(email, password);
+
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -35,6 +35,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       await _authRepository.signOut();
       _user = null;
+
       notifyListeners();
     } catch (e) {
       rethrow;
