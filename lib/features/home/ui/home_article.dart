@@ -21,11 +21,13 @@ class _HomeArticleState extends ConsumerState<HomeArticle> {
   @override
   void initState() {
     super.initState();
-    // Cập nhật thời gian mỗi giây
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _currentTime = DateTime.now();
-      });
+    // Cập nhật thời gian mỗi phút thay vì mỗi giây để giảm lag
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+        });
+      }
     });
   }
 
