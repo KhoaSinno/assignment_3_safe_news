@@ -1,5 +1,5 @@
 // Provider for notification settings
-import 'package:assignment_3_safe_news/features/profile/model/notification_settings.dart';
+import 'package:assignment_3_safe_news/features/profile/model/notification_settings_model.dart';
 import 'package:assignment_3_safe_news/utils/notification_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

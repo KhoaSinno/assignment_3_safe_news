@@ -1,4 +1,4 @@
-import 'package:assignment_3_safe_news/features/profile/model/notification_settings.dart';
+import 'package:assignment_3_safe_news/features/profile/model/notification_settings_model.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/notice_settings_category_item.dart';
 import 'package:assignment_3_safe_news/providers/notice_settings_provider.dart';
 import 'package:flutter/material.dart';
