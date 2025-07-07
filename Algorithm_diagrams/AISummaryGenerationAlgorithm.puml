@@ -1,0 +1,123 @@
+@startuml AISummaryGenerationAlgorithm
+
+start
+
+:User yêu cầu tóm tắt article;
+note right
+**INPUT:**
+- articleId: string
+- articleContent: string
+- forceRefresh: bool (default: false)
+
+**PSEUDOCODE:**
+```
+FUNCTION generateAISummary(articleId, content, forceRefresh):
+    // Kiểm tra cache trước
+    IF NOT forceRefresh THEN
+        cachedSummary = getCachedSummary(articleId)
+        IF cachedSummary != null AND isNotExpired(cachedSummary) THEN
+            RETURN cachedSummary
+        END IF
+    END IF
+    
+    // Validate content
+    IF content.length < MIN_CONTENT_LENGTH THEN
+        RETURN "Nội dung quá ngắn để tóm tắt"
+    END IF
+    
+    // Prepare AI prompt
+    prompt = buildPrompt(content)
+    
+    TRY:
+        response = callGeminiAPI(prompt)
+        summary = extractSummaryFromResponse(response)
+        
+        // Cache the result
+        cacheResult = {
+            articleId: articleId,
+            summary: summary,
+            createdAt: now(),
+            expiresAt: now() + CACHE_DURATION,
+            model: "gemini-pro"
+        }
+        saveSummaryCache(cacheResult)
+        
+        RETURN summary
+        
+    CATCH APILimitExceedException:
+        RETURN "Đã hết lượt tóm tắt miễn phí hôm nay"
+        
+    CATCH NetworkTimeoutException:
+        RETURN "Không thể kết nối AI, vui lòng thử lại"
+        
+    CATCH Exception e:
+        logError(e)
+        RETURN "Có lỗi xảy ra khi tóm tắt"
+END FUNCTION
+```
+end note
+
+:Kiểm tra cache có summary không?;
+
+if (Cache exists và chưa expire?) then (yes)
+    if (forceRefresh?) then (no)
+        :Trả về cached summary;
+        stop
+    endif
+endif
+
+:Validate article content;
+
+if (content.length >= MIN_LENGTH?) then (yes)
+    :Chuẩn bị AI prompt;
+    note right
+    **Prompt Template:**
+    "Hãy tóm tắt bài báo sau thành 2-3 câu ngắn gọn, 
+    súc tích bằng tiếng Việt. Tập trung vào ý chính:
+    
+    [ARTICLE_CONTENT]"
+    end note
+    
+    :Gọi Gemini AI API;
+    
+    if (API call thành công?) then (yes)
+        :Nhận response từ Gemini;
+        :Extract summary text;
+        :Validate summary quality;
+        
+        if (Summary hợp lệ?) then (yes)
+            :Lưu vào cache với expiry time;
+            note right
+            **Cache Structure:**
+            - articleId: string
+            - summary: string  
+            - createdAt: DateTime
+            - expiresAt: DateTime (24h)
+            - model: "gemini-pro"
+            end note
+            
+            :Trả về summary;
+        else (no)
+            :Trả về "Không thể tạo tóm tắt chất lượng";
+        endif
+        
+    elseif (API Limit Exceeded?) then (yes)
+        :Log API quota exceeded;
+        :Trả về "Đã hết lượt tóm tắt miễn phí";
+        
+    elseif (Network Timeout?) then (yes)
+        :Log network error;
+        :Trả về "Lỗi kết nối, thử lại sau";
+        
+    else (Other Error)
+        :Log unknown error;
+        :Trả về "Có lỗi xảy ra";
+    endif
+    
+else (no)
+    :Trả về "Nội dung quá ngắn để tóm tắt";
+endif
+
+stop
+
+@enduml

@@ -1,0 +1,100 @@
+@startuml NewsFilteringAlgorithm
+
+start
+
+:Nhận yêu cầu lọc tin tức;
+note right
+**INPUT:**
+- category: string (optional)
+- timeRange: string (today, week, month)
+- sentimentFilter: bool (chỉ tin tích cực)
+- excludeToxic: bool (loại bỏ tin toxic)
+
+**PSEUDOCODE:**
+```
+FUNCTION filterNews(category, timeRange, sentimentFilter, excludeToxic):
+    // Bước 1: Lọc theo thời gian
+    startDate = calculateStartDate(timeRange)
+    articles = getArticlesByDateRange(startDate, today())
+    
+    // Bước 2: Lọc theo category
+    IF category != null AND category != "all" THEN
+        articles = articles.filter(a => a.category == category)
+    END IF
+    
+    // Bước 3: Lọc theo sentiment (1=positive, 0=neutral, -1=negative)
+    IF sentimentFilter THEN
+        articles = articles.filter(a => a.sentiment >= 0)
+    END IF
+    
+    // Bước 4: Loại bỏ tin toxic
+    IF excludeToxic THEN
+        articles = articles.filter(a => a.isToxic == false)
+    END IF
+    
+    // Bước 5: Sắp xếp theo độ ưu tiên
+    articles = sortByPriority(articles)
+    
+    RETURN articles
+END FUNCTION
+
+FUNCTION sortByPriority(articles):
+    RETURN articles.sort((a, b) => {
+        // Ưu tiên: Sentiment > Thời gian > Không toxic
+        IF a.sentiment != b.sentiment THEN
+            RETURN b.sentiment - a.sentiment  // Positive trước
+        END IF
+        
+        IF a.published != b.published THEN
+            RETURN b.published - a.published  // Mới nhất trước
+        END IF
+        
+        RETURN a.isToxic - b.isToxic  // Không toxic trước
+    })
+END FUNCTION
+```
+end note
+
+:Lấy tất cả articles từ Firestore;
+
+if (category != "all"?) then (yes)
+    :Lọc theo category;
+    note right: articles.where((a) => a.category == category)
+endif
+
+if (timeRange specified?) then (yes)
+    :Tính startDate từ timeRange;
+    if (timeRange == "today"?) then (yes)
+        :startDate = today 00:00;
+    elseif (timeRange == "week"?) then (yes)
+        :startDate = 7 days ago;
+    else (month)
+        :startDate = 30 days ago;
+    endif
+    :Lọc articles theo dateRange;
+endif
+
+if (sentimentFilter enabled?) then (yes)
+    :Chỉ giữ articles với sentiment >= 0;
+    note right: Loại bỏ tin tiêu cực (-1)
+endif
+
+if (excludeToxic enabled?) then (yes)
+    :Loại bỏ articles có isToxic == true;
+endif
+
+:Sắp xếp theo độ ưu tiên;
+note right
+**Priority Order:**
+1. Sentiment (positive > neutral > negative)
+2. Published date (newest first)  
+3. Toxic status (non-toxic first)
+end note
+
+:Cache kết quả trong 5 phút;
+
+:Trả về danh sách articles đã lọc;
+
+stop
+
+@enduml

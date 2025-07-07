@@ -1,0 +1,117 @@
+@startuml ReadingSessionTrackingAlgorithm
+
+start
+
+:User mở article detail page;
+note right
+**INPUT:**
+- userId: string
+- articleId: string
+- sessionStartTime: DateTime
+
+**PSEUDOCODE:**
+```
+FUNCTION startReadingSession(userId, articleId):
+    session = {
+        id: generateUUID(),
+        userId: userId,
+        articleId: articleId,
+        startTime: now(),
+        endTime: null,
+        duration: 0,
+        isCompleted: false
+    }
+    
+    // Bắt đầu timer 30 giây
+    timer = startTimer(30000) // 30 seconds
+    
+    // Lắng nghe sự kiện
+    onPageVisible(() => {
+        resumeTimer(timer)
+    })
+    
+    onPageHidden(() => {
+        pauseTimer(timer)
+    })
+    
+    onPageClosed(() => {
+        endReadingSession(session)
+    })
+    
+    onTimerComplete(() => {
+        markSessionCompleted(session)
+        triggerAchievementCheck(userId, articleId)
+    })
+    
+    RETURN session
+END FUNCTION
+
+FUNCTION markSessionCompleted(session):
+    session.isCompleted = true
+    session.endTime = now()
+    session.duration = session.endTime - session.startTime
+    
+    saveReadingSession(session)
+    
+    // Trigger achievement tracking
+    trackReadingAchievement(session.userId, session.articleId, session.duration)
+END FUNCTION
+```
+end note
+
+:Tạo ReadingSession object;
+:Khởi tạo timer 30 giây;
+
+fork
+    :Lắng nghe page visibility;
+    while (User còn trên page?) is (yes)
+        if (Page visible?) then (yes)
+            :Resume timer;
+        else (no)
+            :Pause timer;
+        endif
+        :Wait for visibility change;
+    endwhile (no)
+fork again
+    :Chạy countdown timer;
+    while (Timer chưa hết 30s?) is (yes)
+        :Cập nhật elapsed time;
+        :Sleep 1 second;
+    endwhile (no)
+    :Timer completed (30s reached);
+end fork
+
+if (Timer hoàn thành 30s?) then (yes)
+    :session.isCompleted = true;
+    :session.endTime = now();
+    :Tính session.duration;
+    
+    :Lưu ReadingSession vào database;
+    
+    :Trigger Achievement Tracking;
+    note right
+    Gọi AchievementTrackingAlgorithm
+    với parameters:
+    - userId
+    - articleId  
+    - duration (>= 30s)
+    - category
+    end note
+    
+    :Cập nhật UI progress indicator;
+    :Hiển thị thông báo "Bài đọc đã hoàn thành";
+    
+else (no)
+    :session.isCompleted = false;
+    :session.endTime = now();
+    :Tính session.duration (< 30s);
+    
+    :Lưu incomplete session (optional);
+    :Không trigger achievement;
+endif
+
+:Cleanup timer và listeners;
+
+stop
+
+@enduml

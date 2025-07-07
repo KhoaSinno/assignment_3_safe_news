@@ -12,7 +12,9 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String dayOfWeek = getVietnameseDayOfWeek(currentTime);
-    final String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(currentTime);
+    final String currentDay = DateFormat(
+      'dd/MM/yyyy HH:mm',
+    ).format(currentTime);
     final authViewModel = ref.watch(authViewModelProvider);
     final isLoggedIn = authViewModel.user != null;
 
@@ -82,7 +84,7 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
           Flexible(
-            flex: 2,
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
