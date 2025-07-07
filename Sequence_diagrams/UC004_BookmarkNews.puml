@@ -1,0 +1,95 @@
+@startuml SequenceBookmarkNews
+
+actor "Người dùng" as user
+boundary "UI: Chi tiết bài báo" as ui_detail
+boundary "UI: Thẻ đánh dấu" as ui_bookmark
+control "Ctrl: Quản lý bookmark" as ctrl_bookmark
+entity "Cloud Database" as cloud_db
+entity "Bộ nhớ cục bộ" as local_storage
+
+activate user
+user -> ui_detail: Nhấn biểu tượng đánh dấu
+
+activate ui_detail
+ui_detail -> ctrl_bookmark: Kiểm tra trạng thái đăng nhập
+activate ctrl_bookmark
+ctrl_bookmark --> ui_detail: Trạng thái đăng nhập
+deactivate ctrl_bookmark
+
+alt#Gold #LightBlue Người dùng đã đăng nhập
+    ui_detail -> ctrl_bookmark: Yêu cầu đánh dấu bài báo
+    activate ctrl_bookmark
+    
+    ctrl_bookmark -> ctrl_bookmark: Kiểm tra trạng thái đánh dấu hiện tại
+    
+    alt #LightGreen Chưa đánh dấu
+        ctrl_bookmark -> cloud_db: Lưu vào cơ sở dữ liệu đám mây
+        activate cloud_db
+        cloud_db --> ctrl_bookmark: Xác nhận lưu
+        deactivate cloud_db
+        
+        ctrl_bookmark -> local_storage: Lưu vào bộ nhớ cục bộ
+        activate local_storage
+        local_storage --> ctrl_bookmark: Xác nhận lưu cục bộ
+        deactivate local_storage
+        
+        ctrl_bookmark -> ui_detail: Cập nhật giao diện (đã đánh dấu)
+        ui_detail --> user: Hiển thị trạng thái đã đánh dấu
+        
+    else #LightCoral Đã đánh dấu
+        ctrl_bookmark -> cloud_db: Xóa khỏi cơ sở dữ liệu đám mây
+        activate cloud_db
+        cloud_db --> ctrl_bookmark: Xác nhận xóa
+        deactivate cloud_db
+        
+        ctrl_bookmark -> local_storage: Xóa khỏi bộ nhớ cục bộ
+        activate local_storage
+        local_storage --> ctrl_bookmark: Xác nhận xóa cục bộ
+        deactivate local_storage
+        
+        ctrl_bookmark -> ui_detail: Cập nhật giao diện (chưa đánh dấu)
+        ui_detail --> user: Hiển thị trạng thái chưa đánh dấu
+        
+    end
+    
+    deactivate ctrl_bookmark
+
+else #Gold #Pink Người dùng chưa đăng nhập
+    ui_detail -> ctrl_bookmark: Hiển thị "Vui lòng đăng nhập"
+activate ctrl_bookmark
+
+    ctrl_bookmark --> user: Thông báo yêu cầu đăng nhập
+deactivate
+end
+
+== Truy cập danh sách đánh dấu ==
+user -> ui_bookmark: Truy cập thẻ đánh dấu
+activate ui_bookmark
+ui_bookmark -> ctrl_bookmark: Lấy danh sách đánh dấu
+activate ctrl_bookmark
+
+ctrl_bookmark -> local_storage: Lấy từ bộ nhớ cục bộ
+activate local_storage
+local_storage --> ctrl_bookmark: Danh sách đánh dấu
+deactivate local_storage
+
+ctrl_bookmark --> ui_bookmark: Danh sách bài báo đã đánh dấu
+ui_bookmark --> user: Hiển thị danh sách để đọc ngoại tuyến
+
+deactivate ctrl_bookmark
+deactivate ui_bookmark
+
+== Xử lý ngoại lệ ==
+alt#Gold #Pink Lỗi cơ sở dữ liệu đám mây
+    cloud_db --> ctrl_bookmark: Lỗi kết nối
+    ctrl_bookmark -> local_storage: Vẫn lưu cục bộ
+    activate local_storage
+    local_storage --> ctrl_bookmark: Lưu cục bộ thành công
+    deactivate local_storage
+    ctrl_bookmark --> user: Thông báo lưu cục bộ
+end
+
+deactivate ui_detail
+deactivate user
+
+@enduml

@@ -1,0 +1,361 @@
+% Usecase 1: Xem tin tức
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Xem tin tức}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC001 \\
+        \hline
+        \textbf{Tên}  & Xem tin tức và theo dõi thành tựu \\
+        \hline
+        \textbf{Mô tả}  & Cho phép người dùng xem danh sách tin tức theo danh mục và chi tiết từng bài báo với tính năng TTS \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Bắt buộc \\
+        \hline
+        \textbf{Tác động}  & Người dùng xem danh sách tin tức, đọc chi tiết và tự động thiết lập thành tựu \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng truy cập ứng dụng, có kết nối internet \\
+        \hline
+        \textbf{Hậu điều kiện}  & Người dùng xem được nội dung chi tiết, cùng việc theo dõi tiến trình đọc báo \\
+        \hline
+        \multirow{7}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng truy cập màn hình chính. \\
+            & 2. Hệ thống hiển thị danh sách tin tức mới nhất. \\
+            & 3. Người dùng có thể sử dụng bộ lọc theo các danh mục và thời gian khác nhau. \\
+            & 4. Người dùng chọn tin tức để xem chi tiết. \\
+            & 5. Hệ thống hiển thị trang chi tiết bài báo với: \\
+            & - Đoạn nội dung tự động tóm tắt với GenAI \\
+            & - Đoạn nội dung đầy đủ bài báo từ nguồn RSS \\
+            & - Chức năng đọc văn bản thành giọng nói \\
+            & - Nút chia sẻ và lưu tin xem ngoại tuyến \\
+            & 6. Hệ thống bắt đầu theo dõi thời gian đọc (30 giây). \\
+            & 7. Nếu đọc đủ 30 giây, cập nhật thống kê thành tựu người dùng. \\
+        \hline
+        \multirow{3}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Nếu không có kết nối internet, hiển thị lỗi mạng. \\
+            & - Nếu nguồn cấp dữ liệu lỗi, hiển thị thông báo "Không thể tải tin tức." \\
+            & - Nếu phân tích bài báo lỗi, hiển thị nội dung thay thế. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+% Usecase 2: Lọc/Tìm kiếm tin tức
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Lọc/Tìm kiếm tin tức}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC002 \\
+        \hline
+        \textbf{Tên}  & Lọc/Tìm kiếm tin tức theo danh mục, thời gian \\
+        \hline
+        \textbf{Mô tả}  & Cho phép người dùng lọc tin tức theo các danh mục, và thời gian có sẵn \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Bắt buộc \\
+        \hline
+        \textbf{Tác động}  & Người dùng chọn danh mục, thời gian và hệ thống hiển thị tin tức tương ứng \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng truy cập màn hình tin tức \\
+        \hline
+        \textbf{Hậu điều kiện}  & Danh sách tin tức được lọc theo danh mục đã chọn \\
+        \hline
+        \multirow{5}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng truy cập màn hình chính, nơi có danh sách tin tức và bộ lọc. \\
+            & 2. Hệ thống hiển thị các thẻ danh mục, thời gian khác nhau. \\
+            & 3. Người dùng chọn thẻ danh mục, thời gian muốn xem. \\
+            & 4. Hệ thống lọc và hiển thị tin tức của danh mục đó. \\
+            & 5. Kho lưu trữ dữ liệu bài báo lưu cache kết quả để tối ưu hiệu suất. \\
+        \hline
+        \multirow{2}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Nếu danh mục không có tin tức, hiển thị "Không có tin tức trong danh mục này." \\
+            & - Nếu có lỗi khi lọc, hệ thống quay về danh mục tổng hợp. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+% Usecase 3: Chia sẻ tin tức
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Chia sẻ tin tức}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC003 \\
+        \hline
+        \textbf{Tên}  & Chia sẻ tin tức \\
+        \hline
+        \textbf{Mô tả}  & Cho phép người dùng chia sẻ tin tức qua các nền tảng khác\\
+        \hline
+        \textbf{Tác nhân}  & Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Bắt buộc \\
+        \hline
+        \textbf{Tác động}  & Người dùng chia sẻ link và tiêu đề bài báo ra bên ngoài ứng dụng \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng đang xem chi tiết tin tức hoặc trong danh sách \\
+        \hline
+        \textbf{Hậu điều kiện}  & Tin tức được chia sẻ thành công \\
+        \hline
+        \multirow{6}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng nhấn biểu tượng chia sẻ trong trang chi tiết hoặc danh sách bài báo. \\
+            & 2. Hệ thống tạo văn bản chia sẻ với định dạng từ trước \\
+            & 3. Hệ thống gọi API để thực hiện chia sẻ. \\
+            & 4. Hệ thống hiển thị bảng chia sẻ gốc của thiết bị. \\
+            & 5. Người dùng chọn ứng dụng để chia sẻ và hoàn tất. \\
+            & 6. Hiển thị thông báo "Chia sẻ thành công!" \\
+        \hline
+        \multirow{2}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Nếu chức năng chia sẻ thất bại, hiển thị hộp thoại với nội dung có thể sao chép. \\
+            & - Nếu không có đường dẫn, chỉ chia sẻ tiêu đề bài báo. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+% Usecase 4: Quản lý bookmark tin tức
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Quản lý bookmark tin tức}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC004 \\
+        \hline
+        \textbf{Tên}  & Lưu và quản lý tin tức đã bookmark \\
+        \hline
+        \textbf{Mô tả}  & Cho phép người dùng lưu tin tức vào danh sách bookmark và đọc ngôại tuyến \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng đã đăng nhập \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Bắt buộc \\
+        \hline
+        \textbf{Tác động}  & Tin tức được lưu vào cơ sở dữ liệu đám mây và bộ nhớ cục bộ để đọc ngoại tuyến \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng đã đăng nhập, đang xem chi tiết bài báo \\
+        \hline
+        \textbf{Hậu điều kiện}  & Tin tức được lưu và có thể truy cập từ thẻ đánh dấu \\
+        \hline
+        \multirow{8}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng nhấn biểu tượng đánh dấu trong trang chi tiết bài báo. \\
+            & 2. Hệ thống kiểm tra trạng thái đánh dấu hiện tại. \\
+            & 3.1. Nếu chưa đánh dấu: \\
+            & - Lưu vào cơ sở dữ liệu đám mây \\
+            & - Lưu vào bộ nhớ cục bộ để đọc ngoại tuyến \\
+            & - Cập nhật giao diện thành đánh dấu đã chọn \\
+            & 3.2. Nếu đã đánh dấu: xóa khỏi cả cơ sở dữ liệu đám mây và bộ nhớ cục bộ \\
+            & 5. Hiển thị thông báo trạng thái. \\
+        \hline
+        \multirow{2}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Nếu chưa đăng nhập, hiển thị thông báo "Vui lòng đăng nhập." \\
+            & - Nếu lỗi cơ sở dữ liệu đám mây, vẫn lưu cục bộ và đồng bộ sau khi trực tuyến. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+
+% Usecase 5: Hệ thống thành tựu và tracking đọc báo
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Hệ thống thành tựu và theo dõi đọc báo}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC005 \\
+        \hline
+        \textbf{Tên}  & Tự động theo dõi và cập nhật thành tựu khi đọc báo \\
+        \hline
+        \textbf{Mô tả}  & Hệ thống tự động theo dõi thời gian đọc và cập nhật thành tựu cá nhân \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng đã đăng nhập \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Bắt buộc \\
+        \hline
+        \textbf{Tác động}  & Thống kê đọc báo được cập nhật theo thời gian thực, thành tựu tự động mở khóa \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng đã đăng nhập, đang xem chi tiết bài báo \\
+        \hline
+        \textbf{Hậu điều kiện}  & Thống kê người dùng được cập nhật vào cơ sở dữ liệu, thành tựu mới hiển thị \\
+        \hline
+        \multirow{10}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng mở trang chi tiết bài báo, bộ hẹn giờ tự động bắt đầu. \\
+            & 2. Hệ thống đếm thời gian đọc với bộ hẹn giờ định kỳ. \\
+            & 3. Sau 30 giây đọc liên tục: \\
+            & - Kích hoạt ghi nhận hoàn thành bài báo \\
+            & - Hệ thống thực hiện thống kê của người dùng và tăng số bài đã đọc \\
+            & 4. Hệ thống cập nhật cơ sở dữ liệu với giao dịch: \\
+            & - Số bài đã đọc tăng 1 \\
+            & - Chuỗi hiện tại (nếu đọc ngày mới) \\
+            & - Danh mục đã đọc (thêm nếu có đọc tin với danh mục mới) \\
+            & - Kiểm tra và mở khóa thành tựu mới với điều kiện đã được đặt trước \\
+            & 5. Giao diện tự động cập nhật bởi hệ thống chạy nền. \\
+        \hline
+        \multirow{2}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Nếu chưa đăng nhập, không theo dõi. \\
+            & - Nếu cơ sở dữ liệu lỗi, thử lại với khoảng cách tăng dần. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+
+% Usecase 6: Hệ thống thông báo push notification
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Hệ thống thông báo đẩy}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC006 \\
+        \hline
+        \textbf{Tên}  & Quản lý và gửi thông báo tin tức mới \\
+        \hline
+        \textbf{Mô tả}  & Hệ thống tự động kiểm tra tin tức mới và gửi thông báo theo sở thích đã được người dùng cài đặt \\
+        \hline
+        \textbf{Tác nhân}  & Hệ thống (tự động), Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Tùy chọn \\
+        \hline
+        \textbf{Tác động}  & Người dùng nhận thông báo tin tức theo danh mục đã chọn \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng đã cấp quyền notification, có internet \\
+        \hline
+        \textbf{Hậu điều kiện}  & Thông báo được gửi và lưu lịch sử \\
+        \hline
+        \multirow{9}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Người dùng cấu hình thông báo trong cài đặt hồ sơ. \\
+            & 2. UI cài đặt thông báo cho phép bật/tắt theo danh mục. \\
+            & 3. Bộ lập lịch thông báo tin tức chạy nền mỗi 2 giờ. \\
+            & 4. Hệ thống kiểm tra tin tức mới từ nguồn RSS. \\
+            & 5. Lọc tin tức theo sở thích danh mục của người dùng. \\
+            & 6. Kiểm tra trùng lặp để tránh thông báo rác. \\
+            & 7. Gửi thông báo qua dịch vụ nhắn tin đám mây. \\
+            & 8. Lưu lịch sử thông báo vào bộ nhớ chia sẻ. \\
+            & 9. Người dùng nhấn thông báo sẽ được chuyển đến chi tiết bài báo. \\
+        \hline
+        \multirow{3}{*}{\textbf{Xử lý ngoại lệ}}
+            & - Quyền bị từ chối: hiển thị hộp thoại hướng dẫn cài đặt. \\
+            & - Mã thông báo không hợp lệ: tự động làm mới và thử lại. \\
+            & - Thực thi nền bị giới hạn: giảm chức năng một cách nhẹ nhàng. \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+% Usecase 7: Tính năng Text-to-Speech (TTS)
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Text-to-Speech cho tin tức}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC007 \\
+        \hline
+        \textbf{Tên}  & Đọc to nội dung tin tức bằng giọng nói \\
+        \hline
+        \textbf{Mô tả}  & Cho phép người dùng nghe tóm tắt hoặc nội dung đầy đủ của bài báo \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Tùy chọn \\
+        \hline
+        \textbf{Tác động}  & Nội dung được đọc to bằng công cụ đọc văn bản \\
+        \hline
+        \textbf{Tiền điều kiện}  & Người dùng đang xem chi tiết bài báo, có nội dung văn bản \\
+        \hline
+        \textbf{Hậu điều kiện}  & Phát âm thanh hoàn tất hoặc bị dừng \\
+        \hline
+        \multirow{4}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Trong trang chi tiết, người dùng nhấn biểu tượng loa. \\
+            & 2. Hệ thống kiểm tra gọi API và đọc từ giọng đã tùy chỉnh của điện thoại. \\
+            & 3. Người dùng có thể dừng, tạm dừng, hoặc tiếp tục. \\
+            & - Chỉ có một dịch vụ TTS hoạt động tại một thời điểm. \\
+            & 4. Khi hoàn tất, TTS được dọn dẹp bộ nhớ. \\
+        \hline
+        \multirow{2}{*}{\textbf{Xử lý ngoại lệ}}
+            & - TTS không khả dụng: hiển thị "TTS không được hỗ trợ." \\
+            & - Nội dung trống: hiển thị "Không có nội dung để đọc." \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup
+
+% Usecase 8: Tóm tắt bài báo bằng AI
+\begingroup
+\renewcommand{\arraystretch}{1.1}
+\small
+\centering
+\noindent
+\begin{minipage}{\textwidth}
+    \centering
+    \captionof{table}{Bảng đặc tả usecase: Tóm tắt bài báo bằng Gemini AI}
+    \begin{tabular}{|m{3cm}|m{9cm}|}
+        \hline
+        \textbf{Mã số}  & UC008 \\
+        \hline
+        \textbf{Tên}  & Tạo tóm tắt nội dung bài báo sử dụng GenAI \\
+        \hline
+        \textbf{Mô tả}  & Sử dụng API Gemini AI để tóm tắt nội dung bài báo thành đoạn ngắn \\
+        \hline
+        \textbf{Tác nhân}  & Người dùng \\
+        \hline
+        \textbf{Mức độ ưu tiên}  & Tùy chọn \\
+        \hline
+        \textbf{Tác động}  & Bài báo được tóm tắt thành nội dung ngắn gọn \\
+        \hline
+        \textbf{Tiền điều kiện}  & Bài báo có nội dung, có internet \\
+        \hline
+        \textbf{Hậu điều kiện}  & Tóm tắt văn bản được hiển thị hoặc không hiển thị \\
+        \hline
+        \multirow{5}{*}{\textbf{Luồng xử lý chính}}
+            & 1. Trong trang chi tiết bài báo khi vào. \\
+            & 2. Hệ thống sẽ tự động thực hiện tóm tắt: \\
+            & - Tự động gửi prompt đã viết sẵn và nội dung bài báo đến API GenAI. \\
+            & 3. Hệ thống nhận dữ liệu từ GenAI trả về. \\
+            & 4. Chuyển đổi dữ liệu. \\
+            & 5. Hiển thị lên UI \\
+        \hline
+        \multirow{3}{*}{\textbf{Xử lý ngoại lệ}}
+            & - API limit exceeded: "Đã hết lượt tóm tắt miễn phí." \\
+            & - Network timeout: "Không thể kết nối AI, thử lại sau." \\
+            & - Nội dung quá ngắn: "Nội dung quá ngắn để tóm tắt." \\
+        \hline
+    \end{tabular}
+\end{minipage}
+\endgroup

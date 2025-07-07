@@ -1,0 +1,55 @@
+@startuml SequenceShareNews
+
+actor "Người dùng" as user
+boundary "UI: Chi tiết bài báo" as ui_detail
+boundary "UI: Danh sách bài báo" as ui_list
+control "Ctrl: Chia sẻ" as ctrl_share
+control "Ctrl: Tạo nội dung" as ctrl_content
+boundary "Bảng chia sẻ thiết bị" as native_share
+entity "Ứng dụng bên ngoài" as external_app
+
+activate user
+
+== Chia sẻ từ chi tiết bài báo ==
+user -> ui_detail: Nhấn biểu tượng chia sẻ
+activate ui_detail
+ui_detail -> ctrl_share: Yêu cầu chia sẻ bài báo
+activate ctrl_share
+
+ctrl_share -> ctrl_content: Tạo văn bản chia sẻ
+activate ctrl_content
+ctrl_content -> ctrl_content: Tạo định dạng chia sẻ
+ctrl_content --> ctrl_share: Văn bản chia sẻ
+deactivate ctrl_content
+
+ctrl_share -> "Plugin chia sẻ": Gọi API chia sẻ
+"Plugin chia sẻ" -> native_share: Hiển thị bảng chia sẻ
+activate native_share
+native_share --> user: Hiển thị tùy chọn chia sẻ
+
+user -> native_share: Chọn ứng dụng để chia sẻ
+native_share -> external_app: Gửi nội dung chia sẻ
+activate external_app
+external_app --> native_share: Xác nhận chia sẻ
+deactivate external_app
+deactivate native_share
+
+"Plugin chia sẻ" --> ctrl_share: Kết quả chia sẻ
+ctrl_share --> ui_detail: Thông báo thành công
+ui_detail --> user: Thông báo thành công
+
+deactivate ctrl_share
+deactivate ui_detail
+
+
+== Xử lý ngoại lệ ==
+alt#Gold #Pink Chức năng chia sẻ thất bại
+    "Plugin chia sẻ" --> ctrl_share: Lỗi chia sẻ
+else Không có đường dẫn
+    ctrl_content -> ctrl_content: Chỉ tạo nội dung với tiêu đề
+    ctrl_content --> ctrl_share: Văn bản chia sẻ (chỉ tiêu đề)
+end
+
+deactivate user
+
+@enduml

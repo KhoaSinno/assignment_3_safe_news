@@ -1,0 +1,92 @@
+@startuml SequenceViewNews
+
+actor "Người dùng" as user
+boundary "UI: Trang chủ" as ui_main
+boundary "UI: Chi tiết bài báo" as ui_detail
+control "Ctrl: Quản lý bài báo" as ctrl_article
+control "Ctrl: Tracking thời gian" as ctrl_tracking
+control "Ctrl: Quản lý thành tựu" as ctrl_achievement
+entity "Database" as database
+entity "RSS Feeds" as rss
+entity "Gemini API" as gemini_api
+
+activate user
+user -> ui_main: Truy cập ứng dụng
+
+activate ui_main
+ui_main -> ctrl_article: Yêu cầu danh sách tin tức
+
+
+
+activate ctrl_article
+' Req to database
+ctrl_article -> database: Lấy tin tức mới nhất
+activate database
+database --> ctrl_article: Danh sách tin tức
+deactivate database
+' Req to RSS
+ctrl_article -> rss: Lấy tin tức mới nhất
+activate rss
+rss --> ctrl_article: Danh sách tin tức
+deactivate rss
+
+ctrl_article --> ui_main: Danh sách tin tức
+deactivate ctrl_article
+ui_main --> user: Hiển thị danh sách tin tức
+
+user -> ui_main: Chọn danh mục lọc
+ui_main -> ctrl_article: Lọc theo danh mục
+activate ctrl_article
+ctrl_article --> ui_main: Tin tức đã lọc
+deactivate ctrl_article
+
+user -> ui_main: Chọn bài báo để xem chi tiết
+ui_main -> ui_detail: Chuyển đến chi tiết
+deactivate ui_main
+
+activate ui_detail
+ui_detail -> ctrl_article: Lấy nội dung chi tiết
+activate ctrl_article
+
+' Get content from RSS
+ctrl_article -> rss: Phân tích nội dung
+activate rss
+rss --> ctrl_article: Nội dung đầy đủ
+deactivate rss
+deactivate ctrl_article
+
+ui_detail -> gemini_api: Yêu cầu tóm tắt
+
+activate ctrl_article
+gemini_api --> ctrl_article: Tóm tắt bài báo
+ctrl_article --> ui_detail: Tóm tắt bài báo
+deactivate ctrl_article
+
+ui_detail -> ctrl_tracking: Bắt đầu tracking thời gian
+activate ctrl_tracking
+
+ui_detail --> user: Hiển thị chi tiết bài báo
+
+== Tracking 30 giây ==
+ctrl_tracking -> ctrl_tracking: Đếm thời gian (30s)
+
+alt#Gold #LightBlue Đáp ứng điều kiện
+    ctrl_tracking -> ctrl_achievement: Ghi nhận hoàn thành
+    activate ctrl_achievement
+    ctrl_achievement -> database: Cập nhật,\n thống kê người dùng
+    activate database
+    database --> ctrl_achievement: Xác nhận cập nhật
+    deactivate database
+    
+    ctrl_achievement -> ctrl_achievement: Kiểm tra thành tựu mới
+
+    ctrl_achievement -> database: Thêm thành tựu mới
+   
+    deactivate ctrl_achievement
+end
+
+deactivate ctrl_tracking
+deactivate ui_detail
+deactivate user
+
+@enduml
