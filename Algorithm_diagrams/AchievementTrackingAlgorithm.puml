@@ -3,46 +3,46 @@
 start
 
 :Người dùng đọc bài báo >= 30 giây;
-note right
-**INPUT:** 
-- userId: string
-- articleId: string  
-- readingDuration: int (seconds)
-- category: string
+' note right
+' **INPUT:** 
+' - userId: string
+' - articleId: string  
+' - readingDuration: int (seconds)
+' - category: string
 
-**PSEUDOCODE:**
-```
-FUNCTION trackAchievement(userId, articleId, duration, category):
-    IF duration < 30 THEN
-        RETURN // Không đủ thời gian
-    END IF
+' **PSEUDOCODE:**
+' ```
+' FUNCTION trackAchievement(userId, articleId, duration, category):
+'     IF duration < 30 THEN
+'         RETURN // Không đủ thời gian
+'     END IF
     
-    stats = getUserStats(userId)
-    stats.articlesRead += 1
-    stats.readCategories.addUnique(category)
+'     stats = getUserStats(userId)
+'     stats.articlesRead += 1
+'     stats.readCategories.addUnique(category)
     
-    // Cập nhật streak
-    IF isToday(stats.lastReadDate) THEN
-        // Đã đọc hôm nay rồi, không tăng streak
-    ELSE IF isYesterday(stats.lastReadDate) THEN
-        stats.currentStreak += 1
-    ELSE
-        stats.currentStreak = 1 // Reset streak
-    END IF
+'     // Cập nhật streak
+'     IF isToday(stats.lastReadDate) THEN
+'         // Đã đọc hôm nay rồi, không tăng streak
+'     ELSE IF isYesterday(stats.lastReadDate) THEN
+'         stats.currentStreak += 1
+'     ELSE
+'         stats.currentStreak = 1 // Reset streak
+'     END IF
     
-    stats.lastReadDate = today()
+'     stats.lastReadDate = today()
     
-    newAchievements = checkAllAchievements(stats)
-    FOR EACH achievement IN newAchievements:
-        stats.unlockedAchievements.add(achievement)
-        sendAchievementNotification(userId, achievement)
-    END FOR
+'     newAchievements = checkAllAchievements(stats)
+'     FOR EACH achievement IN newAchievements:
+'         stats.unlockedAchievements.add(achievement)
+'         sendAchievementNotification(userId, achievement)
+'     END FOR
     
-    saveUserStats(stats)
-    RETURN newAchievements
-END FUNCTION
-```
-end note
+'     saveUserStats(stats)
+'     RETURN newAchievements
+' END FUNCTION
+' ```
+' end note
 
 :Lấy UserAchievementStats từ Firestore;
 
@@ -61,15 +61,15 @@ if (readingDuration >= 30?) then (yes)
     :lastReadDate = today();
     
     :Kiểm tra điều kiện tất cả achievements;
-    note right
-    **Achievement Conditions:**
-    - NEWBIE: Mặc định khi đăng ký
-    - FIRST_READ: articlesRead >= 1
-    - DAILY_READER: articlesRead >= 5 trong ngày
-    - EXPLORER: readCategories.length >= 3
-    - WEEK_STREAK: currentStreak >= 7
-    - BOOKWORM: articlesRead >= 50
-    end note
+    ' note right
+    ' **Achievement Conditions:**
+    ' - NEWBIE: Mặc định khi đăng ký
+    ' - FIRST_READ: articlesRead >= 1
+    ' - DAILY_READER: articlesRead >= 5 trong ngày
+    ' - EXPLORER: readCategories.length >= 3
+    ' - WEEK_STREAK: currentStreak >= 7
+    ' - BOOKWORM: articlesRead >= 50
+    ' end note
     
     if (Có achievement mới?) then (yes)
         :Thêm vào unlockedAchievements;
@@ -87,3 +87,6 @@ endif
 stop
 
 @enduml
+
+
+' Thuật toán theo dõi thành tựu trong ứng dụng Safe News khuyến khích người dùng đọc tin tức thường xuyên bằng cách thưởng điểm cho hành vi tích cực. Khi người dùng đọc bài báo ít nhất 30 giây, hệ thống cập nhật số bài đã đọc, chủ đề khám phá, và chuỗi đọc hàng ngày: giữ nguyên nếu đã đọc trong ngày, tăng nếu đọc liên tiếp từ hôm trước, hoặc đặt lại về 1 nếu bị gián đoạn. Sau đó, thuật toán kiểm tra và mở khóa thành tựu dựa trên số bài đọc và danh mục, gửi thông báo, cập nhật giao diện, và lưu dữ liệu vào Firestore. Cơ chế này tăng tương tác, khuyến khích đa dạng nội dung, và đồng bộ dữ liệu theo thời gian thực.

@@ -3,59 +3,59 @@
 start
 
 :User yêu cầu tóm tắt article;
-note right
-**INPUT:**
-- articleId: string
-- articleContent: string
-- forceRefresh: bool (default: false)
+' note right
+' **INPUT:**
+' - articleId: string
+' - articleContent: string
+' - forceRefresh: bool (default: false)
 
-**PSEUDOCODE:**
-```
-FUNCTION generateAISummary(articleId, content, forceRefresh):
-    // Kiểm tra cache trước
-    IF NOT forceRefresh THEN
-        cachedSummary = getCachedSummary(articleId)
-        IF cachedSummary != null AND isNotExpired(cachedSummary) THEN
-            RETURN cachedSummary
-        END IF
-    END IF
+' **PSEUDOCODE:**
+' ```
+' FUNCTION generateAISummary(articleId, content, forceRefresh):
+'     // Kiểm tra cache trước
+'     IF NOT forceRefresh THEN
+'         cachedSummary = getCachedSummary(articleId)
+'         IF cachedSummary != null AND isNotExpired(cachedSummary) THEN
+'             RETURN cachedSummary
+'         END IF
+'     END IF
     
-    // Validate content
-    IF content.length < MIN_CONTENT_LENGTH THEN
-        RETURN "Nội dung quá ngắn để tóm tắt"
-    END IF
+'     // Validate content
+'     IF content.length < MIN_CONTENT_LENGTH THEN
+'         RETURN "Nội dung quá ngắn để tóm tắt"
+'     END IF
     
-    // Prepare AI prompt
-    prompt = buildPrompt(content)
+'     // Prepare AI prompt
+'     prompt = buildPrompt(content)
     
-    TRY:
-        response = callGeminiAPI(prompt)
-        summary = extractSummaryFromResponse(response)
+'     TRY:
+'         response = callGeminiAPI(prompt)
+'         summary = extractSummaryFromResponse(response)
         
-        // Cache the result
-        cacheResult = {
-            articleId: articleId,
-            summary: summary,
-            createdAt: now(),
-            expiresAt: now() + CACHE_DURATION,
-            model: "gemini-pro"
-        }
-        saveSummaryCache(cacheResult)
+'         // Cache the result
+'         cacheResult = {
+'             articleId: articleId,
+'             summary: summary,
+'             createdAt: now(),
+'             expiresAt: now() + CACHE_DURATION,
+'             model: "gemini-pro"
+'         }
+'         saveSummaryCache(cacheResult)
         
-        RETURN summary
+'         RETURN summary
         
-    CATCH APILimitExceedException:
-        RETURN "Đã hết lượt tóm tắt miễn phí hôm nay"
+'     CATCH APILimitExceedException:
+'         RETURN "Đã hết lượt tóm tắt miễn phí hôm nay"
         
-    CATCH NetworkTimeoutException:
-        RETURN "Không thể kết nối AI, vui lòng thử lại"
+'     CATCH NetworkTimeoutException:
+'         RETURN "Không thể kết nối AI, vui lòng thử lại"
         
-    CATCH Exception e:
-        logError(e)
-        RETURN "Có lỗi xảy ra khi tóm tắt"
-END FUNCTION
-```
-end note
+'     CATCH Exception e:
+'         logError(e)
+'         RETURN "Có lỗi xảy ra khi tóm tắt"
+' END FUNCTION
+' ```
+' end note
 
 :Kiểm tra cache có summary không?;
 
@@ -98,7 +98,7 @@ if (content.length >= MIN_LENGTH?) then (yes)
             
             :Trả về summary;
         else (no)
-            :Trả về "Không thể tạo tóm tắt chất lượng";
+            :Trả về "Không thể tạo tóm tắt";
         endif
         
     elseif (API Limit Exceeded?) then (yes)
@@ -115,9 +115,11 @@ if (content.length >= MIN_LENGTH?) then (yes)
     endif
     
 else (no)
-    :Trả về "Nội dung quá ngắn để tóm tắt";
+    :Trả về\n"Nội dung\nquá ngắn\nđể tóm tắt";
 endif
 
 stop
 
 @enduml
+
+' Thuật toán tạo tóm tắt AI trong Safe News giúp người dùng nắm nhanh nội dung bài báo bằng trí tuệ nhân tạo Gemini Pro. Khi người dùng yêu cầu tóm tắt, hệ thống kiểm tra bộ nhớ đệm: nếu tóm tắt còn hạn (24 giờ), kết quả trả ngay để tiết kiệm thời gian. Nếu không, hệ thống kiểm tra nội dung bài báo đủ dài, tạo yêu cầu tóm tắt ngắn gọn 2-3 câu bằng Gemini AI, rồi lưu kết quả vào bộ nhớ đệm cùng thông tin như ID bài báo và thời gian hết hạn. Thuật toán xử lý lỗi thông minh (hết hạn mức API, mất kết nối, hoặc lỗi khác) và thông báo phù hợp. Tính năng này tăng tốc độ, tiết kiệm tài nguyên, đảm bảo tóm tắt chất lượng và trải nghiệm mượt mà.
