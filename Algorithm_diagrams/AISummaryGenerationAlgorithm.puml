@@ -2,7 +2,7 @@
 
 start
 
-:User yêu cầu tóm tắt article;
+:User yêu cầu tóm tắt tin tức;
 ' note right
 ' **INPUT:**
 ' - articleId: string
@@ -57,60 +57,54 @@ start
 ' ```
 ' end note
 
-:Kiểm tra cache có summary không?;
+:Kiểm tra cache có bài tóm tắt đó không?;
 
-if (Cache exists và chưa expire?) then (yes)
-    if (forceRefresh?) then (no)
-        :Trả về cached summary;
+if (Cache tồn tại và chưa hết hạn?) then (yes)
+    if (Yêu cầu load lại?) then (no)
+        :Trả về cached bài tóm tắt;
         stop
     endif
 endif
 
-:Validate article content;
+:Kiểm tra nội dung;
 
 if (content.length >= MIN_LENGTH?) then (yes)
     :Chuẩn bị AI prompt;
     note right
     **Prompt Template:**
-    "Hãy tóm tắt bài báo sau thành 2-3 câu ngắn gọn, 
-    súc tích bằng tiếng Việt. Tập trung vào ý chính:
+    "Hãy tóm tắt bài báo sau 
+    thành 2-3 câu ngắn gọn, 
+    súc tích bằng tiếng Việt. 
+    Tập trung vào ý chính:
     
-    [ARTICLE_CONTENT]"
+    [Nội dung bài báo]"
     end note
     
     :Gọi Gemini AI API;
     
     if (API call thành công?) then (yes)
-        :Nhận response từ Gemini;
-        :Extract summary text;
-        :Validate summary quality;
+        :Nhận phản hồi từ Gemini;
+        :Tách đoạn tóm tắt từ phản hồi;
+        :Kiểm tra chất lượng tóm tắt;
         
-        if (Summary hợp lệ?) then (yes)
-            :Lưu vào cache với expiry time;
-            note right
-            **Cache Structure:**
-            - articleId: string
-            - summary: string  
-            - createdAt: DateTime
-            - expiresAt: DateTime (24h)
-            - model: "gemini-pro"
-            end note
+        if (Đoạn tóm tắt hợp lệ?) then (yes)
+            :Lưu vào cache với thời gian hết hạn;
+            ' note right
+            ' **Cấu trúc Cache:**
+            ' - articleId: string
+            ' - summary: string  
+            ' - createdAt: DateTime
+            ' - expiresAt: DateTime (24h)
+            ' - model: "gemini-pro"
+            ' end note
             
-            :Trả về summary;
+            :Trả về đoạn tóm tắt;
         else (no)
             :Trả về "Không thể tạo tóm tắt";
         endif
         
-    elseif (API Limit Exceeded?) then (yes)
-        :Log API quota exceeded;
-        :Trả về "Đã hết lượt tóm tắt miễn phí";
-        
-    elseif (Network Timeout?) then (yes)
-        :Log network error;
-        :Trả về "Lỗi kết nối, thử lại sau";
-        
-    else (Other Error)
-        :Log unknown error;
+    else (Lỗi trong quá trình xử lý)
+        :Log lỗi ra;
         :Trả về "Có lỗi xảy ra";
     endif
     

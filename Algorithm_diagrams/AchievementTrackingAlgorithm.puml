@@ -44,23 +44,23 @@ start
 ' ```
 ' end note
 
-:Lấy UserAchievementStats từ Firestore;
+:Lấy danh sách thành tựu từ Firestore;
 
-if (readingDuration >= 30?) then (yes)
-    :stats.articlesRead += 1;
-    :Thêm category vào readCategories (unique);
+if (Thời gian đọc báo >= 30?) then (Có)
+    :Báo đã đọc += 1;
+    :Thêm danh mục vào danh sách danh mục thành tựu (unique);
     
-    if (Đã đọc hôm nay?) then (yes)
-        :Giữ nguyên currentStreak;
-    elseif (Đọc ngày hôm qua?) then (yes)
-        :currentStreak += 1;
-    else (no)
-        :currentStreak = 1 (reset);
+    if (Đã đọc hôm nay?) then (Có)
+        :Giữ nguyên\nchuỗi đọc hiện tại;
+    elseif (Đọc ngày hôm qua?) then (Có)
+        :Chuỗi đọc hiện tại += 1;
+    else (Không)
+        :Chuỗi đọc hiện tại = 1 (reset);
     endif
     
-    :lastReadDate = today();
+    :Lần cuối đọc = Thời gian hiện tại;
     
-    :Kiểm tra điều kiện tất cả achievements;
+    :Kiểm tra điều kiện để đáp ứng tất cả thành tựu;
     ' note right
     ' **Achievement Conditions:**
     ' - NEWBIE: Mặc định khi đăng ký
@@ -71,17 +71,17 @@ if (readingDuration >= 30?) then (yes)
     ' - BOOKWORM: articlesRead >= 50
     ' end note
     
-    if (Có achievement mới?) then (yes)
-        :Thêm vào unlockedAchievements;
-        :Gửi thông báo achievement;
-        :Cập nhật UI badge;
+    if (Có thành tựu mới?) then (Có)
+        :Thêm vào danh sách thành tựu đã mở khóa;
+        :Gửi thông báo;
+        :Cập nhật UI huy hiệu tương ứng;
     endif
     
-    :Lưu stats vào Firestore;
-    :Trả về danh sách achievement mới;
+    :Lưu thông tin vào Firestore;
+    :Trả về danh sách thành tựu mới;
     
-else (no)
-    :Không tracking (< 30s);
+else (Không)
+    :Không theo dõi (< 30s);
 endif
 
 stop
