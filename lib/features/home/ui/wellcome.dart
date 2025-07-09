@@ -20,7 +20,7 @@ class WelcomeState extends State<Welcome> {
         child: Container(
           // This container has the gradient, acts as the ultimate background
           constraints: const BoxConstraints.expand(),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment(-1, -1),
               end: Alignment(-1, 1),
@@ -37,7 +37,7 @@ class WelcomeState extends State<Welcome> {
                 height:
                     availableHeight * 0.75, // Image takes ~75% height from top
                 child: Image.network(
-                  "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/wjp8ruhh_expires_30_days.png",
+                  'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/wjp8ruhh_expires_30_days.png',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -51,7 +51,7 @@ class WelcomeState extends State<Welcome> {
                     availableHeight *
                     0.35, // Bottom section takes ~35% height from bottom
                 child: Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(32),
                       topRight: Radius.circular(32),
@@ -65,7 +65,6 @@ class WelcomeState extends State<Welcome> {
                   width: double.infinity,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       InkWell(
                         onTap: () {
@@ -75,7 +74,7 @@ class WelcomeState extends State<Welcome> {
                         child: Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(128),
-                            color: Color(0xFF2C5AD0),
+                            color: const Color(0xFF2C5AD0),
                           ),
                           padding: const EdgeInsets.symmetric(
                             vertical: 16,
@@ -84,22 +83,22 @@ class WelcomeState extends State<Welcome> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                "Explore",
+                              const Text(
+                                'Explore',
                                 style: TextStyle(
                                   color: Color(0xFFFFFFFF),
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(width: 11),
+                              const SizedBox(width: 11),
                               SizedBox(
                                 width: 16,
                                 height: 16,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(128),
                                   child: Image.network(
-                                    "https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/okvoq8py_expires_30_days.png",
+                                    'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/FHs4UB5GEK/okvoq8py_expires_30_days.png',
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -122,10 +121,9 @@ class WelcomeState extends State<Welcome> {
                 right: 32,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      "Get The Latest News And Updates",
+                      'Get The Latest News And Updates',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -134,15 +132,15 @@ class WelcomeState extends State<Welcome> {
                           Shadow(
                             blurRadius: 5.0,
                             color: Colors.black.withValues(alpha: 0.7),
-                            offset: Offset(2.0, 2.0),
+                            offset: const Offset(2.0, 2.0),
                           ),
                         ],
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      "From Politics to Entertainment: Your One-Stop Source for Comprehensive Coverage of the Latest News and Developments Across the Glob will be right on your hand.",
+                      'From Politics to Entertainment: Your One-Stop Source for Comprehensive Coverage of the Latest News and Developments Across the Glob will be right on your hand.',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.95),
                         fontSize: 18,
@@ -150,7 +148,7 @@ class WelcomeState extends State<Welcome> {
                           Shadow(
                             blurRadius: 4.0,
                             color: Colors.black.withValues(alpha: 0.6),
-                            offset: Offset(1.0, 1.0),
+                            offset: const Offset(1.0, 1.0),
                           ),
                         ],
                       ),

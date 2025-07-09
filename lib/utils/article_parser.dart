@@ -53,6 +53,6 @@ Future<String> fetchArticleContent({required String? url}) async {
 String extractTextFromHtml(String htmlString) {
   final document = parser.parse(htmlString);
   final String parsedString =
-      parser.parse(document.body?.text).documentElement?.text ?? "";
+      parser.parse(document.body?.text).documentElement?.text ?? '';
   return parsedString.trim();
 }

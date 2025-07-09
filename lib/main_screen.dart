@@ -23,8 +23,6 @@ class MainScreen extends ConsumerWidget {
     // Sử dụng MediaQuery để loại bỏ padding system
     return MediaQuery.removePadding(
       context: context,
-      removeTop: false, // Giữ top padding cho status bar
-      removeBottom: false, // Giữ bottom padding cho navigation
       child: Scaffold(
         extendBody: true, // Mở rộng body đến edge
         extendBodyBehindAppBar: true, // Mở rộng body phía sau app bar

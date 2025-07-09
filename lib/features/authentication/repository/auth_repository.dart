@@ -22,8 +22,6 @@ class AuthRepository {
         // Chỉ tạo khi document chưa tồn tại
         final defaultStats = UserAchievementStatsModel(
           userId: userId,
-          articlesRead: 0,
-          currentStreak: 0,
           lastReadDate: DateTime.now(),
           readCategories: [],
           unlockedAchievements: [Achievement.newbie],

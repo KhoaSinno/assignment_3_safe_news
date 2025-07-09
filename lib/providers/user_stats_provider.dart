@@ -76,7 +76,7 @@ class UserStatsNotifier {
 
       final isNewDay = !_isSameDay(currentStats.lastReadDate, now);
 
-      List<String> updatedCategories = _addUniqueCategory(
+      final List<String> updatedCategories = _addUniqueCategory(
         currentStats.readCategories,
         category,
       );

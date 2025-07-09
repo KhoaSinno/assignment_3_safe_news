@@ -14,7 +14,7 @@ class WeatherRepository {
   Future<WeatherModel?> getCurrentWeather() async {
     try {
       // Lấy vị trí hiện tại
-      Position position = await _getCurrentPosition();
+      final Position position = await _getCurrentPosition();
 
       // Gọi API thời tiết
       final url =

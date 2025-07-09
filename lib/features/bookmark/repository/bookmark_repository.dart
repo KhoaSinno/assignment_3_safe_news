@@ -129,7 +129,7 @@ class BookmarkRepository {
       await _safeBookmarkBox.clear();
 
       // Thêm bookmark từ Firebase
-      for (var doc in snapshot.docs) {
+      for (final doc in snapshot.docs) {
         final bookmark = BookmarkModel.fromJson(doc.data());
         await _safeBookmarkBox.put(bookmark.id, bookmark);
       }
@@ -146,7 +146,7 @@ class BookmarkRepository {
     try {
       final localBookmarks = getBookmarks();
 
-      for (var bookmark in localBookmarks) {
+      for (final bookmark in localBookmarks) {
         await _firestore
             .collection('users')
             .doc(user.uid)

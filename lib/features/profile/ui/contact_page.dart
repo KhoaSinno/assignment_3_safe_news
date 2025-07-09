@@ -39,7 +39,7 @@ class ContactPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Icon(Icons.contact_support, size: 64, color: Colors.white),
+                  const Icon(Icons.contact_support, size: 64, color: Colors.white),
                   const SizedBox(height: 16),
                   Text(
                     'Chúng tôi luôn sẵn sàng hỗ trợ bạn',
@@ -223,7 +223,7 @@ class ContactPage extends StatelessWidget {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Email: safenews@gmail.com'),
+                              content: const Text('Email: safenews@gmail.com'),
                               action: SnackBarAction(
                                 label: 'Đóng',
                                 onPressed: () {},
@@ -249,7 +249,7 @@ class ContactPage extends StatelessWidget {
                         onPressed: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Điện thoại: +84 123 456 789'),
+                              content: const Text('Điện thoại: +84 123 456 789'),
                               action: SnackBarAction(
                                 label: 'Đóng',
                                 onPressed: () {},
@@ -345,7 +345,7 @@ class ContactPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Đang mở $label...'),
-            duration: Duration(seconds: 1),
+            duration: const Duration(seconds: 1),
           ),
         );
       },

@@ -26,8 +26,6 @@ class PrimaryButton extends StatelessWidget {
             Theme.of(context).primaryColor,
             Theme.of(context).primaryColor.withValues(alpha: 0.8),
           ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [

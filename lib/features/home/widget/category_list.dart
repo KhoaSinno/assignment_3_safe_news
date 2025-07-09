@@ -17,8 +17,6 @@ class CategoryList extends ConsumerWidget {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               ...categories.entries.map((entry) {
                 return CategoryItem(category : entry.value, isSelected: selectedCateProvider == entry.key,);

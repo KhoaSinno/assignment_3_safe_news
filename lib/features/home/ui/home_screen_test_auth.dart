@@ -14,27 +14,27 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Chào mừng bạn đến với ứng dụng của chúng tôi!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             if (authViewModel.user != null) ...[
               Text(
                 'Bạn đã đăng nhập với email: ${authViewModel.user?.email}',
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
               Column(
                 children: [
                   Text(
                     authViewModel.user?.name ?? 'Tên không có sẵn',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ),
                   Image.network(authViewModel.user?.photoUrl ?? ''),
                 ],
               ),
             ] else ...[
-              Text(
+              const Text(
                 'Bạn chưa đăng nhập.',
                 style: TextStyle(fontSize: 18, color: Colors.red),
               ),
@@ -45,7 +45,7 @@ class HomeScreen extends ConsumerWidget {
                   await authViewModel.signOut();
                   if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Đăng xuất thành công!')),
+                    const SnackBar(content: Text('Đăng xuất thành công!')),
                   );
                 } catch (e) {
                   if (!context.mounted) return;
@@ -54,7 +54,7 @@ class HomeScreen extends ConsumerWidget {
                   );
                 }
               },
-              child: Text('Đăng xuất'),
+              child: const Text('Đăng xuất'),
             ),
           ],
         ),

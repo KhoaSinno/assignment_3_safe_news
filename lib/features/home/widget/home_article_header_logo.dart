@@ -11,8 +11,10 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String dayOfWeek = getVietnameseDayOfWeek(currentTime);
-    String currentDay = DateFormat('dd/MM/yyyy HH:mm').format(currentTime);
+    final String dayOfWeek = getVietnameseDayOfWeek(currentTime);
+    final String currentDay = DateFormat(
+      'dd/MM/yyyy HH:mm',
+    ).format(currentTime);
     final authViewModel = ref.watch(authViewModelProvider);
     final isLoggedIn = authViewModel.user != null;
 
@@ -23,17 +25,16 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(40)),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
-            color: const Color(0x3F000000),
+            color: Color(0x3F000000),
             blurRadius: 4,
-            offset: const Offset(0, 1),
+            offset: Offset(0, 1),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(
             flex: 3,
@@ -83,12 +84,12 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
           Flexible(
-            flex: 2,
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Row(
+                const Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [WeatherWidget()],
                 ),
