@@ -4,6 +4,7 @@ import 'package:assignment_3_safe_news/features/profile/ui/contact_page.dart';
 import 'package:assignment_3_safe_news/features/profile/ui/privacy_policy.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/achievement_badge.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/achievement_stat.dart';
+import 'package:assignment_3_safe_news/features/profile/widget/badge_selection_screen.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/notification_settings_widget.dart';
 import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
 import 'package:flutter/material.dart';
@@ -132,18 +133,60 @@ class ProfileSetting extends ConsumerWidget {
               const SizedBox(height: 16),
 
               // Chỉ hiển thị "Tài khoản của tôi" khi đã đăng nhập
-              if (isLoggedIn)
+              if (isLoggedIn) ...[
+                // Thêm option chọn badge
                 ListTile(
-                  leading: const Icon(Icons.person),
+                  leading: const Icon(Icons.badge),
                   title: Text(
-                    'Tài khoản của tôi',
+                    'Chọn huy hiệu hiển thị',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyLarge?.copyWith(fontSize: 14),
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                  onTap: () {
+                    // Chỉ cho phép chọn badge khi có dữ liệu achievement
+                    userAchievementModel.when(
+                      data: (stats) {
+                        if (stats != null &&
+                            stats.unlockedAchievements.isNotEmpty) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) =>
+                                      BadgeSelectionScreen(userStats: stats),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Chưa có badge nào để chọn'),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        }
+                      },
+                      loading: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Đang tải dữ liệu...'),
+                            backgroundColor: Colors.blue,
+                          ),
+                        );
+                      },
+                      error: (error, stack) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Lỗi khi tải dữ liệu achievement'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
+              ],
 
               // Notification Settings - always show
               ListTile(
@@ -195,7 +238,9 @@ class ProfileSetting extends ConsumerWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ContactPage()),
+                    MaterialPageRoute(
+                      builder: (context) => const ContactPage(),
+                    ),
                   );
                 },
               ),
