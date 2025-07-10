@@ -3,10 +3,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class WeatherWidget extends ConsumerWidget {
+class WeatherWidget extends ConsumerStatefulWidget {
   const WeatherWidget({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<WeatherWidget> createState() => _WeatherWidgetState();
+}
+
+class _WeatherWidgetState extends ConsumerState<WeatherWidget> {
+  bool _shouldLoadWeather = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Delay 3 giây trước khi bắt đầu load weather
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          _shouldLoadWeather = true;
+        });
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // Kiểm tra API key trước - với xử lý safe cho test
     String apiKey = '';
     try {
@@ -31,6 +52,27 @@ class WeatherWidget extends ConsumerWidget {
               fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Nếu chưa đến thời gian load weather, hiển thị trạng thái mặc định
+    if (!_shouldLoadWeather) {
+      return Row(
+        children: [
+          Icon(
+            Icons.wb_sunny,
+            color: Theme.of(context).iconTheme.color,
+            size: 24,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            '--°C',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -83,19 +125,15 @@ class WeatherWidget extends ConsumerWidget {
       loading:
           () => Row(
             children: [
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).iconTheme.color ?? Colors.grey,
-                  ),
-                ),
+              // Bỏ hiệu ứng xoay CircularProgressIndicator
+              Icon(
+                Icons.more_horiz,
+                color: Theme.of(context).iconTheme.color,
+                size: 24,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 5),
               Text(
-                'Loading...',
+                '',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,

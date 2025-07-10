@@ -12,9 +12,7 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String dayOfWeek = getVietnameseDayOfWeek(currentTime);
-    final String currentDay = DateFormat(
-      'dd/MM/yyyy HH:mm',
-    ).format(currentTime);
+    final String currentDay = DateFormat('dd/MM/yyyy').format(currentTime);
     final authViewModel = ref.watch(authViewModelProvider);
     final isLoggedIn = authViewModel.user != null;
 
