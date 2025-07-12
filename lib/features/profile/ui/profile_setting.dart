@@ -335,6 +335,7 @@ class ProfileSetting extends ConsumerWidget {
                   },
                 ),
               ],
+              const SizedBox(height: 100),
             ],
           ),
         ),

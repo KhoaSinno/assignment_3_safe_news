@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,7 +48,7 @@ class NotificationService {
   /// Initialize local notifications
   Future<void> _initializeLocalNotifications() async {
     const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
+      '@mipmap/ic_launcher_monochrome', // Sử dụng monochrome cho Android 13+
     );
     const iosSettings = DarwinInitializationSettings(
       
@@ -62,6 +63,25 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
+
+    // Tạo notification channel cho Android
+    await _createNotificationChannel();
+  }
+
+  /// Tạo notification channel cho Android
+  Future<void> _createNotificationChannel() async {
+    const channel = AndroidNotificationChannel(
+      'safe_news_channel',
+      'Safe News Notifications',
+      description: 'Thông báo tin tức từ ứng dụng Safe News',
+      importance: Importance.high,
+      enableLights: true,
+      enableVibration: true,
+    );
+
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 
   /// Initialize Firebase messaging
@@ -143,14 +163,21 @@ class NotificationService {
     required String body,
     String? payload,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = const AndroidNotificationDetails(
       'safe_news_channel',
       'Safe News',
       channelDescription: 'Thông báo tin tức từ Safe News',
       importance: Importance.high,
       priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
+      icon: '@mipmap/ic_launcher', // Thử dùng icon gốc thay vì monochrome
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Large icon (app logo)
+      color: Color(0xFF1976D2), // Màu xanh dương
+      autoCancel: true,
       enableLights: true,
+      enableVibration: true,
+      showWhen: true,
+      channelShowBadge: true,
+      // Đơn giản hóa - không dùng BigPictureStyle
     );
 
     const iosDetails = DarwinNotificationDetails(
@@ -160,7 +187,7 @@ class NotificationService {
       subtitle: 'Safe News',
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );

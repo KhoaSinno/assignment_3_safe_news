@@ -13,6 +13,9 @@ class SimpleLeaderboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        ),
         title: const Text('Bảng xếp hạng'),
         actions: [
           IconButton(
