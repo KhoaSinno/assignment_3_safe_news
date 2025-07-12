@@ -1,6 +1,7 @@
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/profile/model/achievement_model.dart';
 import 'package:assignment_3_safe_news/features/profile/model/user_achievement_stats_model.dart';
+import 'package:assignment_3_safe_news/providers/ranking_provider.dart';
 import 'package:assignment_3_safe_news/utils/achievement_toast_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -40,11 +41,14 @@ final userStatsProvider = StreamProvider<UserAchievementStatsModel?>((ref) {
 });
 
 final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
-  return UserStatsNotifier();
+  return UserStatsNotifier(ref);
 });
 
 class UserStatsNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProviderRef _ref;
+
+  UserStatsNotifier(this._ref);
   // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> incrementArticleRead({
@@ -106,6 +110,10 @@ class UserStatsNotifier {
       );
 
       transaction.set(docRef, updatedStats.toFirestore());
+
+      // Refresh ranking sau khi stats thay đổi
+      _ref.invalidate(currentUserRankingProvider);
+      _ref.invalidate(leaderboardProvider);
 
       // Show achievement toast if there are new achievements
       if (context != null) {

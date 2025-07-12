@@ -55,7 +55,7 @@ class AchievementStat extends StatelessWidget {
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
                   ),
                   Text(
-                    stats?.sortedAchievement.title ?? 'Người mới',
+                    stats?.sortedAchievement.title ?? 'Người mới', // Cần update với rank
                     style: Theme.of(
                       context,
                     ).textTheme.headlineMedium?.copyWith(fontSize: 20),

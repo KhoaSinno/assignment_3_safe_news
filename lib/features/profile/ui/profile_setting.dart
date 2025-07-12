@@ -6,6 +6,7 @@ import 'package:assignment_3_safe_news/features/profile/widget/achievement_badge
 import 'package:assignment_3_safe_news/features/profile/widget/achievement_stat.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/badge_selection_screen.dart';
 import 'package:assignment_3_safe_news/features/profile/widget/notification_settings_widget.dart';
+import 'package:assignment_3_safe_news/features/profile/widget/user_ranking_widget.dart';
 import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +48,10 @@ class ProfileSetting extends ConsumerWidget {
                     userAchievementModel: userAchievementModel,
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                // User Ranking Card
+                const UserRankingWidget(),
+                const SizedBox(height: 16),
                 // Achievement Stats Row
                 AchievementStat(userAchievementModel: userAchievementModel),
               ] else ...[
