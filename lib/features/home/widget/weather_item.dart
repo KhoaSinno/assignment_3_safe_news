@@ -17,7 +17,7 @@ class _WeatherWidgetState extends ConsumerState<WeatherWidget> {
   void initState() {
     super.initState();
     // Delay 3 giây trước khi bắt đầu load weather
-    Future.delayed(const Duration(seconds: 10), () {
+    Future.delayed(const Duration(seconds: 30), () {
       if (mounted) {
         setState(() {
           _shouldLoadWeather = true;

@@ -36,9 +36,7 @@ class NotificationService {
     }
 
     // Request Firebase messaging permission
-    final settings = await _firebaseMessaging.requestPermission(
-      
-    );
+    final settings = await _firebaseMessaging.requestPermission();
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized) {
       return;
@@ -50,9 +48,7 @@ class NotificationService {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher_monochrome', // Sử dụng monochrome cho Android 13+
     );
-    const iosSettings = DarwinInitializationSettings(
-      
-    );
+    const iosSettings = DarwinInitializationSettings();
 
     const initSettings = InitializationSettings(
       android: androidSettings,
@@ -80,7 +76,9 @@ class NotificationService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
   }
 
@@ -170,7 +168,9 @@ class NotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher', // Thử dùng icon gốc thay vì monochrome
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'), // Large icon (app logo)
+      largeIcon: DrawableResourceAndroidBitmap(
+        '@mipmap/ic_launcher',
+      ), // Large icon (app logo)
       color: Color(0xFF1976D2), // Màu xanh dương
       autoCancel: true,
       enableLights: true,
