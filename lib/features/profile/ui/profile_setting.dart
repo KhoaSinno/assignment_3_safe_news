@@ -57,10 +57,10 @@ class ProfileSetting extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 // User Ranking Card
-                const UserRankingWidget(),
-                const SizedBox(height: 16),
-                // Achievement Stats Row
                 AchievementStat(userAchievementModel: userAchievementModel),
+                const SizedBox(height: 16),
+                const UserRankingWidget(),
+                // Achievement Stats Row
               ] else ...[
                 const SizedBox(height: 24),
                 // Login prompt khi chưa đăng nhập

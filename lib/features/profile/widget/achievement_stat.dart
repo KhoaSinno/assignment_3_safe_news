@@ -1,4 +1,3 @@
-import 'package:assignment_3_safe_news/features/profile/model/achievement_model.dart';
 import 'package:assignment_3_safe_news/features/profile/model/user_achievement_stats_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,22 +45,6 @@ class AchievementStat extends StatelessWidget {
                   ),
                 ],
               ),
-              Column(
-                children: [
-                  Text(
-                    'Hạng',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontSize: 14),
-                  ),
-                  Text(
-                    stats?.sortedAchievement.title ?? 'Người mới', // Cần update với rank
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(fontSize: 20),
-                  ),
-                ],
-              ),
             ],
           ),
       loading:
@@ -83,17 +66,6 @@ class AchievementStat extends StatelessWidget {
                 children: [
                   Text(
                     'Chuỗi đọc',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontSize: 14),
-                  ),
-                  const CircularProgressIndicator(),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Hạng',
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium?.copyWith(fontSize: 14),
@@ -136,22 +108,6 @@ class AchievementStat extends StatelessWidget {
                     style: Theme.of(
                       context,
                     ).textTheme.headlineMedium?.copyWith(fontSize: 24),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    'Hạng',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.copyWith(fontSize: 14),
-                  ),
-                  Text(
-                    'Người mới',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(fontSize: 20),
                   ),
                 ],
               ),
