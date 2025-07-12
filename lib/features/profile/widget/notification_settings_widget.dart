@@ -15,6 +15,9 @@ class NotificationSettingsWidget extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         title: const Text('Cài đặt thông báo'),
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,

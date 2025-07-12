@@ -26,6 +26,13 @@ class ProfileSetting extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        // Border radius and shadow for the AppBar
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
         title: Text(
           'Hồ sơ cá nhân',
           style: Theme.of(
@@ -55,6 +62,7 @@ class ProfileSetting extends ConsumerWidget {
                 // Achievement Stats Row
                 AchievementStat(userAchievementModel: userAchievementModel),
               ] else ...[
+                const SizedBox(height: 24),
                 // Login prompt khi chưa đăng nhập
                 Center(
                   child: Container(
