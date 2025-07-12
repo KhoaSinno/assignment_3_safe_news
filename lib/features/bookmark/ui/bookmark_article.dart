@@ -18,6 +18,14 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
 
     return Scaffold(
       appBar: AppBar(
+        // Border radius and shadow for the AppBar
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+        ),
+        shadowColor: Colors.black.withOpacity(0.5),
         title: Text(
           'Bookmark',
           style: Theme.of(

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="@android:color/white">
+    
+    <!-- Simple news/newspaper icon optimized for notification -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,3v18h18V3H3zM17,17H7v-1h10V17zM17,15H7v-1h10V15zM17,13H7v-1h10V13zM17,11H7V6h10V11z"/>
+</vector>

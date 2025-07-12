@@ -12,9 +12,7 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final String dayOfWeek = getVietnameseDayOfWeek(currentTime);
-    final String currentDay = DateFormat(
-      'dd/MM/yyyy HH:mm',
-    ).format(currentTime);
+    final String currentDay = DateFormat('dd/MM/yyyy').format(currentTime);
     final authViewModel = ref.watch(authViewModelProvider);
     final isLoggedIn = authViewModel.user != null;
 
@@ -40,13 +38,25 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
             flex: 3,
             child: Row(
               children: [
-                const SizedBox(
+                SizedBox(
                   width: 50,
                   height: 50,
-                  child: Icon(
-                    Icons.newspaper,
-                    color: Color(0xFF9F224E),
-                    size: 50,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/icon/ic_launcher.png',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback to icon if image fails to load
+                        return const Icon(
+                          Icons.newspaper,
+                          color: Color(0xFF9F224E),
+                          size: 50,
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),

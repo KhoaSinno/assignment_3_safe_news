@@ -1,8 +1,11 @@
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/profile/model/achievement_model.dart';
 import 'package:assignment_3_safe_news/features/profile/model/user_achievement_stats_model.dart';
+import 'package:assignment_3_safe_news/providers/ranking_provider.dart';
+import 'package:assignment_3_safe_news/utils/achievement_toast_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ✅ Provider phụ thuộc vào auth state để auto-refresh
@@ -38,17 +41,21 @@ final userStatsProvider = StreamProvider<UserAchievementStatsModel?>((ref) {
 });
 
 final userStatsNotifierProvider = Provider<UserStatsNotifier>((ref) {
-  return UserStatsNotifier();
+  return UserStatsNotifier(ref);
 });
 
 class UserStatsNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final ProviderRef _ref;
+
+  UserStatsNotifier(this._ref);
   // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> incrementArticleRead({
     required String category,
     required int readingTimeSeconds,
     required User user,
+    BuildContext? context, // Thêm context để hiển thị toast
   }) async {
     // SIMPLIFIED: Flat structure - direct access to /users/{userId}
     final docRef = _firestore.collection('users').doc(user.uid);
@@ -81,6 +88,14 @@ class UserStatsNotifier {
         category,
       );
 
+      // Check for new achievements BEFORE updating
+      final oldAchievements = currentStats.unlockedAchievements;
+      final newAchievements = _checkNewAchievements(
+        currentStats,
+        currentStats.articlesRead + 1,
+        updatedCategories,
+      );
+
       final UserAchievementStatsModel updatedStats = UserAchievementStatsModel(
         userId: currentStats.userId,
         articlesRead: currentStats.articlesRead + 1,
@@ -90,15 +105,40 @@ class UserStatsNotifier {
                 : currentStats.currentStreak,
         lastReadDate: now,
         readCategories: updatedCategories,
-        unlockedAchievements: _checkNewAchievements(
-          currentStats,
-          currentStats.articlesRead + 1,
-          updatedCategories,
-        ),
+        unlockedAchievements: newAchievements,
         updatedAt: now,
       );
 
       transaction.set(docRef, updatedStats.toFirestore());
+
+      // Refresh ranking sau khi stats thay đổi
+      _ref.invalidate(currentUserRankingProvider);
+      _ref.invalidate(leaderboardProvider);
+
+      // Show achievement toast if there are new achievements
+      if (context != null) {
+        final unlockedNewAchievements =
+            newAchievements
+                .where((achievement) => !oldAchievements.contains(achievement))
+                .toList();
+
+        // Show toast for each new achievement
+        for (final achievement in unlockedNewAchievements) {
+          Future.delayed(
+            Duration(
+              milliseconds: unlockedNewAchievements.indexOf(achievement) * 500,
+            ),
+            () {
+              if (context.mounted) {
+                AchievementToastService.showAchievementUnlocked(
+                  context,
+                  achievement,
+                );
+              }
+            },
+          );
+        }
+      }
     });
   }
 

@@ -1,6 +1,7 @@
 // cspell:disable
 import 'dart:async';
 // APP
+import 'package:assignment_3_safe_news/features/authentication/ui/login_screen.dart';
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
@@ -74,6 +75,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
       category: widget.article.category,
       readingTimeSeconds: _seconds,
       user: user,
+      context: context, // Truyền context để hiển thị toast
     );
   }
 
@@ -135,6 +137,31 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   }
 
   Future<void> _toggleBookmark() async {
+    // Kiểm tra trạng thái đăng nhập trước
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Vui lòng đăng nhập để lưu bài viết'),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'Đăng nhập',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              },
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
     final bookmarkViewModel = ref.read(bookmarkProvider);
 
     try {
@@ -226,6 +253,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
           ),
           Consumer(
             builder: (context, ref, child) {
+              final user = FirebaseAuth.instance.currentUser;
               final bookmarkViewModel = ref.watch(bookmarkProvider);
               final isBookmarked = bookmarkViewModel.isBookmarked(
                 widget.article.id,
@@ -235,7 +263,10 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                 icon: Icon(
                   isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                   color:
-                      isBookmarked
+                      user == null
+                          ? Colors
+                              .grey // Màu xám khi chưa đăng nhập
+                          : isBookmarked
                           ? Colors.blue
                           : Theme.of(context).iconTheme.color,
                 ),

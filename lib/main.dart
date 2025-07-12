@@ -185,7 +185,7 @@ class SafeNewsApp extends ConsumerWidget {
     } catch (e) {
       print('Error in SafeNewsApp build: $e');
       // Fallback widget nếu có lỗi
-      return MaterialApp(
+      return const MaterialApp(
         title: 'Safe News',
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -193,14 +193,14 @@ class SafeNewsApp extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error, color: Colors.red, size: 50),
-                const SizedBox(height: 16),
-                const Text(
+                Icon(Icons.error, color: Colors.red, size: 50),
+                SizedBox(height: 16),
+                Text(
                   'App đang khởi tạo...',
                   style: TextStyle(fontSize: 18),
                 ),
-                const SizedBox(height: 16),
-                const CircularProgressIndicator(),
+                SizedBox(height: 16),
+                CircularProgressIndicator(),
               ],
             ),
           ),
