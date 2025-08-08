@@ -6,7 +6,6 @@ import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.da
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
-import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 import 'package:assignment_3_safe_news/utils/index.dart';
 import 'package:firebase_auth/firebase_auth.dart';
