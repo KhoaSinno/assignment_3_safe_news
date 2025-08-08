@@ -24,7 +24,7 @@ final currentUserRankingProvider = FutureProvider<UserRankingInfo>((ref) async {
 // Provider for leaderboard (top users)
 final leaderboardProvider = FutureProvider<List<UserRankingModel>>((ref) async {
   final rankingService = ref.watch(rankingServiceProvider);
-  return await rankingService.getTopUsers(limit: 50);
+  return await rankingService.getTopUsers();
 });
 
 // Notifier để refresh ranking manually

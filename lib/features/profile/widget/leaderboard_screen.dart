@@ -64,7 +64,7 @@ class LeaderboardScreen extends ConsumerWidget {
               try {
                 return _buildPodium(context, users.take(3).toList());
               } catch (e) {
-                return Container(
+                return const SizedBox(
                   height: 200,
                   child: Center(child: Text('Lỗi hiển thị top 3')),
                 );
@@ -85,7 +85,7 @@ class LeaderboardScreen extends ConsumerWidget {
               } catch (e) {
                 return Container(
                   padding: const EdgeInsets.all(16),
-                  child: Text('Lỗi hiển thị user'),
+                  child: const Text('Lỗi hiển thị user'),
                 );
               }
             },

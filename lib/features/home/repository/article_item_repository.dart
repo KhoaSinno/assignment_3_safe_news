@@ -23,8 +23,9 @@ class ArticleItemRepository {
     String? title,
     String sortTime = 'AllTime',
   }) {
-    Query query = _firestore.collection('news-crawler');
+    // Query query = _firestore.collection('news-crawler');
     // Query query = _firestore.collection('test_30_articles_new');
+    Query query = _firestore.collection('positive_news');
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {
@@ -87,7 +88,41 @@ class ArticleItemRepository {
 
   static String removeMarkdownBold(String text) {
     // Remove **...** at the start or anywhere in the text
-    return text.replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1').trim();
+    String cleanedText = text.replaceAll(RegExp(r'\*\*(.*?)\*\*'), r'$1');
+
+    // Remove unwanted patterns that might appear in AI responses
+    cleanedText = cleanedText.replaceAll(
+      RegExp(r'^\$\d+\s*'),
+      '',
+    ); // Remove $1, $2, etc. at start
+    cleanedText = cleanedText.replaceAll(
+      RegExp(r'^(Tóm tắt:|Summary:)\s*', caseSensitive: false),
+      '',
+    ); // Remove common prefixes
+
+    // Clean up whitespace
+    cleanedText = cleanedText.trim();
+    cleanedText = cleanedText.replaceAll(
+      RegExp(r'\n\s*\n+'),
+      '\n\n',
+    ); // Multiple newlines to double newline
+    cleanedText = cleanedText.replaceAll(
+      RegExp(r'^\s+', multiLine: true),
+      '',
+    ); // Leading whitespace each line
+
+    // Remove empty lines at the beginning
+    final lines = cleanedText.split('\n');
+    int startIndex = 0;
+    while (startIndex < lines.length && lines[startIndex].trim().isEmpty) {
+      startIndex++;
+    }
+
+    if (startIndex > 0 && startIndex < lines.length) {
+      cleanedText = lines.sublist(startIndex).join('\n');
+    }
+
+    return cleanedText.trim();
   }
 
   static Future<String> summaryContentGemini(String content) async {

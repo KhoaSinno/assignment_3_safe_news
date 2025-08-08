@@ -110,6 +110,8 @@ flutter:
     - .env
     - assets/achievements/
     - assets/icon/
+    - assets/default_images/
+    - assets/default_images/default_news_image.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

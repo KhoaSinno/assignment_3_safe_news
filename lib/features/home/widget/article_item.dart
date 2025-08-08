@@ -6,7 +6,7 @@ import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
-
+import 'package:assignment_3_safe_news/utils/index.dart';
 class ArticleItem extends StatefulWidget {
   const ArticleItem({super.key, required this.article});
   final dynamic article;
@@ -74,6 +74,7 @@ class _ArticleItemState extends State<ArticleItem> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -94,7 +95,7 @@ class _ArticleItemState extends State<ArticleItem> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               image: DecorationImage(
-                image: NetworkImage(widget.article.imageUrl),
+                image: getImageProvider(widget),
                 fit: BoxFit.cover,
               ),
             ),
