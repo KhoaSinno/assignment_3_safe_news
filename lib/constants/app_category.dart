@@ -8,6 +8,7 @@ class AppCategory {
 
   // Category constants
   static const String tinMoiNhat = 'tin-moi-nhat';
+  static const String tinNoiBat = 'tin-noi-bat';
   static const String tinXemNhieu = 'tin-xem-nhieu';
   static const String theGioi = 'the-gioi';
   static const String thoiSu = 'thoi-su';
@@ -32,6 +33,10 @@ const Map<String, CategoryModel> categories = {
   AppCategory.tinMoiNhat: CategoryModel(
     name: 'Tin mới nhất',
     slug: AppCategory.tinMoiNhat,
+  ),
+  AppCategory.tinNoiBat: CategoryModel(
+    name: 'Tin nổi bật',
+    slug: AppCategory.tinNoiBat,
   ),
   AppCategory.tinXemNhieu: CategoryModel(
     name: 'Tin xem nhiều',

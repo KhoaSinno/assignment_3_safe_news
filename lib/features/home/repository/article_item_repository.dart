@@ -23,8 +23,9 @@ class ArticleItemRepository {
     String? title,
     String sortTime = 'AllTime',
   }) {
-    Query query = _firestore.collection('news-crawler');
+    // Query query = _firestore.collection('news-crawler');
     // Query query = _firestore.collection('test_30_articles_new');
+    Query query = _firestore.collection('positive_news');
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {

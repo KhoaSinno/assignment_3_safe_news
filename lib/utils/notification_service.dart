@@ -72,7 +72,6 @@ class NotificationService {
       description: 'Thông báo tin tức từ ứng dụng Safe News',
       importance: Importance.high,
       enableLights: true,
-      enableVibration: true,
     );
 
     await _localNotifications
@@ -172,11 +171,7 @@ class NotificationService {
         '@mipmap/ic_launcher',
       ), // Large icon (app logo)
       color: Color(0xFF1976D2), // Màu xanh dương
-      autoCancel: true,
       enableLights: true,
-      enableVibration: true,
-      showWhen: true,
-      channelShowBadge: true,
       // Đơn giản hóa - không dùng BigPictureStyle
     );
 
