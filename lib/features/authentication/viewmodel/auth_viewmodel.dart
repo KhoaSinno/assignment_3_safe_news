@@ -5,13 +5,72 @@ import 'package:assignment_3_safe_news/utils/logger.dart';
 import '../repository/auth_repository.dart';
 import '../model/user_model.dart';
 
-final authViewModelProvider = ChangeNotifierProvider((ref) => AuthViewModel());
+final authViewModelProvider = ChangeNotifierProvider((ref) {
+  final viewModel = AuthViewModel();
+  viewModel.checkAuthState(); // Khôi phục trạng thái khi khởi tạo
+  return viewModel;
+});
 
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _authRepository = AuthRepository();
   UserModel? _user;
+  bool _isInitialized = false;
 
   UserModel? get user => _user;
+  bool get isInitialized => _isInitialized;
+
+  AuthViewModel() {
+    // Lắng nghe thay đổi auth state từ Firebase
+    FirebaseAuth.instance.authStateChanges().listen((User? firebaseUser) {
+      if (firebaseUser != null && firebaseUser.email != null) {
+        _user = UserModel(
+          id: firebaseUser.uid,
+          email: firebaseUser.email!,
+          name: firebaseUser.displayName,
+          photoUrl: firebaseUser.photoURL,
+        );
+        AppLogger.debug(
+          'Auth state changed: User logged in - ${firebaseUser.email}',
+          tag: 'AuthViewModel',
+        );
+      } else {
+        _user = null;
+        AppLogger.debug(
+          'Auth state changed: User logged out',
+          tag: 'AuthViewModel',
+        );
+      }
+      notifyListeners();
+    });
+  }
+
+  /// Kiểm tra và khôi phục trạng thái đăng nhập từ Firebase Auth
+  Future<void> checkAuthState() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null && currentUser.email != null) {
+        _user = UserModel(
+          id: currentUser.uid,
+          email: currentUser.email!,
+          name: currentUser.displayName,
+          photoUrl: currentUser.photoURL,
+        );
+        AppLogger.debug(
+          'Restored user session: ${currentUser.email}',
+          tag: 'AuthViewModel',
+        );
+      } else {
+        _user = null;
+      }
+      _isInitialized = true;
+      notifyListeners();
+    } catch (e) {
+      AppLogger.error('Error checking auth state: $e', tag: 'AuthViewModel');
+      _isInitialized = true;
+      notifyListeners();
+    }
+  }
+
   Future<void> signIn(String email, String password) async {
     try {
       _user = await _authRepository.signIn(email, password);
@@ -35,9 +94,10 @@ class AuthViewModel extends ChangeNotifier {
     try {
       await _authRepository.signOut();
       _user = null;
-
+      AppLogger.debug('User signed out successfully', tag: 'AuthViewModel');
       notifyListeners();
     } catch (e) {
+      AppLogger.error('Error signing out: $e', tag: 'AuthViewModel');
       rethrow;
     }
   }

@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:assignment_3_safe_news/theme/app_theme.dart';
@@ -116,7 +117,8 @@ class SafeNewsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     try {
-      // final authViewModel = ref.watch(authViewModelProvider);
+      // Watch auth state để app tự động cập nhật khi login/logout
+      ref.watch(authViewModelProvider);
       final themeMode = ref.watch(themeProvider);
 
       return MaterialApp(
@@ -195,10 +197,7 @@ class SafeNewsApp extends ConsumerWidget {
               children: [
                 Icon(Icons.error, color: Colors.red, size: 50),
                 SizedBox(height: 16),
-                Text(
-                  'App đang khởi tạo...',
-                  style: TextStyle(fontSize: 18),
-                ),
+                Text('App đang khởi tạo...', style: TextStyle(fontSize: 18)),
                 SizedBox(height: 16),
                 CircularProgressIndicator(),
               ],

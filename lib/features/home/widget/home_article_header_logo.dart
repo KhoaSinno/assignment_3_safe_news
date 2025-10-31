@@ -1,6 +1,6 @@
 import 'package:assignment_3_safe_news/constants/app_calendar.dart';
 import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
-import 'package:assignment_3_safe_news/features/home/widget/weather_item.dart';
+// import 'package:assignment_3_safe_news/features/home/widget/weather_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -99,11 +99,12 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [WeatherWidget()],
-                ),
-                const SizedBox(height: 5),
+                // // Weather widget
+                // const Row(
+                //   mainAxisAlignment: MainAxisAlignment.end,
+                // children: [WeatherWidget()],
+                // ),
+                // const SizedBox(height: 5),
                 isLoggedIn
                     ? Text(
                       'Hi, ${authViewModel.user?.name ?? 'Người dùng'}',
