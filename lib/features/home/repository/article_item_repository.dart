@@ -173,7 +173,15 @@ class ArticleItemRepository {
       return result;
     } catch (e) {
       AppLogger.error('Error with Gemini API: $e');
-      return 'Lỗi khi gọi API tóm tắt.';
+      // Trả về thông báo thân thiện cho người dùng
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('network') || errorString.contains('socket')) {
+        return '⚠️ Không có kết nối mạng. Không thể tạo bản tóm tắt.';
+      } else if (errorString.contains('timeout')) {
+        return '⚠️ Hết thời gian chờ. Vui lòng thử lại sau.';
+      } else {
+        return '⚠️ Không thể tạo bản tóm tắt lúc này. Vui lòng thử lại sau.';
+      }
     }
   }
 
