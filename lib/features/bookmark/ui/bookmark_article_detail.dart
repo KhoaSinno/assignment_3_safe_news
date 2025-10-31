@@ -1,4 +1,5 @@
 // cspell:disable
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -151,29 +152,40 @@ class _BookmarkArticleDetailState extends ConsumerState<BookmarkArticleDetail> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
+                CachedNetworkImage(
+                  imageUrl: widget.bookmark.imageUrl,
                   height: 300,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(widget.bookmark.imageUrl),
-                      fit: BoxFit.cover,
-                      onError: (exception, stackTrace) {},
-                    ),
-                  ),
-                  child:
-                      widget.bookmark.imageUrl.isEmpty ||
-                              Uri.tryParse(
-                                    widget.bookmark.imageUrl,
-                                  )?.hasAbsolutePath !=
-                                  true
-                          ? const Center(
-                            child: Icon(
-                              Icons.broken_image,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          )
-                          : null,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
+                  errorWidget:
+                      (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image_outlined,
+                                size: 80,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Không thể tải ảnh',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                 ),
                 Container(
                   transform: Matrix4.translationValues(0.0, -50.0, 0.0),
