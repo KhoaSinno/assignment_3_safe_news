@@ -28,6 +28,8 @@ Future<String> fetchArticleContent({required String? url}) async {
 
     // Pre-process HTML to handle data-src for images
     final doc = parser.parse(htmlContent);
+
+    // Fix images
     doc.querySelectorAll('img').forEach((imgElement) {
       final dataSrc = imgElement.attributes['data-src'];
       final src = imgElement.attributes['src'];
@@ -41,7 +43,36 @@ Future<String> fetchArticleContent({required String? url}) async {
       }
       // Remove lazy loading attributes that might prevent immediate display
       imgElement.attributes.remove('loading');
+      // Remove problematic inline styles that cause text wrapping issues
+      imgElement.attributes.remove('style');
+      imgElement.attributes.remove('align');
+      imgElement.attributes.remove('width');
+      imgElement.attributes.remove('height');
     });
+
+    // Clean up table elements that often cause layout issues
+    doc.querySelectorAll('table').forEach((table) {
+      table.attributes.remove('style');
+      table.attributes.remove('width');
+    });
+
+    // Clean up figure/picture elements
+    doc.querySelectorAll('figure, picture').forEach((element) {
+      element.attributes.remove('style');
+    });
+
+    // Clean up paragraph and div styles that cause layout issues
+    doc.querySelectorAll('p, div, span').forEach((element) {
+      // Remove float styles that cause text to wrap incorrectly
+      final style = element.attributes['style'];
+      if (style != null &&
+          (style.contains('float') ||
+              style.contains('clear') ||
+              style.contains('width'))) {
+        element.attributes.remove('style');
+      }
+    });
+
     return doc.body?.innerHtml ?? '<p>Không thể xử lý nội dung.</p>';
   } else {
     throw Exception(
