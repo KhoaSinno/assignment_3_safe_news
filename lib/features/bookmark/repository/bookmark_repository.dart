@@ -34,10 +34,9 @@ class BookmarkRepository {
 
   // Search local realtime in _bookmarkBox with title or description
   List<BookmarkModel> searchBookmarks(String query) {
+    // Tự động init nếu chưa được khởi tạo
     if (!_isInitialized) {
-      throw StateError(
-        'BookmarkRepository chưa được khởi tạo. Hãy gọi init() trước.',
-      );
+      return [];
     }
 
     if (query.isEmpty) return getBookmarks();
@@ -57,6 +56,7 @@ class BookmarkRepository {
   // Getter với kiểm tra initialization
   Box<BookmarkModel> get _safeBookmarkBox {
     if (_bookmarkBox == null || !_isInitialized) {
+      // Return empty box behavior thay vì throw error
       throw StateError(
         'BookmarkRepository chưa được khởi tạo. Hãy gọi init() trước.',
       );
@@ -66,8 +66,13 @@ class BookmarkRepository {
 
   final user = FirebaseAuth.instance.currentUser;
   Future<void> addBookmark(BookmarkModel bookmark) async {
+    // Init nếu chưa được khởi tạo
+    if (!_isInitialized) {
+      await init();
+    }
+
     // Add to Hive
-    await _safeBookmarkBox.put(bookmark.id, bookmark);
+    await _bookmarkBox!.put(bookmark.id, bookmark);
 
     // Sync to Firebase if user is logged in
     final user = FirebaseAuth.instance.currentUser;
@@ -82,8 +87,13 @@ class BookmarkRepository {
   }
 
   Future<void> removeBookmark(String id) async {
+    // Init nếu chưa được khởi tạo
+    if (!_isInitialized) {
+      await init();
+    }
+
     // Remove from Hive
-    await _safeBookmarkBox.delete(id);
+    await _bookmarkBox!.delete(id);
 
     // Remove from Firebase if user is logged in
     final user = FirebaseAuth.instance.currentUser;
@@ -98,8 +108,13 @@ class BookmarkRepository {
   }
 
   List<BookmarkModel> getBookmarks() {
+    // Trả về empty list nếu chưa init thay vì throw error
+    if (!_isInitialized || _bookmarkBox == null) {
+      return [];
+    }
+
     // Cascade Operator
-    return _safeBookmarkBox.values.toList()
+    return _bookmarkBox!.values.toList()
       ..sort((a, b) => b.bookmarkedAt.compareTo(a.bookmarkedAt));
   }
 
@@ -109,11 +124,21 @@ class BookmarkRepository {
   }
 
   bool isBookmarked(String id) {
-    return _safeBookmarkBox.containsKey(id);
+    if (!_isInitialized || _bookmarkBox == null) {
+      return false;
+    }
+    return _bookmarkBox!.containsKey(id);
   }
 
   // Đồng bộ từ Firebase
   Future<void> syncFromFirebase() async {
+    if (!_isInitialized || _bookmarkBox == null) {
+      AppLogger.warning(
+        'BookmarkRepository not initialized, skipping sync from Firebase',
+      );
+      return;
+    }
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 
@@ -126,12 +151,12 @@ class BookmarkRepository {
               .get();
 
       // Xóa bookmark local cũ
-      await _safeBookmarkBox.clear();
+      await _bookmarkBox!.clear();
 
       // Thêm bookmark từ Firebase
       for (final doc in snapshot.docs) {
         final bookmark = BookmarkModel.fromJson(doc.data());
-        await _safeBookmarkBox.put(bookmark.id, bookmark);
+        await _bookmarkBox!.put(bookmark.id, bookmark);
       }
     } catch (e) {
       AppLogger.error('Error syncing from Firebase: $e');
@@ -140,6 +165,13 @@ class BookmarkRepository {
 
   // Đồng bộ lên Firebase
   Future<void> syncToFirebase() async {
+    if (!_isInitialized || _bookmarkBox == null) {
+      AppLogger.warning(
+        'BookmarkRepository not initialized, skipping sync to Firebase',
+      );
+      return;
+    }
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return;
 

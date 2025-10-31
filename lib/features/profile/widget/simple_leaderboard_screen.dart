@@ -92,7 +92,7 @@ class SimpleLeaderboardScreen extends ConsumerWidget {
               ),
             ),
             title: Text(
-              user.displayName,
+              _getDisplayName(user.displayName),
               style: TextStyle(
                 fontWeight: isCurrentUser ? FontWeight.bold : FontWeight.normal,
                 color: isCurrentUser ? Theme.of(context).primaryColor : null,
@@ -135,5 +135,14 @@ class SimpleLeaderboardScreen extends ConsumerWidget {
       default:
         return Colors.blue;
     }
+  }
+
+  /// Helper method to format display name (like in home header)
+  String _getDisplayName(String displayName) {
+    // Nếu displayName là "User" hoặc rỗng, không hiển thị
+    if (displayName.isEmpty || displayName == 'User') {
+      return 'Người dùng';
+    }
+    return displayName;
   }
 }

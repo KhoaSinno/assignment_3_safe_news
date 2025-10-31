@@ -6,9 +6,7 @@ import '../repository/auth_repository.dart';
 import '../model/user_model.dart';
 
 final authViewModelProvider = ChangeNotifierProvider((ref) {
-  final viewModel = AuthViewModel();
-  viewModel.checkAuthState(); // Khôi phục trạng thái khi khởi tạo
-  return viewModel;
+  return AuthViewModel();
 });
 
 class AuthViewModel extends ChangeNotifier {
@@ -20,6 +18,9 @@ class AuthViewModel extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   AuthViewModel() {
+    // Khôi phục session ngay lập tức (synchronous) từ currentUser
+    _initializeAuthState();
+
     // Lắng nghe thay đổi auth state từ Firebase
     FirebaseAuth.instance.authStateChanges().listen((User? firebaseUser) {
       if (firebaseUser != null && firebaseUser.email != null) {
@@ -40,12 +41,13 @@ class AuthViewModel extends ChangeNotifier {
           tag: 'AuthViewModel',
         );
       }
+      _isInitialized = true;
       notifyListeners();
     });
   }
 
-  /// Kiểm tra và khôi phục trạng thái đăng nhập từ Firebase Auth
-  Future<void> checkAuthState() async {
+  /// Khôi phục trạng thái đăng nhập ngay lập tức (synchronous)
+  void _initializeAuthState() {
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null && currentUser.email != null) {
@@ -56,18 +58,19 @@ class AuthViewModel extends ChangeNotifier {
           photoUrl: currentUser.photoURL,
         );
         AppLogger.debug(
-          'Restored user session: ${currentUser.email}',
+          'Restored user session immediately: ${currentUser.email}',
           tag: 'AuthViewModel',
         );
       } else {
         _user = null;
       }
       _isInitialized = true;
-      notifyListeners();
     } catch (e) {
-      AppLogger.error('Error checking auth state: $e', tag: 'AuthViewModel');
+      AppLogger.error(
+        'Error initializing auth state: $e',
+        tag: 'AuthViewModel',
+      );
       _isInitialized = true;
-      notifyListeners();
     }
   }
 
