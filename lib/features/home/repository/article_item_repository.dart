@@ -2,7 +2,8 @@ import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -24,8 +25,8 @@ class ArticleItemRepository {
     String sortTime = 'AllTime',
   }) {
     // Query query = _firestore.collection('news-crawler');
-    // Query query = _firestore.collection('test_30_articles_new');
     Query query = _firestore.collection('positive_news');
+    // Query query = _firestore.collection('test_30_articles_new');
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {
@@ -152,18 +153,24 @@ class ArticleItemRepository {
       }
     }
 
-    final model = FirebaseAI.googleAI().generativeModel(
-      model: 'gemini-2.0-flash',
+    // Lấy API key từ .env
+    final String apiKey = dotenv.env['GEMINI_KEY'] ?? '';
+
+    if (apiKey.isEmpty) {
+      AppLogger.error('GEMINI_KEY not found in .env file');
+      return '⚠️ Thiếu API key. Vui lòng kiểm tra cấu hình.';
+    }
+
+    final model = GenerativeModel(
+      model: 'gemini-2.0-flash-exp',
+      apiKey: apiKey,
     );
 
     try {
-      final prompt = [
-        Content.text(
-          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn (tối đa 300 từ), phong cách báo chí, mạch lạc dễ hiểu và cuốn hút. Chỉ trả về văn bản thuần túy, không sử dụng bất kỳ ký tự đặc biệt, markdown, hoặc định dạng nào: $content',
-        ),
-      ];
+      final prompt =
+          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn (tối đa 300 từ), phong cách báo chí, mạch lạc dễ hiểu và cuốn hút. Chỉ trả về văn bản thuần túy, không sử dụng bất kỳ ký tự đặc biệt, markdown, hoặc định dạng nào:\n\n$content';
 
-      final response = await model.generateContent(prompt);
+      final response = await model.generateContent([Content.text(prompt)]);
       final rawText = response.text ?? 'Không thể tạo tóm tắt.';
       final result = removeMarkdownBold(rawText);
 
