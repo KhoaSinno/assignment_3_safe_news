@@ -33,8 +33,8 @@ class ArticleItemRepository {
       query = query.where('category', isEqualTo: categorySlug);
     }
 
-    // Chỉ sắp xếp theo published (không filter ở Firestore vì published là string)
-    query = query.orderBy('published', descending: true);
+    // Không sắp xếp ở Firestore vì published là string format không phù hợp
+    // Sẽ sắp xếp ở client-side sau khi parse thành DateTime
 
     return query.snapshots().map((snapshot) {
       List<ArticleModel> articles =
@@ -46,6 +46,9 @@ class ArticleItemRepository {
                 ),
               )
               .toList();
+
+      // Sắp xếp theo thời gian ở client-side để đảm bảo chính xác
+      articles.sort((a, b) => b.published.compareTo(a.published));
 
       // Áp dụng filter thời gian ở client-side
       if (sortTime != 'AllTime') {
