@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/bookmark/repository/bookmark_repository.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
+import 'package:assignment_3_safe_news/features/authentication/viewmodel/auth_viewmodel.dart';
 import 'package:assignment_3_safe_news/main_screen.dart';
 import 'package:assignment_3_safe_news/providers/theme_provider.dart';
 import 'package:assignment_3_safe_news/theme/app_theme.dart';
@@ -50,7 +51,7 @@ void main() async {
       // Tiếp tục chạy app mà không có .env file
     }
 
-    // Initialize Firebase: 2
+    // Initialize Firebase: 2 (Priority cao nhất)
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
@@ -58,46 +59,50 @@ void main() async {
     // Set up background message handler (must be before initializing)
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    // Initialize Hive: 3
+    // Initialize Hive: 3 (Priority cao)
     await Hive.initFlutter();
 
-    // Initialize bookmark repository AFTER Firebase using singleton
-    try {
-      await BookmarkRepository.instance.init();
-    } catch (e) {
-      print('Warning: BookmarkRepository initialization failed: $e');
-    }
+    // Khởi tạo các services không chặn UI (chạy song song)
+    Future.wait([
+      // Initialize bookmark repository
+      BookmarkRepository.instance.init().catchError((e) {
+        print('Warning: BookmarkRepository initialization failed: $e');
+      }),
 
-    // Initialize TTS Service
-    try {
-      await TTSService().initialize();
-    } catch (e) {
-      print('Warning: TTS Service initialization failed: $e');
-    }
+      // Initialize TTS Service
+      TTSService().initialize().catchError((e) {
+        print('Warning: TTS Service initialization failed: $e');
+      }),
 
-    // Initialize Notification Service
-    try {
-      await NotificationService().initialize();
-    } catch (e) {
-      print('Warning: Notification Service initialization failed: $e');
-    }
+      // Initialize Notification Service
+      NotificationService().initialize().catchError((e) {
+        print('Warning: Notification Service initialization failed: $e');
+      }),
+    ]);
 
-    // Initialize and start News Notification Scheduler
-    try {
-      NewsNotificationScheduler().startPeriodicCheck(
-        interval: const Duration(hours: 2), // Kiểm tra mỗi 2 giờ
-      );
-    } catch (e) {
-      print('Warning: News Notification Scheduler failed: $e');
-    }
+    // Khởi chạy app ngay, các services khác chạy background
+    runApp(const ProviderScope(child: SafeNewsApp()));
 
-    // Setup periodic cache cleanup (every 6 hours)
-    Timer.periodic(const Duration(hours: 6), (timer) {
+    // Khởi động News Notification Scheduler sau khi app đã chạy
+    Future.delayed(const Duration(seconds: 2), () {
       try {
-        ArticleItemRepository.clearExpiredCache();
+        NewsNotificationScheduler().startPeriodicCheck(
+          interval: const Duration(hours: 2),
+        );
       } catch (e) {
-        print('Warning: Cache cleanup failed: $e');
+        print('Warning: News Notification Scheduler failed: $e');
       }
+    });
+
+    // Setup periodic cache cleanup (every 6 hours) - chạy sau khi app start
+    Future.delayed(const Duration(seconds: 5), () {
+      Timer.periodic(const Duration(hours: 6), (timer) {
+        try {
+          ArticleItemRepository.clearExpiredCache();
+        } catch (e) {
+          print('Warning: Cache cleanup failed: $e');
+        }
+      });
     });
 
     runApp(const ProviderScope(child: SafeNewsApp()));
@@ -116,7 +121,8 @@ class SafeNewsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     try {
-      // final authViewModel = ref.watch(authViewModelProvider);
+      // Watch auth state để app tự động cập nhật khi login/logout
+      ref.watch(authViewModelProvider);
       final themeMode = ref.watch(themeProvider);
 
       return MaterialApp(
@@ -195,10 +201,7 @@ class SafeNewsApp extends ConsumerWidget {
               children: [
                 Icon(Icons.error, color: Colors.red, size: 50),
                 SizedBox(height: 16),
-                Text(
-                  'App đang khởi tạo...',
-                  style: TextStyle(fontSize: 18),
-                ),
+                Text('App đang khởi tạo...', style: TextStyle(fontSize: 18)),
                 SizedBox(height: 16),
                 CircularProgressIndicator(),
               ],

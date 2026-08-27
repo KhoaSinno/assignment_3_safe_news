@@ -465,6 +465,14 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                                 'line-height': '1.6',
                               };
                             }
+                            if (element.localName == 'img') {
+                              return {
+                                'display': 'block',
+                                'max-width': '100%',
+                                'height': 'auto',
+                                'margin': '16px auto',
+                              };
+                            }
                             if (element.localName == 'h1' ||
                                 element.localName == 'h2' ||
                                 element.localName == 'h3') {

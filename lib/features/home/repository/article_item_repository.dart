@@ -2,7 +2,8 @@ import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_ai/firebase_ai.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -24,16 +25,16 @@ class ArticleItemRepository {
     String sortTime = 'AllTime',
   }) {
     // Query query = _firestore.collection('news-crawler');
-    // Query query = _firestore.collection('test_30_articles_new');
     Query query = _firestore.collection('positive_news');
+    // Query query = _firestore.collection('test_30_articles_new');
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {
       query = query.where('category', isEqualTo: categorySlug);
     }
 
-    // Chỉ sắp xếp theo published (không filter ở Firestore vì published là string)
-    query = query.orderBy('published', descending: true);
+    // Không sắp xếp ở Firestore vì published là string format không phù hợp
+    // Sẽ sắp xếp ở client-side sau khi parse thành DateTime
 
     return query.snapshots().map((snapshot) {
       List<ArticleModel> articles =
@@ -45,6 +46,9 @@ class ArticleItemRepository {
                 ),
               )
               .toList();
+
+      // Sắp xếp theo thời gian ở client-side để đảm bảo chính xác
+      articles.sort((a, b) => b.published.compareTo(a.published));
 
       // Áp dụng filter thời gian ở client-side
       if (sortTime != 'AllTime') {
@@ -152,18 +156,24 @@ class ArticleItemRepository {
       }
     }
 
-    final model = FirebaseAI.googleAI().generativeModel(
-      model: 'gemini-2.0-flash',
+    // Lấy API key từ .env
+    final String apiKey = dotenv.env['GEMINI_KEY'] ?? '';
+
+    if (apiKey.isEmpty) {
+      AppLogger.error('GEMINI_KEY not found in .env file');
+      return '⚠️ Thiếu API key. Vui lòng kiểm tra cấu hình.';
+    }
+
+    final model = GenerativeModel(
+      model: 'gemini-2.0-flash-exp',
+      apiKey: apiKey,
     );
 
     try {
-      final prompt = [
-        Content.text(
-          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn (tối đa 300 từ), phong cách báo chí, mạch lạc dễ hiểu và cuốn hút. Chỉ trả về văn bản thuần túy, không sử dụng bất kỳ ký tự đặc biệt, markdown, hoặc định dạng nào: $content',
-        ),
-      ];
+      final prompt =
+          'Tóm tắt nội dung sau bằng ngôn ngữ tiếng việt thành một đoạn ngắn (tối đa 300 từ), phong cách báo chí, mạch lạc dễ hiểu và cuốn hút. Chỉ trả về văn bản thuần túy, không sử dụng bất kỳ ký tự đặc biệt, markdown, hoặc định dạng nào:\n\n$content';
 
-      final response = await model.generateContent(prompt);
+      final response = await model.generateContent([Content.text(prompt)]);
       final rawText = response.text ?? 'Không thể tạo tóm tắt.';
       final result = removeMarkdownBold(rawText);
 
@@ -173,7 +183,15 @@ class ArticleItemRepository {
       return result;
     } catch (e) {
       AppLogger.error('Error with Gemini API: $e');
-      return 'Lỗi khi gọi API tóm tắt.';
+      // Trả về thông báo thân thiện cho người dùng
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('network') || errorString.contains('socket')) {
+        return '⚠️ Không có kết nối mạng. Không thể tạo bản tóm tắt.';
+      } else if (errorString.contains('timeout')) {
+        return '⚠️ Hết thời gian chờ. Vui lòng thử lại sau.';
+      } else {
+        return '⚠️ Không thể tạo bản tóm tắt lúc này. Vui lòng thử lại sau.';
+      }
     }
   }
 

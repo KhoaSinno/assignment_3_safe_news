@@ -1,5 +1,6 @@
 import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.dart';
 import 'package:assignment_3_safe_news/features/bookmark/ui/bookmark_article_detail.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -26,15 +27,29 @@ class BookmarkItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Row(
             children: [
-              Container(
-                width: 112,
-                height: 80,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: NetworkImage(bookmark.imageUrl),
-                    fit: BoxFit.cover,
-                  ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CachedNetworkImage(
+                  imageUrl: bookmark.imageUrl,
+                  width: 112,
+                  height: 80,
+                  fit: BoxFit.cover,
+                  placeholder:
+                      (context, url) => Container(
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      ),
+                  errorWidget:
+                      (context, url, error) => Container(
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.image_outlined,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
                 ),
               ),
               const SizedBox(width: 16),
