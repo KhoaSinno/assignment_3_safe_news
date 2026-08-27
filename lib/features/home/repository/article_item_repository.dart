@@ -165,7 +165,7 @@ class ArticleItemRepository {
     }
 
     final model = GenerativeModel(
-      model: 'gemini-2.0-flash-exp',
+      model: 'gemini-2.5-flash',
       apiKey: apiKey,
     );
 
