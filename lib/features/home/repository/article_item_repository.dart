@@ -3,7 +3,7 @@ import 'package:assignment_3_safe_news/utils/logger.dart';
 import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:assignment_3_safe_news/environment/environment.dart';
 
 class ArticleItemRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -24,9 +24,7 @@ class ArticleItemRepository {
     String? title,
     String sortTime = 'AllTime',
   }) {
-    // Query query = _firestore.collection('news-crawler');
-    Query query = _firestore.collection('positive_news');
-    // Query query = _firestore.collection('test_30_articles_new');
+    Query query = _firestore.collection(AppConfig.newsCollection);
 
     // Áp dụng filter category trước
     if (categorySlug != 'all') {
@@ -156,16 +154,16 @@ class ArticleItemRepository {
       }
     }
 
-    // Lấy API key từ .env
-    final String apiKey = dotenv.env['GEMINI_KEY'] ?? '';
+    // Lấy API key từ AppConfig
+    final String apiKey = AppConfig.geminiApiKey;
 
-    if (apiKey.isEmpty) {
-      AppLogger.error('GEMINI_KEY not found in .env file');
+    if (!AppConfig.hasValidGeminiKey) {
+      AppLogger.error('Valid Gemini API key not found in AppConfig');
       return '⚠️ Thiếu API key. Vui lòng kiểm tra cấu hình.';
     }
 
     final model = GenerativeModel(
-      model: 'gemini-2.5-flash',
+      model: AppConfig.geminiModel,
       apiKey: apiKey,
     );
 

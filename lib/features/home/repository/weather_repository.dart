@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:geolocator/geolocator.dart';
 import 'package:assignment_3_safe_news/utils/logger.dart';
+import 'package:assignment_3_safe_news/environment/environment.dart';
 import '../model/weather_model.dart';
 
 class WeatherRepository {
-  static String get _apiKey => dotenv.env['WEATHER_API_KEY'] ?? '';
-
-  static const String _baseUrl = 'https://api.openweathermap.org/data/2.5';
+  static String get _apiKey => AppConfig.weatherApiKey;
+  static String get _baseUrl => AppConfig.weatherBaseUrl;
   Future<WeatherModel?> getCurrentWeather() async {
     try {
       // Lấy vị trí hiện tại

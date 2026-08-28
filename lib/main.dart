@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:assignment_3_safe_news/environment/environment.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'dart:async';
 import 'firebase_options.dart';
@@ -43,13 +43,8 @@ void main() async {
       ),
     );
 
-    // Load environment: 1 (với error handling)
-    try {
-      await dotenv.load();
-    } catch (e) {
-      print('Warning: .env file not found or failed to load: $e');
-      // Tiếp tục chạy app mà không có .env file
-    }
+    // Load environment qua AppConfig (với error handling an toàn)
+    await AppConfig.init();
 
     // Initialize Firebase: 2 (Priority cao nhất)
     await Firebase.initializeApp(
