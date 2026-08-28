@@ -43,6 +43,11 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   @override
   void initState() {
     super.initState();
+    // Khởi tạo tóm tắt tức thì từ description đã được AI xử lý từ trước (0s latency)
+    _summary = widget.article.description.isNotEmpty
+        ? widget.article.description
+        : null;
+    _isLoadingSummary = _summary == null;
     _loadArticleAndGenerateSummary();
     _startReadingTimer();
   }
@@ -83,7 +88,6 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
     if (mounted) {
       setState(() {
         _isLoadingArticle = true;
-        _isLoadingSummary = true;
       });
     }
 
@@ -101,20 +105,17 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
       final plainTextContent = extractTextFromHtml(fetchedHtmlContent);
       if (plainTextContent.isNotEmpty) {
         _plainTextContent = plainTextContent;
-        // Sử dụng cached summary generation
-        final summary = await ArticleItemRepository.summaryContentGemini(
-          plainTextContent,
-        );
-        if (mounted) {
-          setState(() {
-            _summary = summary;
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _summary = 'Không thể trích xuất nội dung để tóm tắt.';
-          });
+        // Chỉ gọi Gemini nếu bài báo chưa có description
+        if (_summary == null || _summary!.isEmpty) {
+          final summary = await ArticleItemRepository.summaryContentGemini(
+            plainTextContent,
+          );
+          if (mounted) {
+            setState(() {
+              _summary = summary;
+              _isLoadingSummary = false;
+            });
+          }
         }
       }
     } catch (e) {
@@ -123,8 +124,13 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
           if (_isLoadingArticle) {
             _articleHtmlContent = '<p>Lỗi khi tải nội dung: $e</p>';
           }
-          _summary = 'Lỗi khi xử lý bài viết: $e';
+          if (_summary == null || _summary!.isEmpty) {
+            _summary = widget.article.description.isNotEmpty
+                ? widget.article.description
+                : 'Không thể tạo bản tóm tắt lúc này.';
+          }
           _isLoadingArticle = false;
+          _isLoadingSummary = false;
         });
       }
     } finally {
@@ -315,6 +321,45 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
               padding: const EdgeInsets.all(32),
               child: Column(
                 children: [
+                  // Sentiment Safety Badge
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: widget.article.sentiment == 1
+                          ? const Color(0xFFE8F5E9)
+                          : const Color(0xFFE3F2FD),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: widget.article.sentiment == 1
+                            ? const Color(0xFF81C784)
+                            : const Color(0xFF90CAF9),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          widget.article.sentiment == 1 ? Icons.eco : Icons.verified_user,
+                          size: 16,
+                          color: widget.article.sentiment == 1
+                              ? const Color(0xFF2E7D32)
+                              : const Color(0xFF1565C0),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          widget.article.sentiment == 1 ? 'Tin Tích Cực' : 'Tin Cảnh Báo An Toàn',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: widget.article.sentiment == 1
+                                ? const Color(0xFF2E7D32)
+                                : const Color(0xFF1565C0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Text(
                     widget.article.title,
                     textAlign: TextAlign.center,

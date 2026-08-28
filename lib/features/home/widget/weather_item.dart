@@ -1,7 +1,7 @@
 import 'package:assignment_3_safe_news/providers/weather_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:assignment_3_safe_news/environment/environment.dart';
 
 class WeatherWidget extends ConsumerStatefulWidget {
   const WeatherWidget({super.key});
@@ -28,16 +28,7 @@ class _WeatherWidgetState extends ConsumerState<WeatherWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra API key trước - với xử lý safe cho test
-    String apiKey = '';
-    try {
-      apiKey = (dotenv.env['WEATHER_API_KEY'] ?? '').trim();
-    } catch (e) {
-      // dotenv chưa được khởi tạo (trong test hoặc lỗi khác)
-      apiKey = '';
-    }
-
-    if (apiKey.isEmpty || apiKey == 'YOUR_OPENWEATHERMAP_API_KEY') {
+    if (!AppConfig.hasValidWeatherKey) {
       return Row(
         children: [
           Icon(

@@ -101,8 +101,8 @@ class _AchievementToastState extends State<AchievementToast>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        widget.achievement.color.withOpacity(0.9),
-                        widget.achievement.color.withOpacity(0.7),
+                        widget.achievement.color.withValues(alpha: 0.9),
+                        widget.achievement.color.withValues(alpha: 0.7),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -110,7 +110,7 @@ class _AchievementToastState extends State<AchievementToast>
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),
@@ -123,7 +123,7 @@ class _AchievementToastState extends State<AchievementToast>
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: SvgPicture.asset(
@@ -169,7 +169,7 @@ class _AchievementToastState extends State<AchievementToast>
                             Text(
                               _getAchievementDescription(widget.achievement),
                               style: TextStyle(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 12,
                               ),
                               maxLines: 2,
@@ -185,7 +185,7 @@ class _AchievementToastState extends State<AchievementToast>
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(

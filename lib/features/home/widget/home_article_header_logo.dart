@@ -15,14 +15,15 @@ class HomeArticleHeaderLogo extends ConsumerWidget {
     final String currentDay = DateFormat('dd/MM/yyyy').format(currentTime);
     final authViewModel = ref.watch(authViewModelProvider);
     final isLoggedIn = authViewModel.user != null;
+    final double topPadding = MediaQuery.of(context).padding.top;
 
     return Container(
       width: double.infinity,
-      height: 120,
-      padding: const EdgeInsets.only(left: 20, right: 20, top: 30),
+      height: 80 + topPadding,
+      padding: EdgeInsets.only(left: 20, right: 20, top: topPadding + 4),
       decoration: BoxDecoration(
         color: Theme.of(context).appBarTheme.backgroundColor,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(40)),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(36)),
         boxShadow: const [
           BoxShadow(
             color: Color(0x3F000000),

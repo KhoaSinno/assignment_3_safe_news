@@ -18,7 +18,7 @@ class ProfileSetting extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authViewModel = ref.watch(authViewModelProvider);
     final themeNotifier = ref.read(themeProvider.notifier);
-    final isDarkMode = ref.watch(themeProvider.notifier).isDarkMode;
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     final userAchievementModel = ref.watch(userStatsProvider);
 
     // Kiểm tra trạng thái đăng nhập

@@ -1,8 +1,6 @@
 import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/ui/detail_article.dart';
-import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 import 'package:assignment_3_safe_news/utils/tts_service.dart';
-import 'package:assignment_3_safe_news/utils/article_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
@@ -17,8 +15,6 @@ class ArticleItem extends StatefulWidget {
 
 class _ArticleItemState extends State<ArticleItem> {
   final TTSService _ttsService = TTSService();
-  bool _isLoadingSummary = false;
-  String? _cachedSummary;
 
   @override
   void initState() {
@@ -27,51 +23,19 @@ class _ArticleItemState extends State<ArticleItem> {
   }
 
   Future<void> _speakArticleSummary() async {
-    // Nếu đang đọc summary này, thì dừng
-    final String summaryText = _cachedSummary ?? widget.article.description;
+    final String summaryText = (widget.article.description != null &&
+            widget.article.description.isNotEmpty)
+        ? widget.article.description
+        : widget.article.title;
+
     if (_ttsService.isSpeaking(summaryText)) {
       await _ttsService.stop();
+      if (mounted) setState(() {});
       return;
     }
 
-    // Nếu chưa có summary cached, thì tạo mới
-    if (_cachedSummary == null) {
-      setState(() {
-        _isLoadingSummary = true;
-      });
-
-      try {
-        // Fetch content và tạo summary
-        final String content = await ArticleItemRepository.getContentWithCache(
-          widget.article.link,
-        );
-        final String plainText = extractTextFromHtml(content);
-
-        if (plainText.isNotEmpty) {
-          _cachedSummary = await ArticleItemRepository.summaryContentGemini(
-            plainText,
-          );
-        } else {
-          _cachedSummary = widget.article.description;
-        }
-
-        setState(() {
-          _isLoadingSummary = false;
-        });
-
-        // Speak summary sau khi load xong
-        await _ttsService.speak(_cachedSummary!);
-      } catch (e) {
-        setState(() {
-          _isLoadingSummary = false;
-          _cachedSummary = widget.article.description;
-        });
-        await _ttsService.speak(_cachedSummary!);
-      }
-    } else {
-      // Đã có cache, speak ngay
-      await _ttsService.speak(_cachedSummary!);
-    }
+    await _ttsService.speak(summaryText);
+    if (mounted) setState(() {});
   }
 
 
@@ -119,39 +83,58 @@ class _ArticleItemState extends State<ArticleItem> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
+                    // Category Name
                     Text(
                       getNameFromCategory(widget.article.category),
                       style: TextStyle(
                         color: Theme.of(context).textTheme.bodyMedium?.color,
-                        fontSize: 14,
+                        fontSize: 13,
                         fontFamily: 'Merriweather',
                         fontWeight: FontWeight.w400,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    // Mini Sentiment Pill
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: widget.article.sentiment == 1
+                            ? const Color(0xFFE8F5E9)
+                            : const Color(0xFFE3F2FD),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        widget.article.sentiment == 1 ? '🌿 Tích cực' : '🛡️ An toàn',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: widget.article.sentiment == 1
+                              ? const Color(0xFF2E7D32)
+                              : const Color(0xFF1565C0),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
                     IconButton(
-                      onPressed:
-                          _isLoadingSummary ? null : _speakArticleSummary,
-                      icon:
-                          _isLoadingSummary
-                              ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                              : Icon(
-                                Icons.volume_up,
-                                color:
-                                    _ttsService.isSpeaking(
-                                          _cachedSummary ??
-                                              widget.article.description,
-                                        )
-                                        ? const Color.fromARGB(255, 44, 8, 204)
-                                        : Theme.of(context).iconTheme.color
-                                            ?.withValues(alpha: 0.54),
-                              ),
-                      iconSize: 30,
+                      onPressed: _speakArticleSummary,
+                      icon: Icon(
+                        _ttsService.isSpeaking(
+                          widget.article.description ?? widget.article.title,
+                        )
+                            ? Icons.volume_up
+                            : Icons.volume_up_outlined,
+                        color: _ttsService.isSpeaking(
+                          widget.article.description ?? widget.article.title,
+                        )
+                            ? const Color(0xFF9F224E)
+                            : Theme.of(context)
+                                .iconTheme
+                                .color
+                                ?.withValues(alpha: 0.54),
+                      ),
+                      iconSize: 24,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
                   ],
                 ),

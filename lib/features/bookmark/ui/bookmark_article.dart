@@ -25,7 +25,7 @@ class _BookmarkArticleState extends ConsumerState<BookmarkArticle> {
             bottomRight: Radius.circular(20),
           ),
         ),
-        shadowColor: Colors.black.withOpacity(0.5),
+        shadowColor: Colors.black.withValues(alpha: 0.5),
         title: Text(
           'Bookmark',
           style: Theme.of(
