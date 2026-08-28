@@ -19,28 +19,35 @@ class BookmarkList extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Container(
             width: double.infinity,
-            height: 56,
+            height: 52,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(28),
+              borderRadius: BorderRadius.circular(26),
               color:
                   Theme.of(context).brightness == Brightness.dark
                       ? Theme.of(context).cardTheme.color
                       : Theme.of(context).appBarTheme.backgroundColor,
               boxShadow: const [
                 BoxShadow(
-                  color: Color(0x3F000000),
-                  blurRadius: 4,
+                  color: Color(0x1F000000),
+                  blurRadius: 6,
                   offset: Offset(0, 2),
                 ),
               ],
             ),
             child: Row(
               children: [
+                Icon(
+                  Icons.search,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: TextField(
                     decoration: InputDecoration(
-                      hintText: 'Tìm kiếm theo tiêu đề, tóm tắt, nội dung...',
+                      hintText: 'Tìm kiếm trong danh sách đã lưu...',
                       hintStyle: TextStyle(
                         color: Theme.of(
                           context,
@@ -61,17 +68,17 @@ class BookmarkList extends ConsumerWidget {
                       color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                     onChanged: (value) {
-                      // Sử dụng Provider để update search query
                       bookmarkViewModel.updateSearchQuery(value);
                     },
                   ),
                 ),
-                Icon(
-                  Icons.search,
-                  color: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
-                ),
+                if (bookmarkViewModel.searchQuery.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: () {
+                      bookmarkViewModel.updateSearchQuery('');
+                    },
+                  ),
               ],
             ),
           ),
@@ -94,7 +101,7 @@ class BookmarkList extends ConsumerWidget {
                         const SizedBox(height: 16),
                         Text(
                           bookmarkViewModel.searchQuery.isEmpty
-                              ? 'Chưa có bookmark nào'
+                              ? 'Chưa có bài viết nào được lưu'
                               : 'Không tìm thấy kết quả cho "${bookmarkViewModel.searchQuery}"',
                           style: const TextStyle(
                             fontSize: 16,
@@ -110,26 +117,56 @@ class BookmarkList extends ConsumerWidget {
                     itemCount: filteredBookmarks.length,
                     itemBuilder: (context, index) {
                       final bookmark = filteredBookmarks[index];
-                      return Dismissible(
-                        key: Key(bookmark.title),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.only(right: 20),
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        onDismissed: (direction) {
-                          bookmarkViewModel.removeBookmark(bookmark.id);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${bookmark.title} được xóa thành công',
-                              ),
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Dismissible(
+                          key: Key(bookmark.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade600,
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          );
-                        },
-                        child: BookmarkItem(bookmark: bookmark),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.delete_outline, color: Colors.white, size: 22),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Xóa',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          onDismissed: (direction) {
+                            final deletedBookmark = bookmark;
+                            bookmarkViewModel.removeBookmark(bookmark.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Đã xóa "${bookmark.title}"',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                action: SnackBarAction(
+                                  label: 'HOÀN TÁC',
+                                  textColor: Colors.amberAccent,
+                                  onPressed: () {
+                                    bookmarkViewModel.addBookmark(deletedBookmark);
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                          child: BookmarkItem(bookmark: bookmark),
+                        ),
                       );
                     },
                   ),

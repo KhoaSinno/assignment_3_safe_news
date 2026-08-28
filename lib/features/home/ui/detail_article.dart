@@ -6,12 +6,14 @@ import 'package:assignment_3_safe_news/features/bookmark/model/bookmark_model.da
 import 'package:assignment_3_safe_news/features/bookmark/viewmodel/bookmark_item_viewmodel.dart';
 import 'package:assignment_3_safe_news/features/home/model/article_model.dart';
 import 'package:assignment_3_safe_news/providers/user_stats_provider.dart';
+import 'package:assignment_3_safe_news/providers/font_size_provider.dart';
+import 'package:assignment_3_safe_news/providers/audio_player_provider.dart';
 import 'package:assignment_3_safe_news/features/home/repository/article_item_repository.dart';
 import 'package:assignment_3_safe_news/utils/index.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // PACKAGES
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -31,15 +33,11 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
   String? _articleHtmlContent;
   bool _isLoadingArticle = false;
   String _plainTextContent = '';
-  bool _isPressingBrief = false;
-  bool _isPressingFull = false;
 
   // Tracking user reading article
   Timer? _readingTimer;
   int _seconds = 0;
   bool _hasTracking = false;
-
-  final FlutterTts flutterTts = FlutterTts();
   @override
   void initState() {
     super.initState();
@@ -213,6 +211,160 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
     }
   }
 
+  void _showFontSizeBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final currentOption = ref.watch(fontSizeProvider);
+            return Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Row(
+                    children: [
+                      Icon(Icons.format_size, color: Color(0xFF9F224E)),
+                      SizedBox(width: 8),
+                      Text(
+                        'Tùy chỉnh cỡ chữ đọc bài',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  ...FontSizeOption.values.map((opt) {
+                    final isSelected = opt == currentOption;
+                    return ListTile(
+                      title: Text(
+                        opt.label,
+                        style: TextStyle(
+                          fontSize: 15 * opt.scale,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected ? const Color(0xFF9F224E) : null,
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle, color: Color(0xFF9F224E))
+                          : null,
+                      onTap: () {
+                        ref.read(fontSizeProvider.notifier).setOption(opt);
+                        Navigator.pop(context);
+                      },
+                    );
+                  }),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showReportDialog() {
+    final reasons = [
+      'Nội dung tiêu cực / bạo lực chưa được lọc',
+      'Thông tin sai sự thật / Giả mạo',
+      'Tóm tắt AI chưa chính xác',
+      'Nội dung giật gân, phản cảm',
+    ];
+    String selectedReason = reasons[0];
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Row(
+                children: [
+                  Icon(Icons.report_problem_outlined, color: Colors.orange),
+                  SizedBox(width: 8),
+                  Text('Báo cáo bài viết', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Giúp chúng tôi cải thiện bộ lọc AI bằng cách chọn lý do:',
+                    style: TextStyle(fontSize: 13),
+                  ),
+                  const SizedBox(height: 12),
+                  ...reasons.map((r) => RadioListTile<String>(
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(r, style: const TextStyle(fontSize: 13)),
+                        value: r,
+                        groupValue: selectedReason,
+                        onChanged: (val) {
+                          if (val != null) {
+                            setDialogState(() => selectedReason = val);
+                          }
+                        },
+                      )),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Hủy'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF9F224E),
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _submitReport(selectedReason);
+                  },
+                  child: const Text('Gửi báo cáo'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _submitReport(String reason) async {
+    try {
+      await FirebaseFirestore.instance.collection('article_reports').add({
+        'article_id': widget.article.id,
+        'title': widget.article.title,
+        'link': widget.article.link,
+        'reason': reason,
+        'reported_at': FieldValue.serverTimestamp(),
+        'user_id': FirebaseAuth.instance.currentUser?.uid ?? 'anonymous',
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cảm ơn bạn! Báo cáo đã được ghi nhận để cải tiến AI.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể gửi báo cáo: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,6 +382,16 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
           },
         ),
         actions: [
+          IconButton(
+            tooltip: 'Cỡ chữ',
+            icon: Icon(Icons.format_size, color: Theme.of(context).iconTheme.color),
+            onPressed: _showFontSizeBottomSheet,
+          ),
+          IconButton(
+            tooltip: 'Báo cáo bài viết',
+            icon: Icon(Icons.outlined_flag, color: Theme.of(context).iconTheme.color),
+            onPressed: _showReportDialog,
+          ),
           IconButton(
             icon: Icon(Icons.share, color: Theme.of(context).iconTheme.color),
             onPressed: () async {
@@ -253,7 +415,6 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                 );
               } catch (e) {
                 // Silently handle error or log it
-                // showDialog removed to avoid async context issues
               }
             },
           ),
@@ -383,6 +544,7 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  // Summary Section
                   Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -394,56 +556,67 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                         ),
                         _isLoadingSummary
                             ? const SizedBox()
-                            : IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  // Nếu đang đọc summary, toggle nó
-                                  // Nếu không đang đọc summary, tắt full và bật summary
-                                  if (_isPressingBrief) {
-                                    _isPressingBrief = false;
-                                    flutterTts.stop();
-                                  } else {
-                                    _isPressingBrief = true;
-                                    _isPressingFull = false;
-                                    flutterTts.stop();
-                                    flutterTts.setLanguage('vi-VN');
-                                    flutterTts.speak(
-                                      _summary ??
-                                          'Đang có lỗi xảy ra với văn bản tóm tắt! Xin vui lòng thử lại!',
-                                    );
-                                  }
-                                });
-                              },
-                              icon: const Icon(Icons.volume_up),
-                              iconSize: 40,
-                              color:
-                                  _isPressingBrief
-                                      ? const Color.fromARGB(255, 44, 8, 204)
-                                      : Theme.of(context).iconTheme.color
-                                          ?.withValues(alpha: 0.54),
-                            ),
+                            : Consumer(
+                                builder: (context, ref, child) {
+                                  final audioState = ref.watch(audioPlayerProvider);
+                                  final isSpeakingSummary = audioState.articleId ==
+                                          widget.article.id &&
+                                      audioState.isPlaying &&
+                                      audioState.isBrief;
+
+                                  return IconButton(
+                                    onPressed: () {
+                                      final textToSpeak = _summary ??
+                                          (widget.article.description.isNotEmpty
+                                              ? widget.article.description
+                                              : widget.article.title);
+                                      ref.read(audioPlayerProvider.notifier).playArticle(
+                                            id: widget.article.id,
+                                            title: widget.article.title,
+                                            text: textToSpeak,
+                                            imageUrl: widget.article.imageUrl,
+                                          );
+                                    },
+                                    icon: Icon(
+                                      isSpeakingSummary ? Icons.volume_up : Icons.volume_up_outlined,
+                                    ),
+                                    iconSize: 36,
+                                    color: isSpeakingSummary
+                                        ? const Color(0xFF9F224E)
+                                        : Theme.of(context)
+                                            .iconTheme
+                                            .color
+                                            ?.withValues(alpha: 0.54),
+                                  );
+                                },
+                              ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
                   _isLoadingSummary
                       ? const Center(child: CircularProgressIndicator())
-                      : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Text(
-                          _summary ?? 'Đang tải tóm tắt...',
-                          textAlign: TextAlign.justify,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyLarge?.copyWith(
-                            fontSize: 16,
-                            fontFamily: 'Merriweather',
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                          ),
+                      : Consumer(
+                          builder: (context, ref, child) {
+                            final fontScale = ref.watch(fontSizeProvider).scale;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Text(
+                                _summary ?? 'Đang tải tóm tắt...',
+                                textAlign: TextAlign.justify,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      fontSize: 16 * fontScale,
+                                      fontFamily: 'Merriweather',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.5,
+                                    ),
+                              ),
+                            );
+                          },
                         ),
-                      ),
                   const SizedBox(height: 24),
+
+                  // Full Article Section
                   Center(
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -455,82 +628,96 @@ class _DetailArticleState extends ConsumerState<DetailArticle> {
                         ),
                         _isLoadingArticle
                             ? const SizedBox()
-                            : IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  // Nếu đang đọc full content, toggle nó
-                                  // Nếu không đang đọc full content, tắt summary và bật full content
-                                  if (_isPressingFull) {
-                                    _isPressingFull = false;
-                                    flutterTts.stop();
-                                  } else {
-                                    _isPressingFull = true;
-                                    _isPressingBrief = false;
-                                    flutterTts.stop();
-                                    flutterTts.setLanguage('vi-VN');
-                                    flutterTts.speak(_plainTextContent);
-                                  }
-                                });
-                              },
-                              icon: const Icon(Icons.volume_up),
-                              iconSize: 40,
-                              color:
-                                  _isPressingFull
-                                      ? const Color.fromARGB(255, 44, 8, 204)
-                                      : Theme.of(context).iconTheme.color
-                                          ?.withValues(alpha: 0.54),
-                            ),
+                            : Consumer(
+                                builder: (context, ref, child) {
+                                  final audioState = ref.watch(audioPlayerProvider);
+                                  final isSpeakingFull = audioState.articleId ==
+                                          widget.article.id &&
+                                      audioState.isPlaying &&
+                                      !audioState.isBrief;
+
+                                  return IconButton(
+                                    onPressed: () {
+                                      final textToSpeak = _plainTextContent.isNotEmpty
+                                          ? _plainTextContent
+                                          : (_summary ?? widget.article.description);
+                                      ref.read(audioPlayerProvider.notifier).playArticle(
+                                            id: widget.article.id,
+                                            title: widget.article.title,
+                                            text: textToSpeak,
+                                            imageUrl: widget.article.imageUrl,
+                                            isBrief: false,
+                                          );
+                                    },
+                                    icon: Icon(
+                                      isSpeakingFull ? Icons.volume_up : Icons.volume_up_outlined,
+                                    ),
+                                    iconSize: 36,
+                                    color: isSpeakingFull
+                                        ? const Color(0xFF9F224E)
+                                        : Theme.of(context)
+                                            .iconTheme
+                                            .color
+                                            ?.withValues(alpha: 0.54),
+                                  );
+                                },
+                              ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 8),
                   _isLoadingArticle
                       ? const Center(child: CircularProgressIndicator())
-                      : Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: HtmlWidget(
-                          _articleHtmlContent ?? '<p>Không có nội dung.</p>',
-                          textStyle: TextStyle(
-                            fontSize: 16,
-                            height: 1.6,
-                            fontFamily: 'Merriweather',
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                          ),
-                          customStylesBuilder: (element) {
-                            if (element.localName == 'p') {
-                              return {
-                                'text-align': 'justify',
-                                'line-height': '1.6',
-                                'margin-bottom': '16px',
-                              };
-                            }
-                            if (element.localName == 'div') {
-                              return {
-                                'text-align': 'justify',
-                                'line-height': '1.6',
-                              };
-                            }
-                            if (element.localName == 'img') {
-                              return {
-                                'display': 'block',
-                                'max-width': '100%',
-                                'height': 'auto',
-                                'margin': '16px auto',
-                              };
-                            }
-                            if (element.localName == 'h1' ||
-                                element.localName == 'h2' ||
-                                element.localName == 'h3') {
-                              return {
-                                'text-align': 'center',
-                                'margin': '20px 0 16px 0',
-                                'font-weight': 'bold',
-                              };
-                            }
-                            return null;
+                      : Consumer(
+                          builder: (context, ref, child) {
+                            final fontScale = ref.watch(fontSizeProvider).scale;
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: HtmlWidget(
+                                _articleHtmlContent ?? '<p>Không có nội dung.</p>',
+                                textStyle: TextStyle(
+                                  fontSize: 16 * fontScale,
+                                  height: 1.6,
+                                  fontFamily: 'Merriweather',
+                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                ),
+                                customStylesBuilder: (element) {
+                                  if (element.localName == 'p') {
+                                    return {
+                                      'text-align': 'justify',
+                                      'line-height': '1.6',
+                                      'margin-bottom': '16px',
+                                    };
+                                  }
+                                  if (element.localName == 'div') {
+                                    return {
+                                      'text-align': 'justify',
+                                      'line-height': '1.6',
+                                    };
+                                  }
+                                  if (element.localName == 'img') {
+                                    return {
+                                      'display': 'block',
+                                      'max-width': '100%',
+                                      'height': 'auto',
+                                      'margin': '16px auto',
+                                    };
+                                  }
+                                  if (element.localName == 'h1' ||
+                                      element.localName == 'h2' ||
+                                      element.localName == 'h3') {
+                                    return {
+                                      'text-align': 'center',
+                                      'margin': '20px 0 16px 0',
+                                      'font-weight': 'bold',
+                                    };
+                                  }
+                                  return null;
+                                },
+                              ),
+                            );
                           },
                         ),
-                      ),
                 ],
               ),
             ),
