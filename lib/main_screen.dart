@@ -6,6 +6,8 @@ import 'package:assignment_3_safe_news/features/bookmark/ui/bookmark_article.dar
 import 'package:assignment_3_safe_news/features/profile/ui/profile_setting.dart';
 import 'package:assignment_3_safe_news/widgets/custom_bottom_nav_bar.dart';
 
+import 'package:assignment_3_safe_news/widgets/floating_audio_bar.dart';
+
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
@@ -27,7 +29,17 @@ class MainScreen extends ConsumerWidget {
         extendBody: true, // Mở rộng body đến edge
         extendBodyBehindAppBar: true, // Mở rộng body phía sau app bar
         resizeToAvoidBottomInset: false, // Không resize khi keyboard xuất hiện
-        body: IndexedStack(index: currentIndex, children: screens),
+        body: Stack(
+          children: [
+            IndexedStack(index: currentIndex, children: screens),
+            const Positioned(
+              left: 0,
+              right: 0,
+              bottom: 85, // Vị trí nổi ngay phía trên thanh điều hướng
+              child: FloatingAudioBar(),
+            ),
+          ],
+        ),
         bottomNavigationBar: const CustomBottomNavBar(),
       ),
     );

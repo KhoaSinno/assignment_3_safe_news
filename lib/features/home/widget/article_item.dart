@@ -1,41 +1,34 @@
 import 'package:assignment_3_safe_news/constants/app_category.dart';
 import 'package:assignment_3_safe_news/features/home/ui/detail_article.dart';
-import 'package:assignment_3_safe_news/utils/tts_service.dart';
+import 'package:assignment_3_safe_news/providers/audio_player_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:assignment_3_safe_news/utils/index.dart';
-class ArticleItem extends StatefulWidget {
+
+class ArticleItem extends ConsumerStatefulWidget {
   const ArticleItem({super.key, required this.article});
   final dynamic article;
 
   @override
-  State<ArticleItem> createState() => _ArticleItemState();
+  ConsumerState<ArticleItem> createState() => _ArticleItemState();
 }
 
-class _ArticleItemState extends State<ArticleItem> {
-  final TTSService _ttsService = TTSService();
-
-  @override
-  void initState() {
-    super.initState();
-    _ttsService.initialize();
-  }
-
+class _ArticleItemState extends ConsumerState<ArticleItem> {
   Future<void> _speakArticleSummary() async {
     final String summaryText = (widget.article.description != null &&
             widget.article.description.isNotEmpty)
         ? widget.article.description
         : widget.article.title;
 
-    if (_ttsService.isSpeaking(summaryText)) {
-      await _ttsService.stop();
-      if (mounted) setState(() {});
-      return;
-    }
-
-    await _ttsService.speak(summaryText);
-    if (mounted) setState(() {});
+    final audioNotifier = ref.read(audioPlayerProvider.notifier);
+    await audioNotifier.playArticle(
+      id: widget.article.id ?? widget.article.title,
+      title: widget.article.title,
+      text: summaryText,
+      imageUrl: widget.article.imageUrl,
+    );
   }
 
 
@@ -117,20 +110,20 @@ class _ArticleItemState extends State<ArticleItem> {
                     const Spacer(),
                     IconButton(
                       onPressed: _speakArticleSummary,
-                      icon: Icon(
-                        _ttsService.isSpeaking(
-                          widget.article.description ?? widget.article.title,
-                        )
-                            ? Icons.volume_up
-                            : Icons.volume_up_outlined,
-                        color: _ttsService.isSpeaking(
-                          widget.article.description ?? widget.article.title,
-                        )
-                            ? const Color(0xFF9F224E)
-                            : Theme.of(context)
-                                .iconTheme
-                                .color
-                                ?.withValues(alpha: 0.54),
+                      icon: Builder(
+                        builder: (context) {
+                          final audioState = ref.watch(audioPlayerProvider);
+                          final isSpeaking = audioState.articleId == (widget.article.id ?? widget.article.title) && audioState.isPlaying;
+                          return Icon(
+                            isSpeaking ? Icons.volume_up : Icons.volume_up_outlined,
+                            color: isSpeaking
+                                ? const Color(0xFF9F224E)
+                                : Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    ?.withValues(alpha: 0.54),
+                          );
+                        },
                       ),
                       iconSize: 24,
                       padding: EdgeInsets.zero,

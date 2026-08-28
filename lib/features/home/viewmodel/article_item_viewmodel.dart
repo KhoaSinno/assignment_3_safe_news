@@ -14,6 +14,11 @@ final sortTimeProvider = StateProvider<String>((ref) {
   return 'AllTime'; // Giá trị mặc định
 });
 
+// Provider cho sentiment filter: null (tất cả), 1 (tích cực), 0 (cảnh báo an toàn)
+final sentimentFilterProvider = StateProvider<int?>((ref) {
+  return null;
+});
+
 // Provider để stream danh sách bài viết dựa trên category được chọn
 final articlesStreamProvider = StreamProvider<List<ArticleModel>>((ref) {
   final selectedCategorySlug = ref.watch(
@@ -21,16 +26,18 @@ final articlesStreamProvider = StreamProvider<List<ArticleModel>>((ref) {
   ); // Theo dõi category đang được chọn
 
   final textSearch = ref.watch(debouncedSearchProvider);
-
   final sortTime = ref.watch(sortTimeProvider);
-
+  final sentimentFilter = ref.watch(sentimentFilterProvider);
   final articleRepository = ref.watch(articleRepositoryProvider);
 
   return articleRepository.fetchArticle(
     categorySlug: selectedCategorySlug!,
     title: textSearch,
     sortTime: sortTime,
-  );
+  ).map((articles) {
+    if (sentimentFilter == null) return articles;
+    return articles.where((a) => a.sentiment == sentimentFilter).toList();
+  });
 });
 
 /// Helper function để cập nhật sort time
