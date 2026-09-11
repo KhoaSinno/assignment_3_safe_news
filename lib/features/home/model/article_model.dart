@@ -1,4 +1,4 @@
-import 'package:intl/intl.dart';
+import 'package:assignment_3_safe_news/utils/date_parser.dart';
 
 class ArticleModel {
   ArticleModel({
@@ -28,9 +28,7 @@ class ArticleModel {
       id: documentId,
       title: json['title'] as String? ?? 'No title',
       description: json['description'] as String? ?? '',
-      published: DateFormat(
-        'EEE, dd MMM yyyy HH:mm:ss Z',
-      ).parse(json['published'] as String? ?? DateTime.now().toIso8601String()),
+      published: parseSafePublishedDate(json['published']),
       link: json['link'] as String?,
       imageUrl: json['image_url'] as String? ?? '',
       category: json['category'] as String? ?? '',
